@@ -1,19 +1,14 @@
 package com.dh.ondot.member.api;
 
 import com.dh.ondot.member.api.response.AccessToken;
-import com.dh.ondot.member.api.response.Token;
+import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.app.AuthFacade;
 import com.dh.ondot.member.app.TokenFacade;
 import com.dh.ondot.member.core.exception.TokenMissingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -23,13 +18,12 @@ public class AuthController {
     private final AuthFacade authFacade;
     private final TokenFacade tokenFacade;
 
-    @PostMapping("/kakao-login")
-    public Token kakaoCallback(
-            @RequestBody Map<String, String> request
+    @PostMapping("/login/oauth")
+    public Token loginWithOAuth(
+            @RequestParam("oauth_provider") String oauthProvider,
+            @RequestParam("access_token") String accessToken
     ) {
-        String code = request.get("code");
-
-        return authFacade.kakaoLogin(code);
+        return authFacade.loginWithOAuth(oauthProvider, accessToken);
     }
 
     @PostMapping("/reissue")

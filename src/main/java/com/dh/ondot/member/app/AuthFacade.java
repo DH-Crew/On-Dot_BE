@@ -1,9 +1,10 @@
 package com.dh.ondot.member.app;
 
-import com.dh.ondot.member.api.response.AccessToken;
-import com.dh.ondot.member.api.response.Token;
-import com.dh.ondot.member.api.response.UserInfo;
+import com.dh.ondot.member.app.dto.Token;
+import com.dh.ondot.member.domain.dto.UserInfo;
 import com.dh.ondot.member.domain.Member;
+import com.dh.ondot.member.domain.OauthApi;
+import com.dh.ondot.member.domain.OauthInfo;
 import com.dh.ondot.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +20,11 @@ public class AuthFacade {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Token kakaoLogin(String accessToken) {
-        UserInfo userInfo = oauthApi.getOauthUser(accessToken);
+    public Token loginWithOAuth(String oauthProvider, String accessToken) {
+        UserInfo userInfo = oauthApi.fetchUser(accessToken);
 
-        Member member = memberRepository.findByOauthProviderId(userInfo.oauthProviderId())
-                .orElseGet(() -> creatMember(userInfo, "kakao"));
+        Member member = memberRepository.findByOauthInfo(OauthInfo.of(oauthProvider, userInfo.oauthProviderId()))
+                .orElseGet(() -> creatMember(userInfo, oauthProvider));
 
         return tokenFacade.issue(member.getId());
     }
