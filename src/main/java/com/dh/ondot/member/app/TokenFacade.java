@@ -1,10 +1,10 @@
 package com.dh.ondot.member.app;
 
-import com.dh.ondot.member.api.response.Token;
+import com.dh.ondot.member.app.dto.Token;
+import com.dh.ondot.member.app.dto.TokenInfo;
 import com.dh.ondot.member.core.JwtProperties;
 import com.dh.ondot.member.core.exception.TokenBlacklistedException;
 import com.dh.ondot.member.infra.RedisTokenRepository;
-import io.jsonwebtoken.Claims;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class TokenFacade {
     public static final long HOURS_IN_MILLIS = 60 * 60 * 1000L;
 
     private final JwtProperties jwtProperties;
-    private final JwtManager jwtManager;
+    private final TokenManager tokenManager;
     private final RedisTokenRepository redisTokenRepository;
     private long accessTokenTime;
     private long refreshTokenTime;
@@ -31,8 +31,8 @@ public class TokenFacade {
     }
 
     public Token issue(Long memberId) {
-        String newAccessToken = jwtManager.createToken(memberId, accessTokenTime);
-        String newRefreshToken = jwtManager.createToken(memberId, refreshTokenTime);
+        String newAccessToken = tokenManager.createToken(memberId, accessTokenTime);
+        String newRefreshToken = tokenManager.createToken(memberId, refreshTokenTime);
 
         redisTokenRepository.saveRefreshToken(memberId.toString(), newRefreshToken, refreshTokenTime);
 
@@ -40,29 +40,26 @@ public class TokenFacade {
     }
 
     public Token reissue(String oldRefreshToken) {
-        Claims claims = jwtManager.parseClaimsFromRefreshToken(oldRefreshToken);
-
-        String jti = claims.getId();
-        String memberId = claims.getSubject();
+        TokenInfo tokenInfo = tokenManager.parseClaimsFromRefreshToken(oldRefreshToken);
+        String jti = tokenInfo.tokenId();
+        String memberId = tokenInfo.memberId();
 
         if (redisTokenRepository.isBlacklisted(jti)) {
             String currentRefreshToken = redisTokenRepository.getRefreshToken(memberId);
-            Date expiration = jwtManager.parseClaimsFromRefreshToken(currentRefreshToken).getExpiration();
+            Date expiration = tokenManager.parseClaimsFromRefreshToken(currentRefreshToken).expiration();
             redisTokenRepository.addBlacklistToken(currentRefreshToken, getRemainingDuration(expiration));
 
             throw new TokenBlacklistedException();
         }
 
-        redisTokenRepository.addBlacklistToken(jti, getRemainingDuration(claims.getExpiration()));
+        redisTokenRepository.addBlacklistToken(jti, getRemainingDuration(tokenInfo.expiration()));
 
-        Token token = issue(Long.valueOf(memberId));
-
-        return token;
+        return issue(Long.valueOf(memberId));
     }
 
     public Long validateToken(String accessToken) {
-        Claims claims = jwtManager.parseClaims(accessToken);
-        String memberId = claims.getSubject();
+        TokenInfo tokenInfo = tokenManager.parseClaims(accessToken);
+        String memberId = tokenInfo.memberId();
 
         return Long.parseLong(memberId);
     }
