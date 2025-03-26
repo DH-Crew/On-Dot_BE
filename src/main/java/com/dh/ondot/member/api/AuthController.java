@@ -3,6 +3,7 @@ package com.dh.ondot.member.api;
 import com.dh.ondot.member.api.response.AccessToken;
 import com.dh.ondot.member.api.response.Token;
 import com.dh.ondot.member.app.AuthFacade;
+import com.dh.ondot.member.app.TokenFacade;
 import com.dh.ondot.member.core.exception.TokenMissingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthFacade authFacade;
+    private final TokenFacade tokenFacade;
 
     @PostMapping("/kakao-login")
     public Token kakaoCallback(
@@ -36,13 +38,13 @@ public class AuthController {
     ) {
         String refreshToken = extractRefreshToken(request);
 
-        return authFacade.reissueToken(refreshToken);
+        return tokenFacade.reissue(refreshToken);
     }
 
     @PostMapping("/test/token")
     public AccessToken testToken() {
-
-        return authFacade.issueTokenForTest();
+        Token token = tokenFacade.issue(1L);
+        return new AccessToken(token.accessToken());
     }
 
     private String extractRefreshToken(HttpServletRequest request) {

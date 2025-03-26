@@ -19,26 +19,13 @@ public class AuthFacade {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Token kakaoLogin(String code) {
-        String accessToken = oauthApi.getAccessToken(code);
+    public Token kakaoLogin(String accessToken) {
         UserInfo userInfo = oauthApi.getOauthUser(accessToken);
 
         Member member = memberRepository.findByOauthProviderId(userInfo.oauthProviderId())
                 .orElseGet(() -> creatMember(userInfo, "kakao"));
 
         return tokenFacade.issue(member.getId());
-    }
-
-    public Token reissueToken(String oldRefreshToken) {
-        Token token = tokenFacade.reissue(oldRefreshToken);
-
-        return token;
-    }
-
-    public AccessToken issueTokenForTest() {
-        Token token = tokenFacade.issue(1L);
-
-        return new AccessToken(token.accessToken());
     }
 
     private Member creatMember(UserInfo userInfo, String oauthProvider) {
