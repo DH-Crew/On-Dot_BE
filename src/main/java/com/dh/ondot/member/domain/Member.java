@@ -23,18 +23,13 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private OauthProvider oauthProvider;
-
-    @Column(nullable = false)
-    private String oauthProviderId;
+    @Embedded
+    private OauthInfo oauthInfo;
 
     public static Member create(String email, String oauthProvider, String oauthProviderId) {
         return Member.builder()
                 .email(email)
-                .oauthProvider(OauthProvider.fromName(oauthProvider))
-                .oauthProviderId(oauthProviderId)
+                .oauthInfo(OauthInfo.of(oauthProvider, oauthProviderId))
                 .build();
     }
 }
