@@ -1,4 +1,4 @@
-package com.dh.ondot.member.api.response;
+package com.dh.ondot.member.app.dto;
 
 public record Token(
         String accessToken,

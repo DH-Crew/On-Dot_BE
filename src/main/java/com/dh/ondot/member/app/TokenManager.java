@@ -1,5 +1,6 @@
 package com.dh.ondot.member.app;
 
+import com.dh.ondot.member.app.dto.TokenInfo;
 import com.dh.ondot.member.core.exception.RefreshTokenExpiredException;
 import com.dh.ondot.member.core.exception.TokenExpiredException;
 import com.dh.ondot.member.core.exception.TokenInvalidException;
@@ -18,7 +19,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Component
-public class JwtManager {
+public class TokenManager {
 
     public static final String TOKEN_ISSUER = "ON_DOT";
 
@@ -47,14 +48,15 @@ public class JwtManager {
                 .compact();
     }
 
-    public Claims parseClaims(String token) {
+    public TokenInfo parseClaims(String token) {
         try {
-            return Jwts.parser()
+            Claims claims = Jwts.parser()
                     .requireIssuer(TOKEN_ISSUER)
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+            return new TokenInfo(claims.getId(), claims.getSubject(), claims.getExpiration());
         } catch (ExpiredJwtException ex) {
             throw new TokenExpiredException();
         } catch (JwtException ex) {
@@ -62,14 +64,15 @@ public class JwtManager {
         }
     }
 
-    public Claims parseClaimsFromRefreshToken(String token) {
+    public TokenInfo parseClaimsFromRefreshToken(String token) {
         try {
-            return Jwts.parser()
+            Claims claims = Jwts.parser()
                     .requireIssuer(TOKEN_ISSUER)
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+            return new TokenInfo(claims.getId(), claims.getSubject(), claims.getExpiration());
         } catch (ExpiredJwtException ex) {
             throw new RefreshTokenExpiredException();
         } catch (JwtException ex) {
