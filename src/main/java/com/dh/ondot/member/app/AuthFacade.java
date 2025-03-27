@@ -25,13 +25,13 @@ public class AuthFacade {
         UserInfo userInfo = oauthApi.fetchUser(accessToken);
 
         Member member = memberRepository.findByOauthInfo(OauthInfo.of(oauthProvider, userInfo.oauthProviderId()))
-                .orElseGet(() -> creatMember(userInfo, oauthProvider));
+                .orElseGet(() -> registerMemberWithOauth(userInfo, oauthProvider));
 
         return tokenFacade.issue(member.getId());
     }
 
-    private Member creatMember(UserInfo userInfo, OauthProvider oauthProvider) {
-        Member newMember = Member.create(
+    private Member registerMemberWithOauth(UserInfo userInfo, OauthProvider oauthProvider) {
+        Member newMember = Member.registerWithOauth(
                 userInfo.email(),
                 oauthProvider,
                 userInfo.oauthProviderId()

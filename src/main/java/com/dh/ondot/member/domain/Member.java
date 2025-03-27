@@ -26,7 +26,7 @@ public class Member extends BaseTimeEntity {
     @Embedded
     private OauthInfo oauthInfo;
 
-    public static Member create(String email, OauthProvider oauthProvider, String oauthProviderId) {
+    public static Member registerWithOauth(String email, OauthProvider oauthProvider, String oauthProviderId) {
         return Member.builder()
                 .email(email)
                 .oauthInfo(OauthInfo.of(oauthProvider, oauthProviderId))
