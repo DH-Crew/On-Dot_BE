@@ -31,7 +31,8 @@ public enum ErrorCode {
     REFRESH_TOKEN_EXPIRED(UNAUTHORIZED, "리프레쉬 토큰이 만료되었습니다. 다시 로그인해 주세요."),
 
     // OAuth
-    UNSUPPORTED_SOCIAL_LOGIN(BAD_REQUEST, "지원하지 않는 소셜 로그인 타입입니다. type : %s")
+    UNSUPPORTED_SOCIAL_LOGIN(BAD_REQUEST, "지원하지 않는 소셜 로그인 타입입니다. type : %s"),
+    OAUTH_USER_FETCH_FAILED(SERVICE_UNAVAILABLE, "%s 사용자 정보를 가져오는 데 실패했습니다. 잠시 후 다시 시도해주세요.")
     ;
 
     public final HttpStatus httpStatus;
