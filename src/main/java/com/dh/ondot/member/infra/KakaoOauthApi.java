@@ -1,9 +1,12 @@
 package com.dh.ondot.member.infra;
 
+import com.dh.ondot.member.core.exception.OauthUserFetchFailedException;
 import com.dh.ondot.member.domain.dto.UserInfo;
 import com.dh.ondot.member.domain.OauthApi;
 import com.dh.ondot.member.infra.dto.KakaoUserInfoResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -15,16 +18,25 @@ public class KakaoOauthApi implements OauthApi {
     private final RestClient restClient = RestClient.create();
 
     @Override
+    @Retryable(
+            retryFor = { Exception.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 500)
+    )
     public UserInfo fetchUser(String accessToken) {
-        KakaoUserInfoResponse response = restClient.get()
-                .uri(USERINFO_URL)
-                .header("Authorization", "Bearer " + accessToken)
-                .retrieve()
-                .body(KakaoUserInfoResponse.class);
+        try {
+            KakaoUserInfoResponse response = restClient.get()
+                    .uri(USERINFO_URL)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .retrieve()
+                    .body(KakaoUserInfoResponse.class);
 
-        String oauthProviderId = String.valueOf(response.id());
-        String email = response.kakao_account().email();
+            String oauthProviderId = String.valueOf(response.id());
+            String email = response.kakao_account().email();
 
-        return new UserInfo(oauthProviderId, email);
+            return new UserInfo(oauthProviderId, email);
+        } catch (Exception e) {
+            throw new OauthUserFetchFailedException("카카오");
+        }
     }
 }
