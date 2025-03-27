@@ -21,7 +21,7 @@ public class OauthInfo {
     @Column(nullable = false)
     private String oauthProviderId;
 
-    public static OauthInfo of(String oauthProvider, String oauthProviderId) {
-        return new OauthInfo(OauthProvider.fromName(oauthProvider), oauthProviderId);
+    public static OauthInfo of(OauthProvider oauthProvider, String oauthProviderId) {
+        return new OauthInfo(oauthProvider, oauthProviderId);
     }
 }

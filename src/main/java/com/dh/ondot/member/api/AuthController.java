@@ -5,6 +5,7 @@ import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.app.AuthFacade;
 import com.dh.ondot.member.app.TokenFacade;
 import com.dh.ondot.member.core.exception.TokenMissingException;
+import com.dh.ondot.member.domain.OauthProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ public class AuthController {
 
     @PostMapping("/login/oauth")
     public Token loginWithOAuth(
-            @RequestParam("oauth_provider") String oauthProvider,
+            @RequestParam("provider") OauthProvider oauthProvider,
             @RequestParam("access_token") String accessToken
     ) {
         return authFacade.loginWithOAuth(oauthProvider, accessToken);

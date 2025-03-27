@@ -1,6 +1,7 @@
 package com.dh.ondot.member.app;
 
 import com.dh.ondot.member.app.dto.Token;
+import com.dh.ondot.member.domain.OauthProvider;
 import com.dh.ondot.member.domain.dto.UserInfo;
 import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.OauthApi;
@@ -20,7 +21,7 @@ public class AuthFacade {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Token loginWithOAuth(String oauthProvider, String accessToken) {
+    public Token loginWithOAuth(OauthProvider oauthProvider, String accessToken) {
         UserInfo userInfo = oauthApi.fetchUser(accessToken);
 
         Member member = memberRepository.findByOauthInfo(OauthInfo.of(oauthProvider, userInfo.oauthProviderId()))
@@ -29,7 +30,7 @@ public class AuthFacade {
         return tokenFacade.issue(member.getId());
     }
 
-    private Member creatMember(UserInfo userInfo, String oauthProvider) {
+    private Member creatMember(UserInfo userInfo, OauthProvider oauthProvider) {
         Member newMember = Member.create(
                 userInfo.email(),
                 oauthProvider,
