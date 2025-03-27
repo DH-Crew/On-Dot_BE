@@ -56,7 +56,7 @@ public class TokenManager {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-            return new TokenInfo(claims.getId(), claims.getSubject(), claims.getExpiration());
+            return new TokenInfo(claims.getId(), claims.getSubject(), claims.getExpiration().toInstant());
         } catch (ExpiredJwtException ex) {
             throw new TokenExpiredException();
         } catch (JwtException ex) {
@@ -72,7 +72,7 @@ public class TokenManager {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-            return new TokenInfo(claims.getId(), claims.getSubject(), claims.getExpiration());
+            return new TokenInfo(claims.getId(), claims.getSubject(), claims.getExpiration().toInstant());
         } catch (ExpiredJwtException ex) {
             throw new RefreshTokenExpiredException();
         } catch (JwtException ex) {

@@ -1,10 +1,10 @@
 package com.dh.ondot.member.app.dto;
 
-import java.util.Date;
+import java.time.Instant;
 
 public record TokenInfo(
         String tokenId,
         String memberId,
-        Date expiration
+        Instant expiration
 ) {
 }

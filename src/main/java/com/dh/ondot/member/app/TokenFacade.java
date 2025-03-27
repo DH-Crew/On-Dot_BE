@@ -46,7 +46,7 @@ public class TokenFacade {
 
         if (redisTokenRepository.isBlacklisted(jti)) {
             String currentRefreshToken = redisTokenRepository.getRefreshToken(memberId);
-            Date expiration = tokenManager.parseClaimsFromRefreshToken(currentRefreshToken).expiration();
+            Instant expiration = tokenManager.parseClaimsFromRefreshToken(currentRefreshToken).expiration();
             redisTokenRepository.addBlacklistToken(currentRefreshToken, getRemainingDuration(expiration));
 
             throw new TokenBlacklistedException();
@@ -64,10 +64,9 @@ public class TokenFacade {
         return Long.parseLong(memberId);
     }
 
-    private Duration getRemainingDuration(Date expiration) {
+    private Duration getRemainingDuration(Instant expiration) {
         Instant now = Instant.now();
-        Instant expirationTime = expiration.toInstant();
 
-        return Duration.between(now, expirationTime);
+        return Duration.between(now, expiration);
     }
 }
