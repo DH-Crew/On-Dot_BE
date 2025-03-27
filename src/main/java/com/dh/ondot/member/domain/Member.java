@@ -20,7 +20,7 @@ public class Member extends BaseTimeEntity {
     @Column(length = 50)
     private String nickname;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Embedded
