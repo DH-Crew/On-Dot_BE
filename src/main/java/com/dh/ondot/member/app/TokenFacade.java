@@ -3,6 +3,7 @@ package com.dh.ondot.member.app;
 import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.app.dto.TokenInfo;
 import com.dh.ondot.member.core.JwtProperties;
+import com.dh.ondot.member.core.exception.RefreshTokenExpiredException;
 import com.dh.ondot.member.core.exception.TokenBlacklistedException;
 import com.dh.ondot.member.infra.RedisTokenRepository;
 import jakarta.annotation.PostConstruct;
@@ -59,6 +60,9 @@ public class TokenFacade {
 
     private Duration getRemainingDuration(Instant expiration) {
         Instant now = Instant.now();
+        if(now.isBefore(expiration)) {
+            throw new RefreshTokenExpiredException();
+        }
 
         return Duration.between(now, expiration);
     }
