@@ -45,10 +45,6 @@ public class TokenFacade {
         String memberId = tokenInfo.memberId();
 
         if (redisTokenRepository.isBlacklisted(jti)) {
-            String currentRefreshToken = redisTokenRepository.getRefreshToken(memberId);
-            Instant expiration = tokenManager.parseClaimsFromRefreshToken(currentRefreshToken).expiration();
-            redisTokenRepository.addBlacklistToken(currentRefreshToken, getRemainingDuration(expiration));
-
             throw new TokenBlacklistedException();
         }
 
