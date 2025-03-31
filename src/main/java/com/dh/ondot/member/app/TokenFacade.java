@@ -60,7 +60,7 @@ public class TokenFacade {
 
     private Duration getRemainingDuration(Instant expiration) {
         Instant now = Instant.now();
-        if(now.isBefore(expiration)) {
+        if(now.isAfter(expiration)) {
             throw new RefreshTokenExpiredException();
         }
 
