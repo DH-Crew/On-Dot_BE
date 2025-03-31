@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +32,6 @@ public class TokenFacade {
     public Token issue(Long memberId) {
         String newAccessToken = tokenManager.createToken(memberId, accessTokenTime);
         String newRefreshToken = tokenManager.createToken(memberId, refreshTokenTime);
-
-        redisTokenRepository.saveRefreshToken(memberId.toString(), newRefreshToken, refreshTokenTime);
 
         return new Token(newAccessToken, newRefreshToken);
     }
