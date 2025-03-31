@@ -1,7 +1,6 @@
 package com.dh.ondot.core.domain;
 
 import com.dh.ondot.core.exception.*;
-import com.dubu.backend.core.exception.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.ConstraintViolation;
