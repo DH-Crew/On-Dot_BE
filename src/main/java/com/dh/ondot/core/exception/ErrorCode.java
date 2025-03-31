@@ -20,7 +20,7 @@ public enum ErrorCode {
     METHOD_NOT_SUPPORTED(METHOD_NOT_ALLOWED,"허용되지 않은 메서드입니다."),
     MEDIA_TYPE_NOT_SUPPORTED(UNSUPPORTED_MEDIA_TYPE,"허용되지 않은 미디어 타입입니다."),
     SERVER_ERROR(INTERNAL_SERVER_ERROR,"서버 오류가 발생했습니다. 관리자에게 문의하세요."),
-    REDIS_UNAVAILABLE(INTERNAL_SERVER_ERROR,"Redis 서버에 연결할 수 없습니다."),
+    REDIS_UNAVAILABLE(SERVICE_UNAVAILABLE,"Redis 서버에 연결할 수 없습니다."),
 
     // Token
     INVALID_TOKEN_HEADER(UNAUTHORIZED, "토큰 헤더 형식이 잘못되었습니다."),
