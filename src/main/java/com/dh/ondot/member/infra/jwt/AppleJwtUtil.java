@@ -19,9 +19,11 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
@@ -69,12 +71,14 @@ public class AppleJwtUtil {
     private PrivateKey getPrivateKey() {
         try {
             ClassPathResource resource = new ClassPathResource("auth/ApplePrivateKey.p8");
-            String privateKey = new String(Files.readAllBytes(Paths.get(resource.getURI())));
-            Reader pemReader = new StringReader(privateKey);
-            PEMParser pemParser = new PEMParser(pemReader);
-            JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
-            PrivateKeyInfo object = (PrivateKeyInfo) pemParser.readObject();
-            return converter.getPrivateKey(object);
+            try (Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+                 PEMParser pemParser = new PEMParser(reader)
+            ) {
+                JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
+                PrivateKeyInfo privateKeyInfo = (PrivateKeyInfo) pemParser.readObject();
+
+                return converter.getPrivateKey(privateKeyInfo);
+            }
         } catch (Exception e) {
             throw new ApplePrivateKeyLoadFailedException();
         }
