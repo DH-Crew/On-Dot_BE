@@ -8,7 +8,6 @@ public record AppleProperties(
         String teamId,
         String keyId,
         String audience,
-        String grantType,
-        String privateKey
+        String grantType
 ) {
 }
