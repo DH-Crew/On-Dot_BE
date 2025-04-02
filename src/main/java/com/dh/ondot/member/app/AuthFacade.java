@@ -1,11 +1,8 @@
 package com.dh.ondot.member.app;
 
 import com.dh.ondot.member.app.dto.Token;
-import com.dh.ondot.member.domain.OauthProvider;
+import com.dh.ondot.member.domain.*;
 import com.dh.ondot.member.domain.dto.UserInfo;
-import com.dh.ondot.member.domain.Member;
-import com.dh.ondot.member.domain.OauthApi;
-import com.dh.ondot.member.domain.OauthInfo;
 import com.dh.ondot.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class AuthFacade {
-    private final OauthApi oauthApi;
     private final TokenFacade tokenFacade;
+    private final OauthApiFactory oauthApiFactory;
     private final MemberRepository memberRepository;
 
     @Transactional
     public Token loginWithOAuth(OauthProvider oauthProvider, String accessToken) {
+        OauthApi oauthApi = oauthApiFactory.getOauthApi(oauthProvider);
         UserInfo userInfo = oauthApi.fetchUser(accessToken);
 
         Member member = memberRepository.findByOauthInfo(OauthInfo.of(oauthProvider, userInfo.oauthProviderId()))
