@@ -1,6 +1,6 @@
 package com.dh.ondot.member.core;
 
-import com.dh.ondot.member.core.exception.InvalidOauthProviderException;
+import com.dh.ondot.member.core.exception.UnsupportedSocialLoginException;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import com.dh.ondot.member.domain.OauthProvider;
@@ -14,7 +14,7 @@ public class OauthProviderConverter implements Converter<String, OauthProvider> 
         try {
             return OauthProvider.valueOf(type.toUpperCase(ENGLISH));
         } catch (IllegalArgumentException e) {
-            throw new InvalidOauthProviderException(type);
+            throw new UnsupportedSocialLoginException(type);
         }
     }
 }
