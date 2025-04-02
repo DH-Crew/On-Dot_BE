@@ -1,6 +1,7 @@
-package com.dh.ondot.member.infra;
+package com.dh.ondot.member.infra.oauth;
 
 import com.dh.ondot.member.core.exception.OauthUserFetchFailedException;
+import com.dh.ondot.member.domain.OauthProvider;
 import com.dh.ondot.member.domain.dto.UserInfo;
 import com.dh.ondot.member.domain.OauthApi;
 import com.dh.ondot.member.infra.dto.KakaoUserInfoResponse;
@@ -20,7 +21,7 @@ public class KakaoOauthApi implements OauthApi {
     @Override
     @Retryable(
             retryFor = { Exception.class },
-            maxAttempts = 3,
+            maxAttempts = 2,
             backoff = @Backoff(delay = 500)
     )
     public UserInfo fetchUser(String accessToken) {
@@ -36,7 +37,7 @@ public class KakaoOauthApi implements OauthApi {
 
             return new UserInfo(oauthProviderId, email);
         } catch (Exception e) {
-            throw new OauthUserFetchFailedException("카카오");
+            throw new OauthUserFetchFailedException(OauthProvider.KAKAO.name());
         }
     }
 }
