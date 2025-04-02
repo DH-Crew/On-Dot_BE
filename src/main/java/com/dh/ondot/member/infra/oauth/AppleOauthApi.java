@@ -10,6 +10,7 @@ import com.dh.ondot.member.infra.dto.ApplePublicKeyResponse;
 import com.dh.ondot.member.infra.dto.AppleSocialTokenInfoResponseDto;
 import com.dh.ondot.member.infra.jwt.AppleJwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AppleOauthApi implements OauthApi {
@@ -45,6 +47,7 @@ public class AppleOauthApi implements OauthApi {
 
             return appleJwtUtil.parseIdToken(appleKeys, tokenDto.idToken());
         } catch (Exception e) {
+            log.error("Apple OAuth 사용자 정보 조회 실패: {}", e.getMessage(), e);
             throw new OauthUserFetchFailedException(OauthProvider.APPLE.name());
         }
     }
