@@ -4,8 +4,8 @@ import com.dh.ondot.core.exception.BadRequestException;
 
 import static com.dh.ondot.core.exception.ErrorCode.UNSUPPORTED_SOCIAL_LOGIN;
 
-public class InvalidOauthProviderException extends BadRequestException {
-    public InvalidOauthProviderException(String type) {
+public class UnsupportedSocialLoginException extends BadRequestException {
+    public UnsupportedSocialLoginException(String type) {
         super(UNSUPPORTED_SOCIAL_LOGIN.getMessage().formatted(type));
     }
 
