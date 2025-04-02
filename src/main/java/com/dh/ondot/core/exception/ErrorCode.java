@@ -32,7 +32,11 @@ public enum ErrorCode {
 
     // OAuth
     UNSUPPORTED_SOCIAL_LOGIN(BAD_REQUEST, "지원하지 않는 소셜 로그인 타입입니다. type : %s"),
-    OAUTH_USER_FETCH_FAILED(SERVICE_UNAVAILABLE, "%s 사용자 정보를 가져오는 데 실패했습니다. 잠시 후 다시 시도해주세요.")
+    OAUTH_USER_FETCH_FAILED(SERVICE_UNAVAILABLE, "%s 사용자 정보를 가져오는 데 실패했습니다. 잠시 후 다시 시도해주세요."),
+    APPLE_AUTHORIZATION_CODE_EXPIRED(UNAUTHORIZED, "애플 Authorization Code가 만료되었거나 잘못되었습니다. 다시 시도해주세요."),
+    APPLE_SIGNATURE_INVALID(UNAUTHORIZED, "애플 id_token 서명 검증에 실패했습니다. 위조되었을 가능성이 있습니다."),
+    APPLE_USER_PARSE_FAILED(NOT_FOUND, "애플 사용자 정보를 파싱하는 데 실패했습니다. id_token 구조를 확인하세요."),
+    APPLE_PRIVATE_KEY_LOAD_FAILED(INTERNAL_SERVER_ERROR, "Apple 비공개 키 파일을 로드하는 데 실패했습니다. 파일 경로 또는 포맷을 확인하세요.")
     ;
 
     public final HttpStatus httpStatus;
