@@ -12,6 +12,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 public class TokenInterceptor implements HandlerInterceptor {
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final TokenFacade tokenFacade;
 
@@ -23,21 +25,19 @@ public class TokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (handler instanceof HandlerMethod handlerMethod) {
-
-            String jwtToken = request.getHeader("Authorization");
+            String jwtToken = request.getHeader(AUTHORIZATION_HEADER);
             String accessToken;
-            if (jwtToken == null) {
+            if (jwtToken == null || jwtToken.trim().isEmpty()) {
                 throw new TokenMissingException();
             }
 
-            if (jwtToken.startsWith("Bearer ")) {
-                accessToken = jwtToken.substring(7);
+            if (jwtToken.startsWith(BEARER_PREFIX)) {
+                accessToken = jwtToken.substring(BEARER_PREFIX.length());
             } else {
                 throw new InvalidTokenHeaderException();
             }
 
             Long memberId = tokenFacade.validateToken(accessToken);
-
             request.setAttribute("memberId", memberId);
         }
 
