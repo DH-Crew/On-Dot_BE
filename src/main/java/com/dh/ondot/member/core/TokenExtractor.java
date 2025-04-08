@@ -8,9 +8,15 @@ public class TokenExtractor {
     private static final String BEARER_PREFIX = "Bearer ";
 
     public static String extract(String header) {
-        if (header == null || !header.startsWith(BEARER_PREFIX)) {
-            throw new TokenMissingException();
-        }
+public static String extract(String header) {
+    if (header == null) {
+        throw new TokenMissingException();
+    }
+    if (!header.startsWith(BEARER_PREFIX)) {
+        throw new InvalidTokenHeaderException();
+    }
+    return header.substring(BEARER_PREFIX.length());
+}
         return header.substring(BEARER_PREFIX.length());
     }
 }
