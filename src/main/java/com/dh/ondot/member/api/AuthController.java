@@ -4,15 +4,14 @@ import com.dh.ondot.member.api.response.AccessToken;
 import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.app.AuthFacade;
 import com.dh.ondot.member.app.TokenFacade;
+import com.dh.ondot.member.core.TokenExtractor;
 import com.dh.ondot.member.core.exception.TokenMissingException;
 import com.dh.ondot.member.domain.OauthProvider;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -34,7 +33,7 @@ public class AuthController {
     public Token reissue(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token
     ) {
-        String refreshToken = extractRefreshToken(token);
+        String refreshToken = TokenExtractor.extract(token);
 
         return tokenFacade.reissue(refreshToken);
     }
@@ -44,7 +43,7 @@ public class AuthController {
     public void logout(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token
     ) {
-        String refreshToken = extractRefreshToken(token);
+        String refreshToken = TokenExtractor.extract(token);
         tokenFacade.logout(refreshToken);
     }
 
@@ -53,12 +52,5 @@ public class AuthController {
     public AccessToken testToken() {
         Token token = tokenFacade.issue(1L);
         return new AccessToken(token.accessToken());
-    }
-
-    private String extractRefreshToken(String token) {
-        if (token == null || !token.startsWith("Bearer ")) {
-            throw new TokenMissingException();
-        }
-        return token.substring(7);
     }
 }
