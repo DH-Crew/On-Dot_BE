@@ -39,6 +39,15 @@ public class AuthController {
         return tokenFacade.reissue(refreshToken);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/logout")
+    public void logout(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token
+    ) {
+        String refreshToken = extractRefreshToken(token);
+        tokenFacade.logout(refreshToken);
+    }
+
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/test/token")
     public AccessToken testToken() {
