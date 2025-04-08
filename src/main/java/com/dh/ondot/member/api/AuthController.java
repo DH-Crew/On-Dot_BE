@@ -6,9 +6,10 @@ import com.dh.ondot.member.app.AuthFacade;
 import com.dh.ondot.member.app.TokenFacade;
 import com.dh.ondot.member.core.exception.TokenMissingException;
 import com.dh.ondot.member.domain.OauthProvider;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -19,6 +20,7 @@ public class AuthController {
     private final AuthFacade authFacade;
     private final TokenFacade tokenFacade;
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login/oauth")
     public Token loginWithOAuth(
             @RequestParam("provider") OauthProvider oauthProvider,
@@ -27,26 +29,27 @@ public class AuthController {
         return authFacade.loginWithOAuth(oauthProvider, accessToken);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/reissue")
     public Token reissue(
-            HttpServletRequest request
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token
     ) {
-        String refreshToken = extractRefreshToken(request);
+        String refreshToken = extractRefreshToken(token);
 
         return tokenFacade.reissue(refreshToken);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/test/token")
     public AccessToken testToken() {
         Token token = tokenFacade.issue(1L);
         return new AccessToken(token.accessToken());
     }
 
-    private String extractRefreshToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+    private String extractRefreshToken(String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
             throw new TokenMissingException();
         }
-        return bearerToken.substring(7);
+        return token.substring(7);
     }
 }
