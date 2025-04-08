@@ -8,11 +8,13 @@ import com.dh.ondot.member.core.exception.TokenBlacklistedException;
 import com.dh.ondot.member.infra.RedisTokenRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenFacade {
@@ -49,6 +51,18 @@ public class TokenFacade {
         redisTokenRepository.addBlacklistToken(jti, getRemainingDuration(tokenInfo.expiration()));
 
         return issue(Long.valueOf(memberId));
+    }
+
+    public void logout(String refreshToken) {
+        try {
+            TokenInfo tokenInfo = tokenManager.parseClaimsFromRefreshToken(refreshToken);
+            String jti = tokenInfo.tokenId();
+            Instant expiration = tokenInfo.expiration();
+
+            redisTokenRepository.addBlacklistToken(jti, getRemainingDuration(expiration));
+        } catch (Exception e) {
+            log.warn("Invalid refresh token during logout. Token: {}", refreshToken, e);
+        }
     }
 
     public Long validateToken(String accessToken) {
