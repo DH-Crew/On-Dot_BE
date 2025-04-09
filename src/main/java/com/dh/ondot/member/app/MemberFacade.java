@@ -32,7 +32,7 @@ public class MemberFacade {
         Member member = findExistingMember(memberRepository, memberId);
         member.updateOnboarding(request.preparationTime(), request.ringTone(), request.volume());
 
-        Address address = Address.createByOnboardingAddress(member, request.addressTitle(), request.longitude(), request.latitude());
+        Address address = Address.createByOnboarding(member, request.addressTitle(), request.longitude(), request.latitude());
         addressRepository.save(address);
 
         List<Answer> answerList = new ArrayList<>();

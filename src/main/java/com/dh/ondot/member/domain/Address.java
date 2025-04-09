@@ -32,7 +32,7 @@ public class Address extends BaseTimeEntity {
     @Column(name = "latitude", nullable = false)
     private Double latitude;
 
-    public static Address createByOnboardingAddress(Member member, String title, double longitude, double latitude) {
+    public static Address createByOnboarding(Member member, String title, double longitude, double latitude) {
         return Address.builder()
                 .member(member)
                 .type(AddressType.HOME)
