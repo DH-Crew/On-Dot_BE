@@ -40,7 +40,9 @@ public enum ErrorCode {
 
     // Member
     MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다. memberId : %d"),
+    NOT_FOUND_QUESTION(NOT_FOUND, "질문을 찾을 수 없습니다. questionId : %d"),
     UNSUPPORTED_MAP_PROVIDER(BAD_REQUEST, "지원하지 않는 지도 제공자입니다. mapProvider : %s"),
+    UNSUPPORTED_ADDRESS_TYPE(BAD_REQUEST, "지원하지 않는 주소 타입입니다. addressType : %s"),
 
     // Alarm
     UNSUPPORTED_SOUND_MODE(BAD_REQUEST, "지원하지 않는 사운드 모드입니다. mode : %s"),
