@@ -2,10 +2,7 @@ package com.dh.ondot.member.app;
 
 import com.dh.ondot.member.api.request.OnboardingRequest;
 import com.dh.ondot.member.core.exception.NotFoundQuestionException;
-import com.dh.ondot.member.domain.Address;
-import com.dh.ondot.member.domain.Answer;
-import com.dh.ondot.member.domain.Member;
-import com.dh.ondot.member.domain.Question;
+import com.dh.ondot.member.domain.*;
 import com.dh.ondot.member.domain.repository.AddressRepository;
 import com.dh.ondot.member.domain.repository.AnswerRepository;
 import com.dh.ondot.member.domain.repository.MemberRepository;
@@ -43,6 +40,14 @@ public class MemberFacade {
             answerList.add(answer);
         }
         answerRepository.saveAll(answerList);
+
+        return member;
+    }
+
+    @Transactional
+    public Member updateMapProvider(Long memberId, String mapProvider) {
+        Member member = findExistingMember(memberRepository, memberId);
+        member.updateMapProvider(mapProvider);
 
         return member;
     }

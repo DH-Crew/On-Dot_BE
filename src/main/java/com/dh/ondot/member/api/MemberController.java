@@ -1,7 +1,9 @@
 package com.dh.ondot.member.api;
 
 import com.dh.ondot.member.api.request.OnboardingRequest;
+import com.dh.ondot.member.api.request.UpdateMapProviderRequest;
 import com.dh.ondot.member.api.response.OnboardingResponse;
+import com.dh.ondot.member.api.response.UpdateMapProviderResponse;
 import com.dh.ondot.member.app.MemberFacade;
 import com.dh.ondot.member.domain.Member;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberFacade memberFacade;
 
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/onboarding")
     public OnboardingResponse onboarding(
             @RequestAttribute("memberId") Long memberId,
@@ -23,6 +25,17 @@ public class MemberController {
         Member member = memberFacade.onboarding(memberId, request);
 
         return OnboardingResponse.from(member);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/map-provider")
+    public UpdateMapProviderResponse updateMapProvider(
+            @RequestAttribute("memberId") Long memberId,
+            @RequestBody UpdateMapProviderRequest request
+    ) {
+        Member member = memberFacade.updateMapProvider(memberId, request.mapProvider());
+
+        return UpdateMapProviderResponse.from(member);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
