@@ -39,7 +39,12 @@ public enum ErrorCode {
     APPLE_PRIVATE_KEY_LOAD_FAILED(INTERNAL_SERVER_ERROR, "Apple 비공개 키 파일을 로드하는 데 실패했습니다. 파일 경로 또는 포맷을 확인하세요."),
 
     // Member
-    MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다. memberId : %d")
+    MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다. memberId : %d"),
+    UNSUPPORTED_MAP_PROVIDER(BAD_REQUEST, "지원하지 않는 지도 제공자입니다. mapProvider : %s"),
+
+    // Alarm
+    UNSUPPORTED_SOUND_MODE(BAD_REQUEST, "지원하지 않는 사운드 모드입니다. mode : %s"),
+    UNSUPPORTED_RING_TONE(BAD_REQUEST, "지원하지 않는 벨소리입니다. ringTone : %s")
     ;
 
     public final HttpStatus httpStatus;
