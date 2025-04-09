@@ -2,6 +2,7 @@ package com.dh.ondot.member.domain;
 
 import com.dh.ondot.core.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.schedule.domain.Sound;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +12,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "members")
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +32,15 @@ public class Member extends BaseTimeEntity {
 
     private Long latestDepartureAlarmId;
 
+    private Integer preparationTime;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "ringTone", column = @Column(name = "default_ring_tone")),
+            @AttributeOverride(name = "volume", column = @Column(name = "default_volume"))
+    })
+    private Sound sound;
+
     @Enumerated(EnumType.STRING)
     private MapProvider mapProvider;
 
@@ -38,5 +49,10 @@ public class Member extends BaseTimeEntity {
                 .email(email)
                 .oauthInfo(OauthInfo.of(oauthProvider, oauthProviderId))
                 .build();
+    }
+
+    public void updateOnboarding(Integer preparationTime, String ringTone, Integer volume) {
+        this.preparationTime = preparationTime;
+        this.sound = Sound.of(ringTone, volume);
     }
 }
