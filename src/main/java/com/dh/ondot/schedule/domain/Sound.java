@@ -14,14 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sound {
     @Enumerated(EnumType.STRING)
-    private SoundMode soundMode;
-
-    @Enumerated(EnumType.STRING)
     private RingTone ringTone;
 
     private Integer volume;
 
-    public static Sound of(String soundMode, String ringTone, Integer volume) {
-        return new Sound(SoundMode.from(soundMode), RingTone.from(ringTone), volume);
+    public static Sound of(String ringTone, Integer volume) {
+        return new Sound(RingTone.from(ringTone), volume);
     }
 }
