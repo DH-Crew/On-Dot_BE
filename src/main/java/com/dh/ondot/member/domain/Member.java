@@ -26,6 +26,13 @@ public class Member extends BaseTimeEntity {
     @Embedded
     private OauthInfo oauthInfo;
 
+    private Long latestPreparationAlarmId;
+
+    private Long latestDepartureAlarmId;
+
+    @Enumerated(EnumType.STRING)
+    private MapProvider mapProvider;
+
     public static Member registerWithOauth(String email, OauthProvider oauthProvider, String oauthProviderId) {
         return Member.builder()
                 .email(email)
