@@ -28,7 +28,7 @@ public class MemberFacade {
     private final AnswerRepository answerRepository;
 
     @Transactional
-    public Member Onboarding(Long memberId, OnboardingRequest request) {
+    public Member onboarding(Long memberId, OnboardingRequest request) {
         Member member = findExistingMember(memberRepository, memberId);
         member.updateOnboarding(request.preparationTime(), request.ringTone(), request.volume());
 
