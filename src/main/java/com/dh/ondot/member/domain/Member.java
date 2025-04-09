@@ -55,4 +55,8 @@ public class Member extends BaseTimeEntity {
         this.preparationTime = preparationTime;
         this.sound = Sound.of(ringTone, volume);
     }
+
+    public void updateMapProvider(String mapProvider) {
+        this.mapProvider = MapProvider.from(mapProvider);
+    }
 }
