@@ -19,19 +19,22 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(length = 50)
+    @Column(name = "nickname", length = 50)
     private String nickname;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @Embedded
     private OauthInfo oauthInfo;
 
+    @Column(name = "latest_preparation_alarm_id")
     private Long latestPreparationAlarmId;
 
+    @Column(name = "latest_departure_alarm_id")
     private Long latestDepartureAlarmId;
 
+    @Column(name = "preparation_time")
     private Integer preparationTime;
 
     @Embedded
@@ -42,6 +45,7 @@ public class Member extends BaseTimeEntity {
     private Sound sound;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "map_provider")
     private MapProvider mapProvider;
 
     public static Member registerWithOauth(String email, OauthProvider oauthProvider, String oauthProviderId) {

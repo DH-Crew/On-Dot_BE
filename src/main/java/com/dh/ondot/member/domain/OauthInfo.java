@@ -14,11 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OauthInfo {
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "oauth_provider", nullable = false)
     private OauthProvider oauthProvider;
 
-    @Column(nullable = false)
+    @Column(name = "oauth_provider_id", nullable = false)
     private String oauthProviderId;
 
     public static OauthInfo of(OauthProvider oauthProvider, String oauthProviderId) {

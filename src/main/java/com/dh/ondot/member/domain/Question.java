@@ -16,7 +16,6 @@ public class Question extends BaseTimeEntity {
     @Column(name = "question_id")
     private Long id;
 
-
     @Enumerated(EnumType.STRING)
     @Column(name = "question_type", nullable = false)
     private QuestionType questionType;
