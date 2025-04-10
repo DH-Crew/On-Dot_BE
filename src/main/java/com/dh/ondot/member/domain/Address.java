@@ -23,8 +23,11 @@ public class Address extends BaseTimeEntity {
     @Column(name = "type")
     private AddressType type;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "road_address", nullable = false)
+    private String roadAddress;
 
     @Column(name = "longtitude", nullable = false)
     private Double longitude;
@@ -32,11 +35,11 @@ public class Address extends BaseTimeEntity {
     @Column(name = "latitude", nullable = false)
     private Double latitude;
 
-    public static Address createByOnboarding(Member member, String title, double longitude, double latitude) {
+    public static Address createByOnboarding(Member member, String roadAddress, double longitude, double latitude) {
         return Address.builder()
                 .member(member)
                 .type(AddressType.HOME)
-                .title(title)
+                .roadAddress(roadAddress)
                 .longitude(longitude)
                 .latitude(latitude)
                 .build();
