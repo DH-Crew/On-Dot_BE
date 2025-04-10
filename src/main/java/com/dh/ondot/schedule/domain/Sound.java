@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,8 +15,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Sound {
     @Enumerated(EnumType.STRING)
+    @Column(name = "ring_tone")
     private RingTone ringTone;
 
+    @Column(name = "volume")
     private Integer volume;
 
     public static Sound of(String ringTone, Integer volume) {
