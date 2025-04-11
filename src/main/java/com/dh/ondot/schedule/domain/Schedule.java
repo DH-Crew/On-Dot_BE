@@ -25,17 +25,21 @@ public class Schedule extends BaseTimeEntity {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "departure_place_id", nullable = false)
-    private Long departurePlaceId;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "departure_place_id", nullable = false)
+    private Place departurePlace;
 
-    @Column(name = "arrival_place_id", nullable = false)
-    private Long arrivalPlaceId;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "arrival_place_id", nullable = false)
+    private Place arrivalPlace;
 
-    @Column(name = "preparation_alarm_id", nullable = false)
-    private Long preparationAlarmId;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "preparation_alarm_id", nullable = false)
+    private Alarm preparationAlarm;
 
-    @Column(name = "departure_alarm_id", nullable = false)
-    private Long departureAlarmId;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "departure_alarm_id", nullable = false)
+    private Alarm departureAlarm;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -49,4 +53,21 @@ public class Schedule extends BaseTimeEntity {
 
     @Column(name = "appointment_at", nullable = false)
     private LocalDateTime appointmentAt;
+
+    public static Schedule createSchedule(Long memberId, Place departurePlace, Place arrivalPlace,
+                                          Alarm preparationAlarm, Alarm departureAlarm, String title,
+                                          Boolean isRepeat, SortedSet<Integer> repeatDays, LocalDateTime appointmentAt
+    ) {
+        return Schedule.builder()
+                .memberId(memberId)
+                .departurePlace(departurePlace)
+                .arrivalPlace(arrivalPlace)
+                .preparationAlarm(preparationAlarm)
+                .departureAlarm(departureAlarm)
+                .title(title)
+                .isRepeat(isRepeat)
+                .repeatDays(isRepeat ? repeatDays : null)
+                .appointmentAt(appointmentAt)
+                .build();
+    }
 }

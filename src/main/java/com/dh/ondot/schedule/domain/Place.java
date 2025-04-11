@@ -27,4 +27,13 @@ public class Place extends BaseTimeEntity {
 
     @Column(name = "latitude", nullable = false)
     private Double latitude;
+
+    public static Place createPlace(String title, String roadAddress, Double longitude, Double latitude) {
+        return Place.builder()
+                .title(title)
+                .roadAddress(roadAddress)
+                .longitude(longitude)
+                .latitude(latitude)
+                .build();
+    }
 }
