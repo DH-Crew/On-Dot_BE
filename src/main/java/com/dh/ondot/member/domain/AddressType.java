@@ -8,11 +8,11 @@ public enum AddressType {
     HOME
     ;
 
-    public static AddressType from(String ringTone) {
+    public static AddressType from(String type) {
         try {
-            return AddressType.valueOf(ringTone.toUpperCase(Locale.ENGLISH));
+            return AddressType.valueOf(type.toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException e) {
-            throw new UnsupportedAddressTypeException(ringTone);
+            throw new UnsupportedAddressTypeException(type);
         }
     }
 }
