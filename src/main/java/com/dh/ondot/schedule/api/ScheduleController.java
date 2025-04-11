@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.api;
 
 import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
+import com.dh.ondot.schedule.api.request.VoiceScheduleCreateRequest;
 import com.dh.ondot.schedule.api.response.ScheduleCreateResponse;
 import com.dh.ondot.schedule.app.ScheduleFacade;
 import com.dh.ondot.schedule.domain.Schedule;
@@ -24,5 +25,14 @@ public class ScheduleController {
         Schedule schedule = scheduleFacade.createSchedule(memberId, request);
 
         return ScheduleCreateResponse.of(schedule);
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PostMapping("/voice")
+    public void createVoiceSchedule(
+            @RequestAttribute("memberId") Long memberId,
+            @Valid @RequestBody VoiceScheduleCreateRequest request
+    ) {
+        scheduleFacade.createVoiceSchedule(memberId, request);
     }
 }

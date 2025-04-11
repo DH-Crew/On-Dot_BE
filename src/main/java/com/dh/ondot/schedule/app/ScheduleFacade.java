@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.app;
 
 import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
+import com.dh.ondot.schedule.api.request.VoiceScheduleCreateRequest;
 import com.dh.ondot.schedule.domain.Alarm;
 import com.dh.ondot.schedule.domain.Place;
 import com.dh.ondot.schedule.domain.Schedule;
@@ -17,7 +18,6 @@ public class ScheduleFacade {
     private final ScheduleService scheduleService;
 
     public Schedule createSchedule(Long memberId, ScheduleCreateRequest request) {
-
         Place departurePlace = Place.createPlace(
                 request.departurePlace().title(),
                 request.departurePlace().roadAddress(),
@@ -73,5 +73,22 @@ public class ScheduleFacade {
         );
 
         return scheduleService.saveSchedule(schedule);
+    }
+
+    public void createVoiceSchedule(Long memberId, VoiceScheduleCreateRequest request) {
+        Place departurePlace = Place.createPlace(
+                request.departurePlace().title(),
+                request.departurePlace().roadAddress(),
+                request.departurePlace().longitude(),
+                request.departurePlace().latitude()
+        );
+
+        Place arrivalPlace = Place.createPlace(
+                request.arrivalPlace().title(),
+                request.arrivalPlace().roadAddress(),
+                request.arrivalPlace().longitude(),
+                request.arrivalPlace().latitude()
+        );
+        // todo: 시간 계산 후 알람 생성 비동기 처리
     }
 }
