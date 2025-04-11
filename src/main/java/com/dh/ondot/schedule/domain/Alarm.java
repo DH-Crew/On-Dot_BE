@@ -1,6 +1,10 @@
 package com.dh.ondot.schedule.domain;
 
 import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.schedule.domain.enums.AlarmMode;
+import com.dh.ondot.schedule.domain.enums.Mission;
+import com.dh.ondot.schedule.domain.vo.Snooze;
+import com.dh.ondot.schedule.domain.vo.Sound;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,16 +32,38 @@ public class Alarm extends BaseTimeEntity {
     @Column(name = "triggered_at", nullable = false)
     private LocalDateTime triggeredAt;
 
-    @Column(name = "delay_time", nullable = false)
-    private Integer delayTime;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mission")
+    private Mission mission;
+
+    @Embedded
+    private Snooze snooze;
 
     @Embedded
     private Sound sound;
 
-    @Column(name = "is_vibration", nullable = false, columnDefinition = "TINYINT(1)")
-    private boolean isVibration;
+    public static Alarm createPreparationAlarm(String alarmMode, boolean isEnabled, LocalDateTime triggeredAt, String mission,
+                                               boolean isSnoozeEnabled, Integer snoozeInterval, String snoozeCount,
+                                               String soundCategory, String ringTone, Integer volume) {
+        return Alarm.builder()
+                .mode(AlarmMode.from(alarmMode))
+                .isEnabled(isEnabled)
+                .triggeredAt(triggeredAt)
+                .mission(Mission.from(mission))
+                .snooze(Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount))
+                .sound(Sound.of(soundCategory, ringTone, volume))
+                .build();
+    }
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "mission")
-    private Mission mission;
+    public static Alarm createDepartureAlarm(String alarmMode, LocalDateTime triggeredAt,
+                                             boolean isSnoozeEnabled, Integer snoozeInterval, String snoozeCount,
+                                             String soundCategory, String ringTone, Integer volume) {
+        return Alarm.builder()
+                .mode(AlarmMode.from(alarmMode))
+                .isEnabled(true)
+                .triggeredAt(triggeredAt)
+                .snooze(Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount))
+                .sound(Sound.of(soundCategory, ringTone, volume))
+                .build();
+    }
 }
