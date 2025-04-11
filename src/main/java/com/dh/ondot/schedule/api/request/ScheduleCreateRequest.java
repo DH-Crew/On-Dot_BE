@@ -24,16 +24,6 @@ public record ScheduleCreateRequest(
 
         @NotNull @Valid DepartureAlarmDto departureAlarm
 ) {
-    public record PlaceDto(
-            String title,
-
-            @NotBlank String roadAddress,
-
-            @NotNull Double longitude,
-
-            @NotNull Double latitude
-    ) {}
-
     public record PreparationAlarmDto(
             @NotBlank String alarmMode,
 
@@ -47,7 +37,7 @@ public record ScheduleCreateRequest(
 
             @NotNull @Min(1) @Max(60) Integer snoozeInterval,
 
-            @NotBlank String snoozeCount,
+            @NotNull @Min(-1) @Max(10) Integer snoozeCount,
 
             @NotBlank String soundCategory,
 
@@ -65,7 +55,7 @@ public record ScheduleCreateRequest(
 
             @NotNull @Min(1) @Max(60) Integer snoozeInterval,
 
-            @NotBlank @Min(-1) @Max(10) String snoozeCount,
+            @NotNull @Min(-1) @Max(10) Integer snoozeCount,
 
             @NotBlank String soundCategory,
 

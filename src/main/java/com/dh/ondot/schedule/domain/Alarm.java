@@ -43,7 +43,7 @@ public class Alarm extends BaseTimeEntity {
     private Sound sound;
 
     public static Alarm createPreparationAlarm(String alarmMode, boolean isEnabled, LocalDateTime triggeredAt, String mission,
-                                               boolean isSnoozeEnabled, Integer snoozeInterval, String snoozeCount,
+                                               boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
                                                String soundCategory, String ringTone, Integer volume) {
         return Alarm.builder()
                 .mode(AlarmMode.from(alarmMode))
@@ -56,7 +56,7 @@ public class Alarm extends BaseTimeEntity {
     }
 
     public static Alarm createDepartureAlarm(String alarmMode, LocalDateTime triggeredAt,
-                                             boolean isSnoozeEnabled, Integer snoozeInterval, String snoozeCount,
+                                             boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
                                              String soundCategory, String ringTone, Integer volume) {
         return Alarm.builder()
                 .mode(AlarmMode.from(alarmMode))

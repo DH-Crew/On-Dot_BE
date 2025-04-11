@@ -27,7 +27,7 @@ public class Snooze {
     @Column(name = "snooze_count", nullable = false)
     private SnoozeCount snoozeCount;
 
-    public static Snooze of(boolean isSnoozeEnabled, Integer snoozeInterval, String snoozeCount) {
+    public static Snooze of(boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount) {
         return new Snooze(isSnoozeEnabled, SnoozeInterval.from(snoozeInterval), SnoozeCount.from(snoozeCount));
     }
 }
