@@ -24,9 +24,10 @@ public class MemberFacade {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
 
+    @Transactional
     public Member onboarding(Long memberId, OnboardingRequest request) {
         Member member = memberService.findExistingMember(memberId);
-        member.updateOnboarding(request.preparationTime(), request.ringTone(), request.volume());
+        member.updateOnboarding(request.preparationTime(), request.soundCategory(), request.ringTone(), request.volume());
 
         Address address = Address.createByOnboarding(member, request.addressTitle(), request.longitude(), request.latitude());
         addressRepository.save(address);

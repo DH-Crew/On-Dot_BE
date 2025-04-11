@@ -6,38 +6,27 @@ import jakarta.validation.constraints.*;
 import java.util.List;
 
 public record OnboardingRequest(
-        @NotNull
-        @Min(1)
-        int preparationTime,
+        @NotNull @Min(1) @Max(240) int preparationTime,
 
-        @NotBlank
-        String addressTitle,
+        @NotBlank String addressTitle,
 
-        @NotNull
-        @DecimalMin("-180.0") @DecimalMax("180.0")
-        double longitude,
+        @NotNull @DecimalMin("-180.0") @DecimalMax("180.0") double longitude,
 
-        @NotNull
-        @DecimalMin("-90.0") @DecimalMax("90.0")
-        double latitude,
+        @NotNull @DecimalMin("-90.0") @DecimalMax("90.0") double latitude,
 
-        @NotBlank
-        String ringTone,
+        @NotBlank String soundCategory,
 
-        @NotNull
-        @Min(1) @Max(10)
-        int volume,
+        @NotBlank String ringTone,
 
-        @NotNull
-        @Size(min = 1)
-        @Valid
+        @NotNull @Min(1) @Max(10) int volume,
+
+        @NotNull @Size(min = 1) @Valid
         List<@Valid QuestionDto> questions
 ) {
     public record QuestionDto(
-            @NotNull
-            Long questionId,
+            @NotNull Long questionId,
 
-            @NotBlank
-            String answer
-    ) {}
+            @NotBlank String answer
+    ) {
+    }
 }
