@@ -5,8 +5,7 @@ import com.dh.ondot.member.core.exception.UnsupportedAddressTypeException;
 import java.util.Locale;
 
 public enum AddressType {
-    HOME
-    ;
+    HOME;
 
     public static AddressType from(String type) {
         try {

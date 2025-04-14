@@ -16,15 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-/**
- * Place API (Swagger 문서 전용)
- *
- * <p><b>인증</b> : 모든 요청은 <code>Authorization: Bearer JWT</code> 필요.<br>
- * TokenInterceptor가 검증 후 <code>memberId</code> 를 주입합니다.</p>
- *
- * <p><b>검색 로직</b> : POI API와 도로명 주소 API 결과를 라운드‑로빈으로 병합해
- * 최대 10~20개의 후보를 반환합니다.</p>
- */
 @Tag(
         name = "Place API",
         description = """

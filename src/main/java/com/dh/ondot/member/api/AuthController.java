@@ -1,10 +1,12 @@
 package com.dh.ondot.member.api;
 
 import com.dh.ondot.member.api.response.AccessToken;
+import com.dh.ondot.member.api.swagger.AuthSwagger;
 import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.app.AuthFacade;
 import com.dh.ondot.member.app.TokenFacade;
 import com.dh.ondot.member.core.TokenExtractor;
+import com.dh.ondot.member.core.exception.InvalidTokenHeaderException;
 import com.dh.ondot.member.core.exception.TokenMissingException;
 import com.dh.ondot.member.domain.OauthProvider;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController implements AuthSwagger {
     private final AuthFacade authFacade;
     private final TokenFacade tokenFacade;
 
@@ -43,8 +45,11 @@ public class AuthController {
     public void logout(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token
     ) {
-        String refreshToken = TokenExtractor.extract(token);
-        tokenFacade.logout(refreshToken);
+        try {
+            String refreshToken = TokenExtractor.extract(token);
+            tokenFacade.logout(refreshToken);
+        } catch (TokenMissingException | InvalidTokenHeaderException ignored) {
+        }
     }
 
     @ResponseStatus(HttpStatus.OK)

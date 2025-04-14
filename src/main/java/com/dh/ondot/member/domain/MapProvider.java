@@ -6,8 +6,7 @@ import java.util.Locale;
 
 public enum MapProvider {
     KAKAO,
-    NAVER
-    ;
+    NAVER;
 
     public static MapProvider from(String ringTone) {
         try {

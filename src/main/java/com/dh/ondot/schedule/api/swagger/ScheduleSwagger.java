@@ -45,8 +45,8 @@ public interface ScheduleSwagger {
             description = """
             새로운 스케줄을 생성합니다. <br>
             <ul>
-              <li><code>repeatDay</code> 는 1(일) ~ 7(토) 숫자 배열입니다.</li>
-              <li><code>triggeredAt</code> 은 <code>HH:mm:ss</code> 형태의 ISO‑8601 시간 문자열입니다.</li>
+              <li><code>repeatDay</code> 는 1(일)~7(토) 숫자 배열입니다.</li>
+              <li><code>triggeredAt</code> 은 <code>HH:mm:ss</code> 형태의 ISO‑8601 시간 문자열입니다.</li>
             </ul>""",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,

@@ -20,7 +20,6 @@ import java.util.UUID;
 
 @Component
 public class TokenManager {
-
     public static final String TOKEN_ISSUER = "ON_DOT";
 
     @Value("${jwt.secret}")
