@@ -1,6 +1,7 @@
 package com.dh.ondot.member.domain;
 
 import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.member.domain.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
 

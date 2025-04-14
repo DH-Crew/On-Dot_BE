@@ -3,6 +3,7 @@ package com.dh.ondot.member.app;
 import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.domain.*;
 import com.dh.ondot.member.domain.dto.UserInfo;
+import com.dh.ondot.member.domain.enums.OauthProvider;
 import com.dh.ondot.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

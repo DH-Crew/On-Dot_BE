@@ -1,4 +1,4 @@
-package com.dh.ondot.member.domain;
+package com.dh.ondot.member.domain.enums;
 
 import com.dh.ondot.core.exception.UnsupportedException;
 

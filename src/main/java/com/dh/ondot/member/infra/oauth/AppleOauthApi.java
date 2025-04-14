@@ -4,7 +4,7 @@ import com.dh.ondot.member.core.AppleProperties;
 import com.dh.ondot.member.core.exception.AppleAuthorizationCodeExpiredException;
 import com.dh.ondot.member.core.exception.OauthUserFetchFailedException;
 import com.dh.ondot.member.domain.OauthApi;
-import com.dh.ondot.member.domain.OauthProvider;
+import com.dh.ondot.member.domain.enums.OauthProvider;
 import com.dh.ondot.member.domain.dto.UserInfo;
 import com.dh.ondot.member.infra.dto.ApplePublicKeyResponse;
 import com.dh.ondot.member.infra.dto.AppleSocialTokenInfoResponseDto;

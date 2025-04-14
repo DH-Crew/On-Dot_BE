@@ -2,7 +2,7 @@ package com.dh.ondot.member.infra.oauth;
 
 import com.dh.ondot.member.domain.OauthApi;
 import com.dh.ondot.member.domain.OauthApiFactory;
-import com.dh.ondot.member.domain.OauthProvider;
+import com.dh.ondot.member.domain.enums.OauthProvider;
 import com.dh.ondot.core.exception.UnsupportedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
