@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
         <b>AccessToken (Authorization: Bearer JWT)</b>은 필수입니다.<br>
         <br>
         <b>🔔 Alarm ENUM</b><br>
-        • <code>AlarmMode</code>: <code>SILENT</code>, <code>VIBRATE</code>, <code>SOUND</code><br>
+        • <code>AlarmMode</code>: SILENT, VIBRATE, SOUND<br>
         • <code>SnoozeInterval</code>: 1, 3, 5, 10, 30, 60 (분)<br>
         • <code>SnoozeCount</code>: -1(INFINITE), 1, 3, 5, 10 (회)<br>
         • <code>SoundCategory</code>: <i>BIRD, OCEAN, DEFAULT …</i><br>

@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.*;
 @Tag(
         name = "Auth API",
         description = """
-        인증·토큰 발급·재발급·로그아웃 엔드포인트입니다.<br><br>
-        <b>🛡 로그인 후 이용하는 API에서 발생 가능한 토큰 오류</b><br>
-        • ❌ <code>TOKEN_MISSING</code> : Authorization 헤더 없음<br>
-        • ❌ <code>INVALID_TOKEN_HEADER</code>: "Bearer " 접두사 누락<br>
-        • ⏰ <code>TOKEN_EXPIRED</code> : Access Token 만료<br>
-        • 🚫 <code>TOKEN_INVALID</code> : 위·변조 또는 형식 오류<br>
+        인증 관련 API입니다.<br><br>
+        <b>로그인 후 이용하는 API에서 발생 가능한 토큰 오류</b><br>
+        • <code>TOKEN_MISSING</code> : Authorization 헤더 없음<br>
+        • <code>INVALID_TOKEN_HEADER</code>: "Bearer " 접두사 누락<br>
+        • <code>TOKEN_EXPIRED</code> : Access Token 만료<br>
+        • <code>TOKEN_INVALID</code> : 위·변조 또는 형식 오류<br><br>
         <b>🔑 OauthProvider ENUM</b> : <code>KAKAO</code> | <code>APPLE</code>
         """
 )
