@@ -1,8 +1,10 @@
 package com.dh.ondot.member.domain;
 
-import com.dh.ondot.member.core.exception.UnsupportedMapProviderException;
+import com.dh.ondot.core.exception.UnsupportedException;
 
 import java.util.Locale;
+
+import static com.dh.ondot.core.exception.ErrorCode.UNSUPPORTED_MAP_PROVIDER;
 
 public enum MapProvider {
     KAKAO,
@@ -12,7 +14,7 @@ public enum MapProvider {
         try {
             return MapProvider.valueOf(ringTone.toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException e) {
-            throw new UnsupportedMapProviderException(ringTone);
+            throw new UnsupportedException(UNSUPPORTED_MAP_PROVIDER, ringTone);
         }
     }
 }

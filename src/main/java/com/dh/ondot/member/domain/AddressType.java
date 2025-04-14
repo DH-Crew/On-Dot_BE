@@ -1,8 +1,10 @@
 package com.dh.ondot.member.domain;
 
-import com.dh.ondot.member.core.exception.UnsupportedAddressTypeException;
+import com.dh.ondot.core.exception.UnsupportedException;
 
 import java.util.Locale;
+
+import static com.dh.ondot.core.exception.ErrorCode.UNSUPPORTED_ADDRESS_TYPE;
 
 public enum AddressType {
     HOME;
@@ -11,7 +13,7 @@ public enum AddressType {
         try {
             return AddressType.valueOf(type.toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException e) {
-            throw new UnsupportedAddressTypeException(type);
+            throw new UnsupportedException(UNSUPPORTED_ADDRESS_TYPE, type);
         }
     }
 }

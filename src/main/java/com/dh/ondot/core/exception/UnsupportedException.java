@@ -1,7 +1,4 @@
-package com.dh.ondot.schedule.core.exception;
-
-import com.dh.ondot.core.exception.BadRequestException;
-import com.dh.ondot.core.exception.ErrorCode;
+package com.dh.ondot.core.exception;
 
 public class UnsupportedException extends BadRequestException {
     private final ErrorCode errorCode;

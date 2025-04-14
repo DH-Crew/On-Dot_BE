@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.domain.enums;
 
-import com.dh.ondot.schedule.core.exception.UnsupportedException;
+import com.dh.ondot.core.exception.UnsupportedException;
 
 import java.util.Locale;
 
