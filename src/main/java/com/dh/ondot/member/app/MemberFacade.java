@@ -1,9 +1,11 @@
 package com.dh.ondot.member.app;
 
 import com.dh.ondot.member.api.request.OnboardingRequest;
+import com.dh.ondot.member.core.exception.NotFoundAddressException;
 import com.dh.ondot.member.core.exception.NotFoundAnswerException;
 import com.dh.ondot.member.core.exception.NotFoundQuestionException;
 import com.dh.ondot.member.domain.*;
+import com.dh.ondot.member.domain.enums.AddressType;
 import com.dh.ondot.member.domain.repository.*;
 import com.dh.ondot.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,13 @@ public class MemberFacade {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final ChoiceRepository choiceRepository;
+
+    @Transactional(readOnly = true)
+    public Address getHomeAddress(Long memberId) {
+        memberService.findExistingMember(memberId);
+        return addressRepository.findByMemberIdAndType(memberId, AddressType.HOME)
+                .orElseThrow(() -> new NotFoundAddressException(memberId));
+    }
 
     @Transactional
     public Member onboarding(Long memberId, OnboardingRequest request) {
