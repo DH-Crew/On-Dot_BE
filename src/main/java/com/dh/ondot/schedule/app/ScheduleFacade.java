@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 @Service
@@ -61,10 +60,6 @@ public class ScheduleFacade {
                 request.departureAlarm().volume()
         );
 
-        SortedSet<Integer> repeatDays = request.isRepeat()
-                ? new TreeSet<>(request.repeatDays())
-                : null;
-
         Schedule schedule = Schedule.createSchedule(
                 memberId,
                 departurePlace,
@@ -73,7 +68,7 @@ public class ScheduleFacade {
                 departureAlarm,
                 request.title(),
                 request.isRepeat(),
-                repeatDays,
+                new TreeSet<>(request.repeatDays()),
                 request.appointmentAt()
         );
 
@@ -118,7 +113,7 @@ public class ScheduleFacade {
         boolean placeChanged = departureChanged || arrivalChanged;
         boolean timeChanged = schedule.isAppointmentTimeChanged(request.appointmentAt());
 
-        // 3) 장소가 달라졌다면 → (비동기) 새로운 시간 계산 후 처리 (TODO 주석으로 남김)
+        // 장소가 달라졌다면 → (비동기) 새로운 시간 계산 후 처리 (TODO 주석으로 남김)
         if (placeChanged || timeChanged) {
             // TODO: 경로 재계산·도착/출발 시간 보정 등의 비동기 로직 호출
         }
