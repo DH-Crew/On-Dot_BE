@@ -70,4 +70,17 @@ public class Schedule extends BaseTimeEntity {
                 .appointmentAt(appointmentAt)
                 .build();
     }
+
+    public void updateCore(String title, boolean isRepeat,
+                           SortedSet<Integer> repeatDays, LocalDateTime appointmentAt
+    ) {
+        this.title         = title;
+        this.isRepeat      = isRepeat;
+        this.repeatDays    = isRepeat ? repeatDays : null;
+        this.appointmentAt = appointmentAt;
+    }
+
+    public boolean isAppointmentTimeChanged(LocalDateTime newAppointmentAt) {
+        return !this.appointmentAt.isEqual(newAppointmentAt);
+    }
 }
