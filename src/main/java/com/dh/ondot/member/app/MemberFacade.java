@@ -64,6 +64,19 @@ public class MemberFacade {
     }
 
     @Transactional
+    public Address updateHomeAddress(Long memberId, String roadAddress,
+                                     double longitude, double latitude) {
+        memberService.findExistingMember(memberId);
+
+        Address address = addressRepository.findByMemberIdAndType(memberId, AddressType.HOME)
+                .orElseThrow(() -> new NotFoundAddressException(memberId));
+
+        address.update(roadAddress, longitude, latitude);
+
+        return address;
+    }
+
+    @Transactional
     public void deleteMember(Long memberId) {
         memberService.findExistingMember(memberId);
         memberRepository.deleteById(memberId);

@@ -42,7 +42,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다. MemberId : %d"),
     NOT_FOUND_QUESTION(NOT_FOUND, "질문을 찾을 수 없습니다. QuestionId : %d"),
     NOT_FOUND_ANSWER(NOT_FOUND, "답을 찾을 수 없습니다. AnswerId : %d"),
-    NOT_FOUND_ADDRESS(NOT_FOUND, "회원이 저장한 주소를 찾을 수 없습니다. AddressId : %d"),
+    NOT_FOUND_ADDRESS(NOT_FOUND, "회원이 저장한 주소를 찾을 수 없습니다. MemberId : %d"),
     UNSUPPORTED_MAP_PROVIDER(BAD_REQUEST, "지원하지 않는 지도 제공자입니다. MapProvider : %s"),
     UNSUPPORTED_ADDRESS_TYPE(BAD_REQUEST, "지원하지 않는 주소 타입입니다. AddressType : %s"),
 
