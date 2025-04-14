@@ -1,7 +1,6 @@
 package com.dh.ondot.member.domain;
 
 import com.dh.ondot.core.domain.BaseTimeEntity;
-import com.dh.ondot.member.domain.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,10 +15,6 @@ public class Question extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
     private Long id;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "question_type", nullable = false)
-    private QuestionType questionType;
 
     @Column(name = "content", nullable = false)
     private String content;

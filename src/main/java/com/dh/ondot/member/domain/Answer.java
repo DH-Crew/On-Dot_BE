@@ -20,16 +20,12 @@ public class Answer extends BaseTimeEntity {
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
+    @Column(name = "content", nullable = false)
     private String content;
 
-    public static Answer createByOnboarding(Question question, Member member, String content) {
+    public static Answer create(Question question, String content) {
         return Answer.builder()
                 .question(question)
-                .member(member)
                 .content(content)
                 .build();
     }
