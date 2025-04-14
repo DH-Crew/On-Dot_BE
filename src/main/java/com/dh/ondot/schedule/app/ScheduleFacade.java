@@ -62,7 +62,7 @@ public class ScheduleFacade {
         );
 
         SortedSet<Integer> repeatDays = request.isRepeat()
-                ? new TreeSet<>(request.repeatDay())
+                ? new TreeSet<>(request.repeatDays())
                 : null;
 
         Schedule schedule = Schedule.createSchedule(
@@ -164,7 +164,7 @@ public class ScheduleFacade {
         schedule.updateCore(
                 request.title(),
                 request.isRepeat(),
-                new TreeSet<>(request.repeatDay()),
+                new TreeSet<>(request.repeatDays()),
                 request.appointmentAt()
         );
 

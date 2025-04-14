@@ -14,7 +14,7 @@ public record ScheduleUpdateRequest (
 
         // 1: 일요일, 2: 월요일, ..., 7: 토요일
         @NotNull @Size(min = 1, max = 7)
-        List<@Min(1) @Max(7) Integer> repeatDay,
+        List<@Min(1) @Max(7) Integer> repeatDays,
 
         @NotNull LocalDateTime appointmentAt,
 

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
         <b>AccessToken (Authorization: Bearer JWT)</b>는 필수값입니다.<br>
         → TokenInterceptor 에서 처리되며 각 엔드포인트에 별도 파라미터는 필요 없으나 오른쪽 상단 Authorize에 토큰 값을 넣어야합니다.<br><br>
 
-        <b>🗓 repeatDay 요일 규칙</b>:<br>
+        <b>🗓 repeatDays 요일 규칙</b>:<br>
         • 1 = 일요일<br>
         • 2 = 월요일 …<br>
         • 7 = 토요일<br><br>
@@ -45,7 +45,7 @@ public interface ScheduleSwagger {
             description = """
             새로운 스케줄을 생성합니다. <br>
             <ul>
-              <li><code>repeatDay</code> 는 1(일)~7(토) 숫자 배열입니다.</li>
+              <li><code>repeatDays</code> 는 1(일)~7(토) 숫자 배열입니다.</li>
               <li><code>triggeredAt</code> 은 <code>HH:mm:ss</code> 형태의 ISO‑8601 시간 문자열입니다.</li>
             </ul>""",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -58,7 +58,7 @@ public interface ScheduleSwagger {
                     {
                       "title": "스터디 모임",
                       "isRepeat": true,
-                      "repeatDay": [2, 4, 6],
+                      "repeatDays": [2, 4, 6],
                       "appointmentAt": "2025-05-10T19:00:00",
                       "departurePlace": {
                         "title": "집",
@@ -185,7 +185,7 @@ public interface ScheduleSwagger {
                     {
                       "title": "스터디 모임(수정)",
                       "isRepeat": true,
-                      "repeatDay": [2, 4, 6],
+                      "repeatDays": [2, 4, 6],
                       "appointmentAt": "2025-05-10T20:00:00",
                       "departurePlace": {
                         "title": "집",
