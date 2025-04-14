@@ -36,4 +36,19 @@ public class Place extends BaseTimeEntity {
                 .latitude(latitude)
                 .build();
     }
+
+    public void update(String title, String roadAddress,
+                       Double longitude, Double latitude
+    ) {
+        this.title = title;
+        this.roadAddress = roadAddress;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    public boolean isPlaceChanged(String roadAddress, Double longitude, Double latitude) {
+        return !this.roadAddress.equals(roadAddress)
+                || !this.longitude.equals(longitude)
+                || !this.latitude.equals(latitude);
+    }
 }
