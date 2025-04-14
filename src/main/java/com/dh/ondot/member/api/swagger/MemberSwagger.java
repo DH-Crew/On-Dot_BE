@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(
         name = "Member API",
         description = """
-        <b>AccessToken (Authorization: Bearer JWT)</b>는 필수입니다.<br><br>
+        <b>AccessToken (Authorization: Bearer JWT)</b>은 필수입니다.<br><br>
         <b>🏠 AddressType ENUM</b> : <code>HOME</code><br>
         <b>🗺 MapProvider ENUM</b> : <code>NAVER</code>, <code>KAKAO</code><br><br>
         <b>📢 주요 ErrorCode</b><br>
