@@ -1,5 +1,5 @@
 # open jdk 17 버전의 환경을 구성
-FROM openjdk:17
+FROM eclipse-temurin:17-jdk-jammy
 
 # 타임존 설정
 ENV TZ=Asia/Seoul
