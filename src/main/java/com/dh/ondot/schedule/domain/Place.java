@@ -48,7 +48,7 @@ public class Place extends BaseTimeEntity {
 
     public boolean isPlaceChanged(String roadAddress, Double longitude, Double latitude) {
         return !this.roadAddress.equals(roadAddress)
-                || !this.longitude.equals(longitude)
-                || !this.latitude.equals(latitude);
+                || Double.compare(this.longitude, longitude) != 0
+                || Double.compare(this.latitude, latitude) != 0;
     }
 }
