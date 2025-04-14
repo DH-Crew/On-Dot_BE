@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class KakaoSearchRoadAddressApi implements SearchRoadAddressApi {
-    @Value("${kakao.client.authorization-key}")
+    @Value("${oauth2.client.registration.kakao.client_id}")
     private String authorizationKey;
 
     @Override
