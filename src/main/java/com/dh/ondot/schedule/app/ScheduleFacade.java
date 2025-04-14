@@ -103,13 +103,13 @@ public class ScheduleFacade {
         Schedule schedule = scheduleService.findScheduleById(scheduleId);
 
         // 장소 변경 여부 확인
-        boolean departureChanged = !schedule.getDeparturePlace().isPlaceChanged(
+        boolean departureChanged = schedule.getDeparturePlace().isPlaceChanged(
                 request.departurePlace().roadAddress(),
                 request.departurePlace().longitude(),
                 request.departurePlace().latitude()
         );
 
-        boolean arrivalChanged = !schedule.getArrivalPlace().isPlaceChanged(
+        boolean arrivalChanged = schedule.getArrivalPlace().isPlaceChanged(
                 request.arrivalPlace().roadAddress(),
                 request.arrivalPlace().longitude(),
                 request.arrivalPlace().latitude()
