@@ -45,4 +45,10 @@ public class Address extends BaseTimeEntity {
                 .latitude(latitude)
                 .build();
     }
+
+    public void update(String roadAddress, double longitude, double latitude) {
+        this.roadAddress = roadAddress;
+        this.longitude   = longitude;
+        this.latitude    = latitude;
+    }
 }
