@@ -5,6 +5,7 @@ import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
 import com.dh.ondot.schedule.api.request.VoiceScheduleCreateRequest;
 import com.dh.ondot.schedule.api.response.ScheduleCreateResponse;
 import com.dh.ondot.schedule.api.response.ScheduleUpdateResponse;
+import com.dh.ondot.schedule.api.swagger.ScheduleSwagger;
 import com.dh.ondot.schedule.app.ScheduleFacade;
 import com.dh.ondot.schedule.app.dto.UpdateScheduleResult;
 import com.dh.ondot.schedule.domain.Schedule;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/schedules")
-public class ScheduleController {
+public class ScheduleController implements ScheduleSwagger {
     private final ScheduleFacade scheduleFacade;
 
     @ResponseStatus(HttpStatus.CREATED)
