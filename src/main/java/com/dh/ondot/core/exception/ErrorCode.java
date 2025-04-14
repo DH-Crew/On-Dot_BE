@@ -50,7 +50,8 @@ public enum ErrorCode {
     UNSUPPORTED_SNOOZE_INTERVAL(BAD_REQUEST, "지원하지 않는 알람 미루기 간격입니다. SnoozeInterval : %s"),
     UNSUPPORTED_SNOOZE_COUNT(BAD_REQUEST, "지원하지 않는 알람 미루기 횟수입니다. SnoozeCount : %s"),
     UNSUPPORTED_SOUND_CATEGORY(BAD_REQUEST, "지원하지 않는 사운드 카테고리입니다. SoundCategory : %s"),
-    UNSUPPORTED_MISSION(BAD_REQUEST, "지원하지 않는 미션입니다. Mission : %s")
+    UNSUPPORTED_MISSION(BAD_REQUEST, "지원하지 않는 미션입니다. Mission : %s"),
+    NOT_FOUND_SCHEDULE(NOT_FOUND, "일정을 찾을 수 없습니다. ScheduleId : %d")
     ;
 
     public final HttpStatus httpStatus;
