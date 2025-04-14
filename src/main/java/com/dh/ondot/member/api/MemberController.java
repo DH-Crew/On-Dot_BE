@@ -7,6 +7,7 @@ import com.dh.ondot.member.api.response.HomeAddressResponse;
 import com.dh.ondot.member.api.response.OnboardingResponse;
 import com.dh.ondot.member.api.response.UpdateHomeAddressResponse;
 import com.dh.ondot.member.api.response.UpdateMapProviderResponse;
+import com.dh.ondot.member.api.swagger.MemberSwagger;
 import com.dh.ondot.member.app.MemberFacade;
 import com.dh.ondot.member.domain.Address;
 import com.dh.ondot.member.domain.Member;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
-public class MemberController {
+public class MemberController implements MemberSwagger {
     private final MemberFacade memberFacade;
 
     @ResponseStatus(HttpStatus.OK)
