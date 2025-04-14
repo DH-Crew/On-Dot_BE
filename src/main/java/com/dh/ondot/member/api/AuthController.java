@@ -8,7 +8,7 @@ import com.dh.ondot.member.app.TokenFacade;
 import com.dh.ondot.member.core.TokenExtractor;
 import com.dh.ondot.member.core.exception.InvalidTokenHeaderException;
 import com.dh.ondot.member.core.exception.TokenMissingException;
-import com.dh.ondot.member.domain.OauthProvider;
+import com.dh.ondot.member.domain.enums.OauthProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

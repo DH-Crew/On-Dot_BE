@@ -1,10 +1,15 @@
 package com.dh.ondot.member.api;
 
 import com.dh.ondot.member.api.request.OnboardingRequest;
+import com.dh.ondot.member.api.request.UpdateHomeAddressRequest;
 import com.dh.ondot.member.api.request.UpdateMapProviderRequest;
+import com.dh.ondot.member.api.response.HomeAddressResponse;
 import com.dh.ondot.member.api.response.OnboardingResponse;
+import com.dh.ondot.member.api.response.UpdateHomeAddressResponse;
 import com.dh.ondot.member.api.response.UpdateMapProviderResponse;
+import com.dh.ondot.member.api.swagger.MemberSwagger;
 import com.dh.ondot.member.app.MemberFacade;
+import com.dh.ondot.member.domain.Address;
 import com.dh.ondot.member.domain.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +19,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
-public class MemberController {
+public class MemberController implements MemberSwagger {
     private final MemberFacade memberFacade;
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/home-address")
+    public HomeAddressResponse getHomeAddress(
+            @RequestAttribute("memberId") Long memberId
+    ) {
+        Address address = memberFacade.getHomeAddress(memberId);
+        return HomeAddressResponse.from(address);
+    }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/onboarding")
@@ -37,6 +51,22 @@ public class MemberController {
         Member member = memberFacade.updateMapProvider(memberId, request.mapProvider());
 
         return UpdateMapProviderResponse.from(member);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/home-address")
+    public UpdateHomeAddressResponse updateHomeAddress(
+            @RequestAttribute("memberId") Long memberId,
+            @Valid @RequestBody UpdateHomeAddressRequest request
+    ) {
+        Address address = memberFacade.updateHomeAddress(
+                memberId,
+                request.roadAddress(),
+                request.longitude(),
+                request.latitude()
+        );
+
+        return UpdateHomeAddressResponse.from(address);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

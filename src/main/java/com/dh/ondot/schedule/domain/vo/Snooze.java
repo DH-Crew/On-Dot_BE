@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Snooze {
-    @Column(name = "is_snooze_enabled", nullable = false)
+    @Column(name = "is_snooze_enabled", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isSnoozeEnabled;
 
     @Enumerated(EnumType.STRING)

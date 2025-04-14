@@ -2,6 +2,8 @@ package com.dh.ondot.member.domain;
 
 import com.dh.ondot.core.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.member.domain.enums.MapProvider;
+import com.dh.ondot.member.domain.enums.OauthProvider;
 import com.dh.ondot.schedule.domain.vo.Sound;
 import jakarta.persistence.*;
 import lombok.*;

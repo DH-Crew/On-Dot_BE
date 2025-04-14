@@ -1,6 +1,7 @@
 package com.dh.ondot.member.domain;
 
 import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.member.domain.enums.AddressType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,5 +44,11 @@ public class Address extends BaseTimeEntity {
                 .longitude(longitude)
                 .latitude(latitude)
                 .build();
+    }
+
+    public void update(String roadAddress, double longitude, double latitude) {
+        this.roadAddress = roadAddress;
+        this.longitude   = longitude;
+        this.latitude    = latitude;
     }
 }

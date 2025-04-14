@@ -17,21 +17,20 @@ import org.springframework.web.bind.annotation.*;
 @Tag(
         name = "Schedule API",
         description = """
-        <b>AccessToken (Authorization: Bearer JWT)</b>는 필수값입니다.<br>
-        → TokenInterceptor 에서 처리되며 각 엔드포인트에 별도 파라미터는 필요 없으나 오른쪽 상단 Authorize에 토큰 값을 넣어야합니다.<br><br>
+        <b>AccessToken (Authorization: Bearer JWT)</b>은 필수값입니다.<br>
+        → 각 엔드포인트에 별도 파라미터는 필요 없으나 오른쪽 상단 Authorize에 토큰 값을 넣어야합니다.<br><br>
 
-        <b>🗓 repeatDays 요일 규칙</b>:<br>
+        <b>🗓 repeatDays 요일 규칙</b><br>
         • 1 = 일요일<br>
         • 2 = 월요일 …<br>
         • 7 = 토요일<br><br>
 
-        <b>🔔 Alarm 관련 ENUM</b>:<br>
-        • AlarmMode: <code>SILENT</code>, <code>VIBRATE</code>, <code>SOUND</code><br>
-        • SnoozeInterval: 1, 3, 5, 10, 30, 60 (분)<br>
-        • SnoozeCount: -1(INFINITE), 1, 3, 5, 10 (회)<br>
-        • Mission: 미정<br>
-        • RingTone: 미정<br>
-        • SoundCategory: 미정
+        <b>🔔 Alarm ENUM</b><br>
+        • <code>AlarmMode</code>: SILENT, VIBRATE, SOUND<br>
+        • <code>SnoozeInterval</code>: 1, 3, 5, 10, 30, 60 (분)<br>
+        • <code>SnoozeCount</code>: -1(INFINITE), 1, 3, 5, 10 (회)<br>
+        • <code>SoundCategory</code>: <i>BIRD, OCEAN, DEFAULT …</i><br>
+        • <code>RingTone</code>: <i>beep.mp3, morning.mp3 …</i>
         """
 )
 @RequestMapping("/schedules")

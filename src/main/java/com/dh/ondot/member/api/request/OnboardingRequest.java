@@ -8,7 +8,7 @@ import java.util.List;
 public record OnboardingRequest(
         @NotNull @Min(1) @Max(240) int preparationTime,
 
-        @NotBlank String addressTitle,
+        @NotBlank String roadAddress,
 
         @NotNull @DecimalMin("-180.0") @DecimalMax("180.0") double longitude,
 
@@ -26,7 +26,7 @@ public record OnboardingRequest(
     public record QuestionDto(
             @NotNull Long questionId,
 
-            @NotBlank String answer
+            @NotNull Long answerId
     ) {
     }
 }

@@ -6,7 +6,7 @@ import com.dh.ondot.core.exception.UnsupportedException;
 import java.util.Locale;
 
 public enum RingTone {
-    ;
+    DEFAULT;
 
     public static RingTone from(String ringTone) {
         try {

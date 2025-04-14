@@ -1,5 +1,6 @@
 package com.dh.ondot.member.domain;
 
+import com.dh.ondot.member.domain.enums.OauthProvider;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

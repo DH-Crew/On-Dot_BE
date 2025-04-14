@@ -6,7 +6,7 @@ import com.dh.ondot.core.exception.UnsupportedException;
 import java.util.Locale;
 
 public enum Mission {
-    ;
+    NONE;
 
     public static Mission from(String mission) {
         try {
