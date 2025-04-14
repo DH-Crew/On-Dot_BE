@@ -39,14 +39,19 @@ public enum ErrorCode {
     APPLE_PRIVATE_KEY_LOAD_FAILED(INTERNAL_SERVER_ERROR, "Apple 비공개 키 파일을 로드하는 데 실패했습니다. 파일 경로 또는 포맷을 확인하세요."),
 
     // Member
-    MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다. memberId : %d"),
-    NOT_FOUND_QUESTION(NOT_FOUND, "질문을 찾을 수 없습니다. questionId : %d"),
-    UNSUPPORTED_MAP_PROVIDER(BAD_REQUEST, "지원하지 않는 지도 제공자입니다. mapProvider : %s"),
-    UNSUPPORTED_ADDRESS_TYPE(BAD_REQUEST, "지원하지 않는 주소 타입입니다. addressType : %s"),
+    MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다. MemberId : %d"),
+    NOT_FOUND_QUESTION(NOT_FOUND, "질문을 찾을 수 없습니다. QuestionId : %d"),
+    UNSUPPORTED_MAP_PROVIDER(BAD_REQUEST, "지원하지 않는 지도 제공자입니다. MapProvider : %s"),
+    UNSUPPORTED_ADDRESS_TYPE(BAD_REQUEST, "지원하지 않는 주소 타입입니다. AddressType : %s"),
 
     // Alarm
-    UNSUPPORTED_SOUND_MODE(BAD_REQUEST, "지원하지 않는 사운드 모드입니다. mode : %s"),
-    UNSUPPORTED_RING_TONE(BAD_REQUEST, "지원하지 않는 벨소리입니다. ringTone : %s")
+    UNSUPPORTED_ALARM_MODE(BAD_REQUEST, "지원하지 않는 알람 모드입니다. Mode : %s"),
+    UNSUPPORTED_RING_TONE(BAD_REQUEST, "지원하지 않는 벨소리입니다. RingTone : %s"),
+    UNSUPPORTED_SNOOZE_INTERVAL(BAD_REQUEST, "지원하지 않는 알람 미루기 간격입니다. SnoozeInterval : %s"),
+    UNSUPPORTED_SNOOZE_COUNT(BAD_REQUEST, "지원하지 않는 알람 미루기 횟수입니다. SnoozeCount : %s"),
+    UNSUPPORTED_SOUND_CATEGORY(BAD_REQUEST, "지원하지 않는 사운드 카테고리입니다. SoundCategory : %s"),
+    UNSUPPORTED_MISSION(BAD_REQUEST, "지원하지 않는 미션입니다. Mission : %s"),
+    NOT_FOUND_SCHEDULE(NOT_FOUND, "일정을 찾을 수 없습니다. ScheduleId : %d")
     ;
 
     public final HttpStatus httpStatus;

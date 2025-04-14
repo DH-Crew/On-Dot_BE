@@ -1,6 +1,7 @@
-package com.dh.ondot.schedule.domain;
+package com.dh.ondot.schedule.domain.enums;
 
-import com.dh.ondot.schedule.core.exception.UnsupportedRingToneException;
+import com.dh.ondot.core.exception.ErrorCode;
+import com.dh.ondot.core.exception.UnsupportedException;
 
 import java.util.Locale;
 
@@ -11,8 +12,7 @@ public enum RingTone {
         try {
             return RingTone.valueOf(ringTone.toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException e) {
-            throw new UnsupportedRingToneException(ringTone);
+            throw new UnsupportedException(ErrorCode.UNSUPPORTED_RING_TONE, ringTone);
         }
     }
 }
-

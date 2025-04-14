@@ -2,7 +2,7 @@ package com.dh.ondot.member.domain;
 
 import com.dh.ondot.core.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
-import com.dh.ondot.schedule.domain.Sound;
+import com.dh.ondot.schedule.domain.vo.Sound;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,6 +39,7 @@ public class Member extends BaseTimeEntity {
 
     @Embedded
     @AttributeOverrides({
+            @AttributeOverride(name = "soundCategory", column = @Column(name = "default_sound_category")),
             @AttributeOverride(name = "ringTone", column = @Column(name = "default_ring_tone")),
             @AttributeOverride(name = "volume", column = @Column(name = "default_volume"))
     })
@@ -55,9 +56,9 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
-    public void updateOnboarding(Integer preparationTime, String ringTone, Integer volume) {
+    public void updateOnboarding(Integer preparationTime, String soundCategory, String ringTone, Integer volume) {
         this.preparationTime = preparationTime;
-        this.sound = Sound.of(ringTone, volume);
+        this.sound = Sound.of(soundCategory, ringTone, volume);
     }
 
     public void updateMapProvider(String mapProvider) {
