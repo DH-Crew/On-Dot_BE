@@ -21,7 +21,7 @@ public class AlarmFacade {
         memberService.findExistingMember(memberId);
 
         return scheduleRepository
-                .findLatestByMemberId(memberId, PageRequest.of(0, 1))
+                .findLatestByMemberId(memberId)
                 .orElseThrow(() -> new NotFoundScheduleException(memberId));
     }
 }

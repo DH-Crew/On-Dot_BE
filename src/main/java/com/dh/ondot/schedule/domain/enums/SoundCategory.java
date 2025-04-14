@@ -7,7 +7,7 @@ import java.util.Locale;
 import static com.dh.ondot.core.exception.ErrorCode.UNSUPPORTED_SOUND_CATEGORY;
 
 public enum SoundCategory {
-    ;
+    DEFAULT;
 
     public static SoundCategory from(String category) {
         try {
