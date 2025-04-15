@@ -1,13 +1,13 @@
 package com.dh.ondot.schedule.domain;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record PlaceHistory(
         Long memberId,
         String title,
         Double longitude,
         Double latitude,
-        LocalDateTime searchedAt
+        Instant searchedAt
 ) {
     public static PlaceHistory of(
             Long memberId, String title,
@@ -18,7 +18,7 @@ public record PlaceHistory(
                 title,
                 longitude,
                 latitude,
-                LocalDateTime.now()
+                Instant.now()
         );
     }
 }

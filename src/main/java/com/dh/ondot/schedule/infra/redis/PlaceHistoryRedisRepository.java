@@ -25,7 +25,7 @@ public class PlaceHistoryRedisRepository {
     public void push(PlaceHistory history) {
         String key = key(history.memberId());
         String value = converter.toJson(history);
-        double score = history.searchedAt().toEpochSecond(ZoneOffset.UTC);
+        double score = history.searchedAt().getEpochSecond();
 
         redisTemplate.opsForZSet().add(key, value, score);
 
