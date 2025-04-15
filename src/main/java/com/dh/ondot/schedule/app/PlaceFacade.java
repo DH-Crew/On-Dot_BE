@@ -1,6 +1,8 @@
 package com.dh.ondot.schedule.app;
 
 import com.dh.ondot.schedule.app.dto.PlaceSearchResult;
+import com.dh.ondot.schedule.domain.PlaceHistory;
+import com.dh.ondot.schedule.domain.service.PlaceHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +13,23 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PlaceFacade {
+    private final PlaceHistoryService placeHistoryService;
     private final SearchPlaceApi searchPlaceApi;
     private final SearchRoadAddressApi searchRoadAddressApi;
+
+    public void saveHistory(
+            Long memberId, String title,
+            String roadAddr, Double longitude, Double latitude
+    ) {
+        placeHistoryService.record(
+                memberId, title, roadAddr,
+                longitude, latitude
+        );
+    }
+
+    public List<PlaceHistory> getHistory(Long memberId) {
+        return placeHistoryService.recent(memberId);
+    }
 
     public List<PlaceSearchResult> searchPlaces(String query) {
         List<PlaceSearchResult> placeResults = searchPlaceApi.search(query);
