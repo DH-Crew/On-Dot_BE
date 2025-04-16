@@ -2,7 +2,10 @@ package com.dh.ondot.schedule.infra.redis;
 
 import com.dh.ondot.schedule.domain.PlaceHistory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
@@ -26,14 +29,19 @@ public class PlaceHistoryRedisRepository {
         String value = converter.toJson(history);
         double score = history.searchedAt().getEpochSecond();
 
-        redisTemplate.opsForZSet().add(key, value, score);
+        redisTemplate.execute(new SessionCallback<Void>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Void execute(RedisOperations operations) throws DataAccessException {
+                operations.multi();
 
-        // 최근 기록 10개만 남기고 삭제
-        long size = safeLong(redisTemplate.opsForZSet().size(key));
-        long excess = size - MAX_HISTORY;
-        if (excess > 0) {
-            redisTemplate.opsForZSet().removeRange(key, 0, excess - 1);
-        }
+                operations.opsForZSet().add(key, value, score);
+                operations.opsForZSet().removeRange(key, 0, -MAX_HISTORY -1);// 11개일 경우 1개 제거
+
+                operations.exec();
+                return null;
+            }
+        });
     }
 
     public List<PlaceHistory> findRecent(Long memberId) {
