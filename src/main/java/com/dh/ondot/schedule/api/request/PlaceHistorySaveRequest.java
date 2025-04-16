@@ -5,8 +5,8 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record PlaceDto(
-        String title,
+public record PlaceHistorySaveRequest(
+        String title,// nullable
 
         @NotBlank String roadAddress,
 

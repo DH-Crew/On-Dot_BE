@@ -53,7 +53,10 @@ public enum ErrorCode {
     UNSUPPORTED_SNOOZE_COUNT(BAD_REQUEST, "지원하지 않는 알람 미루기 횟수입니다. SnoozeCount : %s"),
     UNSUPPORTED_SOUND_CATEGORY(BAD_REQUEST, "지원하지 않는 사운드 카테고리입니다. SoundCategory : %s"),
     UNSUPPORTED_MISSION(BAD_REQUEST, "지원하지 않는 미션입니다. Mission : %s"),
-    NOT_FOUND_SCHEDULE(NOT_FOUND, "일정을 찾을 수 없습니다. ScheduleId : %d")
+    NOT_FOUND_SCHEDULE(NOT_FOUND, "일정을 찾을 수 없습니다. ScheduleId : %d"),
+
+    //Place
+    PLACE_HISTORY_SERIALIZATION_FAILED(INTERNAL_SERVER_ERROR, "장소 검색 기록 직렬화 중 오류가 발생했습니다."),
     ;
 
     public final HttpStatus httpStatus;
