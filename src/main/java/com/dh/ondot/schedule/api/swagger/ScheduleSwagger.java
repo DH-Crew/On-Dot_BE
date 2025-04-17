@@ -1,13 +1,11 @@
 package com.dh.ondot.schedule.api.swagger;
 
 import com.dh.ondot.core.domain.ErrorResponse;
+import com.dh.ondot.schedule.api.request.AlarmSwitchRequest;
 import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
 import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
 import com.dh.ondot.schedule.api.request.VoiceScheduleCreateRequest;
-import com.dh.ondot.schedule.api.response.HomeScheduleListResponse;
-import com.dh.ondot.schedule.api.response.ScheduleCreateResponse;
-import com.dh.ondot.schedule.api.response.ScheduleDetailResponse;
-import com.dh.ondot.schedule.api.response.ScheduleUpdateResponse;
+import com.dh.ondot.schedule.api.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -416,6 +414,50 @@ public interface ScheduleSwagger {
             @RequestAttribute("memberId") Long memberId,
             @PathVariable Long scheduleId,
             @RequestBody ScheduleUpdateRequest request
+    );
+
+    @Operation(
+            summary = "알람 ON/OFF",
+            description = "<b>일정의 알람 동작 여부</b>를 isEnabled 의 true/false 로 변경합니다.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema   = @Schema(implementation = AlarmSwitchRequest.class),
+                            examples = @ExampleObject(value = """
+            { "isEnabled": false }
+            """)
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description  = "변경 완료",
+                            content      = @Content(schema = @Schema(
+                                    implementation = AlarmSwitchResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description  = "멤버 또는 스케줄 없음",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = ErrorResponse.class),
+                                    examples  = {
+                                            @ExampleObject(name="ScheduleNotFound", value="""
+                    { "errorCode":"NOT_FOUND_SCHEDULE",
+                      "message":"일정을 찾을 수 없습니다. ScheduleId : 1001" }"""),
+                                            @ExampleObject(name="MemberNotFound", value="""
+                    { "errorCode":"NOT_FOUND_MEMBER",
+                      "message":"회원을 찾을 수 없습니다. MemberId : 123" }""")
+                                    }
+                            )
+                    )
+            }
+    )
+    @PatchMapping("/{scheduleId}/alarm")
+    AlarmSwitchResponse switchAlarm(
+            @RequestAttribute("memberId") Long memberId,
+            @PathVariable Long scheduleId,
+            @RequestBody AlarmSwitchRequest request
     );
 
     /*──────────────────────────────────────────────────────
