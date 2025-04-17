@@ -28,7 +28,7 @@ public class AuthFacade {
                 .orElseGet(() -> registerMemberWithOauth(userInfo, oauthProvider));
 
         Token token = tokenFacade.issue(member.getId());
-        boolean isOnboardingCompleted = member.getPreparationTime() != null;
+        boolean isOnboardingCompleted = member.checkOnboardingCompleted();
 
         return LoginResponse.of(token.accessToken(),token.refreshToken(),isOnboardingCompleted);
     }
