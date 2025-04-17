@@ -66,4 +66,8 @@ public class Member extends BaseTimeEntity {
     public void updateMapProvider(String mapProvider) {
         this.mapProvider = MapProvider.from(mapProvider);
     }
+
+    public boolean checkOnboardingCompleted() {
+        return preparationTime != null;
+    }
 }

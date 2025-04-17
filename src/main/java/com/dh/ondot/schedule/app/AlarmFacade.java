@@ -5,14 +5,12 @@ import com.dh.ondot.schedule.core.exception.NotFoundScheduleException;
 import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.domain.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class AlarmFacade {
-
     private final MemberService memberService;
     private final ScheduleRepository scheduleRepository;
 
@@ -21,7 +19,7 @@ public class AlarmFacade {
         memberService.findExistingMember(memberId);
 
         return scheduleRepository
-                .findLatestByMemberId(memberId)
+                .findLatestScheduleByMemberId(memberId)
                 .orElseThrow(() -> new NotFoundScheduleException(memberId));
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 @Tag(
         name = "Place API",
         description = """
-        <p><b>장소(Place) 검색·최근 기록</b> 기능을 제공합니다.</p>
+        <p><b>장소(Place)</b> 관련 API입니다.</p>
         """
 )
 @RequestMapping("/places")

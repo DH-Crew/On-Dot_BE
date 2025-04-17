@@ -2,6 +2,7 @@ package com.dh.ondot.member.api.swagger;
 
 import com.dh.ondot.core.domain.ErrorResponse;
 import com.dh.ondot.member.api.response.AccessToken;
+import com.dh.ondot.member.api.response.LoginResponse;
 import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.domain.enums.OauthProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(
         name = "Auth API",
         description = """
-        인증 관련 API입니다.<br><br>
+        <b>인증 관련 API입니다.</b><br><br>
         <b>로그인 후 이용하는 API에서 발생 가능한 토큰 오류</b><br>
         • <code>TOKEN_MISSING</code> : Authorization 헤더 없음<br>
         • <code>INVALID_TOKEN_HEADER</code>: "Bearer " 접두사 누락<br>
@@ -42,12 +43,13 @@ public interface AuthSwagger {
                             responseCode = "200",
                             description = "로그인 성공",
                             content = @Content(
-                                    schema = @Schema(implementation = Token.class),
+                                    schema = @Schema(implementation = LoginResponse.class),
                                     examples = @ExampleObject(
                                             value = """
                         {
                           "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                           "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                          "isOnboardingCompleted": false
                         }"""
                                     )
                             )
@@ -83,7 +85,7 @@ public interface AuthSwagger {
             }
     )
     @PostMapping("/login/oauth")
-    Token loginWithOAuth(
+    LoginResponse loginWithOAuth(
             @Parameter(description = "OAuth 제공자", example = "KAKAO", required = true)
             @RequestParam("provider") OauthProvider provider,
             @Parameter(description = "소셜 Access Token", required = true)

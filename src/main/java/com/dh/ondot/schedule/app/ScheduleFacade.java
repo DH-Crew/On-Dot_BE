@@ -40,7 +40,7 @@ public class ScheduleFacade {
                 request.preparationAlarm().alarmMode(),
                 request.preparationAlarm().isEnabled(),
                 request.appointmentAt().toLocalDate().atTime(request.preparationAlarm().triggeredAt()),
-                request.preparationAlarm().mission(),
+//                request.preparationAlarm().mission(),
                 request.preparationAlarm().isSnoozeEnabled(),
                 request.preparationAlarm().snoozeInterval(),
                 request.preparationAlarm().snoozeCount(),
@@ -137,7 +137,7 @@ public class ScheduleFacade {
                 request.preparationAlarm().isEnabled(),
                 request.appointmentAt().toLocalDate()
                         .atTime(request.preparationAlarm().triggeredAt()),
-                request.preparationAlarm().mission(),
+//                request.preparationAlarm().mission(),
                 request.preparationAlarm().isSnoozeEnabled(),
                 request.preparationAlarm().snoozeInterval(),
                 request.preparationAlarm().snoozeCount(),
@@ -162,6 +162,7 @@ public class ScheduleFacade {
                 new TreeSet<>(request.repeatDays()),
                 request.appointmentAt()
         );
+        // todo: nextAlarmAt 업데이트 로직 추가
 
         return new UpdateScheduleResult(schedule, placeChanged || timeChanged);
     }
