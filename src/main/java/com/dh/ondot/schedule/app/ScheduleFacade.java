@@ -167,6 +167,18 @@ public class ScheduleFacade {
         return new UpdateScheduleResult(schedule, placeChanged || timeChanged);
     }
 
+    @Transactional
+    public Schedule switchAlarm(
+            Long memberId, Long scheduleId, boolean enabled
+    ) {
+        memberService.findExistingMember(memberId);
+
+        Schedule schedule = scheduleService.findScheduleById(scheduleId);
+        schedule.switchAlarm(enabled);
+
+        return schedule;
+    }
+
     public void deleteSchedule(Long memberId, Long scheduleId) {
         memberService.findExistingMember(memberId);
         Schedule schedule = scheduleService.findScheduleById(scheduleId);
