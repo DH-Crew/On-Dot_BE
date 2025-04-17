@@ -100,6 +100,10 @@ public class Schedule extends BaseTimeEntity {
         this.nextAlarmAt = preparationTime.isBefore(departureTime)? preparationTime : departureTime;
     }
 
+    public void switchAlarm(boolean enabled) {
+        this.departureAlarm.changeEnabled(enabled);
+    }
+
     /**
      * 반복 여부에 따라 “다음에 실제로 울릴 시각”을 계산한다
      * 일회성 알람이면, base 그대로

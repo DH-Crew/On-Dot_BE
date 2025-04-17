@@ -1,12 +1,10 @@
 package com.dh.ondot.schedule.api;
 
+import com.dh.ondot.schedule.api.request.AlarmSwitchRequest;
 import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
 import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
 import com.dh.ondot.schedule.api.request.VoiceScheduleCreateRequest;
-import com.dh.ondot.schedule.api.response.ScheduleCreateResponse;
-import com.dh.ondot.schedule.api.response.ScheduleDetailResponse;
-import com.dh.ondot.schedule.api.response.HomeScheduleListResponse;
-import com.dh.ondot.schedule.api.response.ScheduleUpdateResponse;
+import com.dh.ondot.schedule.api.response.*;
 import com.dh.ondot.schedule.api.swagger.ScheduleSwagger;
 import com.dh.ondot.schedule.app.ScheduleFacade;
 import com.dh.ondot.schedule.app.ScheduleQueryFacade;
@@ -80,6 +78,18 @@ public class ScheduleController implements ScheduleSwagger {
         HttpStatus status = result.needsDepartureTimeRecalculation() ? HttpStatus.ACCEPTED : HttpStatus.OK;
 
         return ResponseEntity.status(status).body(ScheduleUpdateResponse.of(result.schedule()));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/{scheduleId}/alarm")
+    public AlarmSwitchResponse switchAlarm(
+            @RequestAttribute("memberId") Long memberId,
+            @PathVariable Long scheduleId,
+            @Valid @RequestBody AlarmSwitchRequest request
+    ) {
+        Schedule schedule = scheduleFacade.switchAlarm(memberId, scheduleId, request.isEnabled());
+
+        return AlarmSwitchResponse.from(schedule);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

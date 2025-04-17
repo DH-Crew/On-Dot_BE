@@ -89,4 +89,8 @@ public class Alarm extends BaseTimeEntity {
         this.snooze      = Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount);
         this.sound       = Sound.of(soundCategory, ringTone, volume);
     }
+
+    public void changeEnabled(boolean enabled) {
+        this.isEnabled = enabled;
+    }
 }
