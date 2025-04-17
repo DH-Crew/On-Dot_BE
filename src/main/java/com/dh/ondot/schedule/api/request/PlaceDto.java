@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.api.request;
 
+import com.dh.ondot.schedule.domain.Place;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -14,4 +15,7 @@ public record PlaceDto(
 
         @NotNull @DecimalMin("-90.0") @DecimalMax("90.0") Double latitude
 ) {
+    public static PlaceDto from(Place place) {
+        return new PlaceDto(place.getTitle(), place.getRoadAddress(), place.getLongitude(), place.getLatitude());
+    }
 }

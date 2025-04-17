@@ -2,13 +2,14 @@ package com.dh.ondot.schedule.domain;
 
 import com.dh.ondot.core.domain.BaseTimeEntity;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
-import com.dh.ondot.schedule.domain.enums.Mission;
 import com.dh.ondot.schedule.domain.vo.Snooze;
 import com.dh.ondot.schedule.domain.vo.Sound;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Getter
@@ -30,11 +31,11 @@ public class Alarm extends BaseTimeEntity {
     private boolean isEnabled;
 
     @Column(name = "triggered_at", nullable = false)
-    private LocalDateTime triggeredAt;
+    private Instant triggeredAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "mission")
-    private Mission mission;
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "mission")
+//    private Mission mission;
 
     @Embedded
     private Snooze snooze;
@@ -42,14 +43,14 @@ public class Alarm extends BaseTimeEntity {
     @Embedded
     private Sound sound;
 
-    public static Alarm createPreparationAlarm(String alarmMode, boolean isEnabled, LocalDateTime triggeredAt, String mission,
+    public static Alarm createPreparationAlarm(String alarmMode, boolean isEnabled, LocalDateTime triggeredAt,
                                                boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
                                                String soundCategory, String ringTone, Integer volume) {
         return Alarm.builder()
                 .mode(AlarmMode.from(alarmMode))
                 .isEnabled(isEnabled)
-                .triggeredAt(triggeredAt)
-                .mission(Mission.from(mission))
+                .triggeredAt(triggeredAt.atZone(ZoneId.of("Asia/Seoul")).toInstant())
+//                .mission(Mission.from(mission))
                 .snooze(Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount))
                 .sound(Sound.of(soundCategory, ringTone, volume))
                 .build();
@@ -61,21 +62,21 @@ public class Alarm extends BaseTimeEntity {
         return Alarm.builder()
                 .mode(AlarmMode.from(alarmMode))
                 .isEnabled(true)
-                .triggeredAt(triggeredAt)
+                .triggeredAt(triggeredAt.atZone(ZoneId.of("Asia/Seoul")).toInstant())
                 .snooze(Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount))
                 .sound(Sound.of(soundCategory, ringTone, volume))
                 .build();
     }
 
     public void updatePreparation(String alarmMode, boolean isEnabled,
-                                  LocalDateTime triggeredAt, String mission,
+                                  LocalDateTime triggeredAt,
                                   boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
                                   String soundCategory, String ringTone, Integer volume
     ) {
         this.mode          = AlarmMode.from(alarmMode);
         this.isEnabled     = isEnabled;
-        this.triggeredAt   = triggeredAt;
-        this.mission       = Mission.from(mission);
+        this.triggeredAt   = triggeredAt.atZone(ZoneId.of("Asia/Seoul")).toInstant();
+//        this.mission       = Mission.from(mission);
         this.snooze        = Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount);
         this.sound         = Sound.of(soundCategory, ringTone, volume);
     }

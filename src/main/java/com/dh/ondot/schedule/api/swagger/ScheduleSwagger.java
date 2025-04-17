@@ -29,8 +29,8 @@ import org.springframework.web.bind.annotation.*;
         • <code>AlarmMode</code>: SILENT, VIBRATE, SOUND<br>
         • <code>SnoozeInterval</code>: 1, 3, 5, 10, 30, 60 (분)<br>
         • <code>SnoozeCount</code>: -1(INFINITE), 1, 3, 5, 10 (회)<br>
-        • <code>SoundCategory</code>: <i>BIRD, OCEAN, DEFAULT …</i><br>
-        • <code>RingTone</code>: <i>beep.mp3, morning.mp3 …</i>
+        • <code>SoundCategory</code>: <i>DEFAULT …</i><br>
+        • <code>RingTone</code>: <i>DEFAULT …</i>
         """
 )
 @RequestMapping("/schedules")
@@ -75,22 +75,21 @@ public interface ScheduleSwagger {
                         "alarmMode": "VIBRATE",
                         "isEnabled": true,
                         "triggeredAt": "18:30:00",
-                        "mission": "QR",
                         "isSnoozeEnabled": true,
                         "snoozeInterval": 5,
                         "snoozeCount": 3,
-                        "soundCategory": "BIRD",
-                        "ringTone": "morning.mp3",
+                        "soundCategory": "DEFAULT",
+                        "ringTone": "DEFAULT",
                         "volume": 7
                       },
                       "departureAlarm": {
                         "alarmMode": "SOUND",
                         "triggeredAt": "18:50:00",
                         "isSnoozeEnabled": false,
-                        "snoozeInterval": 0,
+                        "snoozeInterval": 1,
                         "snoozeCount": -1,
                         "soundCategory": "DEFAULT",
-                        "ringTone": "beep.mp3",
+                        "ringTone": "DEFAULT",
                         "volume": 8
                       }
                     }"""
@@ -202,12 +201,11 @@ public interface ScheduleSwagger {
                         "alarmMode": "VIBRATE",
                         "isEnabled": true,
                         "triggeredAt": "18:45:00",
-                        "mission": "QR",
                         "isSnoozeEnabled": true,
                         "snoozeInterval": 5,
                         "snoozeCount": 3,
-                        "soundCategory": "BIRD",
-                        "ringTone": "morning.mp3",
+                        "soundCategory": "DEFAULT",
+                        "ringTone": "DEFAULT",
                         "volume": 7
                       },
                       "departureAlarm": {
@@ -217,7 +215,7 @@ public interface ScheduleSwagger {
                         "snoozeInterval": 0,
                         "snoozeCount": -1,
                         "soundCategory": "DEFAULT",
-                        "ringTone": "beep.mp3",
+                        "ringTone": "DEFAULT",
                         "volume": 8
                       }
                     }"""
