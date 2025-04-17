@@ -1,0 +1,49 @@
+package com.dh.ondot.schedule.app;
+
+import com.dh.ondot.member.domain.service.MemberService;
+import com.dh.ondot.schedule.api.response.*;
+import com.dh.ondot.schedule.app.dto.HomeScheduleListItem;
+import com.dh.ondot.schedule.core.exception.NotFoundScheduleException;
+import com.dh.ondot.schedule.domain.Schedule;
+import com.dh.ondot.schedule.infra.ScheduleQueryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.*;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class ScheduleQueryFacade {
+    private final MemberService memberService;
+    private final ScheduleQueryRepository  scheduleQueryRepository;
+
+    public Schedule findOne(Long memberId, Long scheduleId) {
+        memberService.findExistingMember(memberId);
+
+        return scheduleQueryRepository.findScheduleByMemberIdAndId(memberId, scheduleId)
+                .orElseThrow(() -> new NotFoundScheduleException(scheduleId));
+    }
+
+    public HomeScheduleListResponse findAll(Long memberId, Pageable page) {
+        Slice<Schedule> slice =  scheduleQueryRepository.findPageByMember(memberId, page);
+
+        List<HomeScheduleListItem> homeScheduleListItem = slice.getContent().stream()
+                .map(HomeScheduleListItem::from)
+                .toList();
+
+        LocalDateTime now = Instant.now().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+        LocalDateTime earliest = homeScheduleListItem.stream()
+                .filter(HomeScheduleListItem::isEnabled)
+                .map(HomeScheduleListItem::nextAlarmAt)
+                .filter(next -> next.isAfter(now))
+                .findFirst()
+                .orElse(null);
+
+        return HomeScheduleListResponse.of(earliest, homeScheduleListItem, slice.hasNext());
+    }
+}
