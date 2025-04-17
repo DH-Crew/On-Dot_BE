@@ -80,7 +80,7 @@ public interface ScheduleSwagger {
                       "preparationAlarm": {
                         "alarmMode": "VIBRATE",
                         "isEnabled": true,
-                        "triggeredAt": "18:30:00",
+                        "triggeredAt": "2025-05-10T18:30:00",
                         "isSnoozeEnabled": true,
                         "snoozeInterval": 5,
                         "snoozeCount": 3,
@@ -90,7 +90,7 @@ public interface ScheduleSwagger {
                       },
                       "departureAlarm": {
                         "alarmMode": "SOUND",
-                        "triggeredAt": "18:50:00",
+                        "triggeredAt": "2025-05-10T18:50:00",
                         "isSnoozeEnabled": false,
                         "snoozeInterval": 1,
                         "snoozeCount": -1,
@@ -209,7 +209,7 @@ public interface ScheduleSwagger {
                       "preparationAlarm": {
                         "alarmMode": "VIBRATE",
                         "isEnabled": true,
-                        "triggeredAt": "18:30:00",
+                        "triggeredAt": "2025-05-10T18:30:00",
                         "isSnoozeEnabled": true,
                         "snoozeInterval": 5,
                         "snoozeCount": 3,
@@ -219,7 +219,7 @@ public interface ScheduleSwagger {
                       },
                       "departureAlarm": {
                         "alarmMode": "SOUND",
-                        "triggeredAt": "18:50:00",
+                        "triggeredAt": "2025-05-10T18:50:00",
                         "isSnoozeEnabled": false,
                         "snoozeInterval": 1,
                         "snoozeCount": -1,
@@ -371,7 +371,7 @@ public interface ScheduleSwagger {
                       "preparationAlarm": {
                         "alarmMode": "VIBRATE",
                         "isEnabled": true,
-                        "triggeredAt": "18:45:00",
+                        "triggeredAt": "2025-05-10T18:45:00",
                         "isSnoozeEnabled": true,
                         "snoozeInterval": 5,
                         "snoozeCount": 3,
@@ -381,7 +381,7 @@ public interface ScheduleSwagger {
                       },
                       "departureAlarm": {
                         "alarmMode": "SOUND",
-                        "triggeredAt": "19:10:00",
+                        "triggeredAt": "2025-05-10T19:10:00",
                         "isSnoozeEnabled": false,
                         "snoozeInterval": 0,
                         "snoozeCount": -1,
