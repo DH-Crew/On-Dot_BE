@@ -384,7 +384,7 @@ public interface ScheduleSwagger {
                         "alarmMode": "SOUND",
                         "triggeredAt": "2025-05-10T19:10:00",
                         "isSnoozeEnabled": false,
-                        "snoozeInterval": 0,
+                        "snoozeInterval": 1,
                         "snoozeCount": -1,
                         "soundCategory": "DEFAULT",
                         "ringTone": "DEFAULT",
