@@ -293,6 +293,7 @@ public interface ScheduleSwagger {
                                     schema    = @Schema(implementation = HomeScheduleListResponse.class),
                                     examples  = @ExampleObject(value = """
                     {
+                      "isOnboardingCompleted": true,
                       "earliestAlarmAt": "2025-05-10T18:30:00",
                       "hasNext": false,
                       "scheduleList": [

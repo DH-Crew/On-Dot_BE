@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.app;
 
+import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.schedule.api.response.*;
 import com.dh.ondot.schedule.app.dto.HomeScheduleListItem;
@@ -30,6 +31,7 @@ public class ScheduleQueryFacade {
     }
 
     public HomeScheduleListResponse findAll(Long memberId, Pageable page) {
+        Member member = memberService.findExistingMember(memberId);
         Slice<Schedule> slice =  scheduleQueryRepository.findPageByMember(memberId, page);
 
         List<HomeScheduleListItem> homeScheduleListItem = slice.getContent().stream()
@@ -44,6 +46,8 @@ public class ScheduleQueryFacade {
                 .findFirst()
                 .orElse(null);
 
-        return HomeScheduleListResponse.of(earliest, homeScheduleListItem, slice.hasNext());
+        boolean isOnboardingCompleted = member.getPreparationTime() != null;
+
+        return HomeScheduleListResponse.of(isOnboardingCompleted, earliest, homeScheduleListItem, slice.hasNext());
     }
 }

@@ -6,12 +6,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record HomeScheduleListResponse(
+        boolean isOnboardingCompleted,
         LocalDateTime earliestAlarmTime,
         List<HomeScheduleListItem> scheduleList,
         boolean hasNext
 ) {
-    public static HomeScheduleListResponse of(LocalDateTime earliest, List<HomeScheduleListItem> list, boolean hasNext) {
+    public static HomeScheduleListResponse of(boolean isOnboardingCompleted, LocalDateTime earliest, List<HomeScheduleListItem> list, boolean hasNext) {
         return new HomeScheduleListResponse(
+                isOnboardingCompleted,
                 earliest,
                 list,
                 hasNext
