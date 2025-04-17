@@ -1,16 +1,22 @@
 package com.dh.ondot.schedule.api.swagger;
 
+import com.dh.ondot.core.domain.ErrorResponse;
 import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
 import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
 import com.dh.ondot.schedule.api.request.VoiceScheduleCreateRequest;
+import com.dh.ondot.schedule.api.response.HomeScheduleListResponse;
 import com.dh.ondot.schedule.api.response.ScheduleCreateResponse;
+import com.dh.ondot.schedule.api.response.ScheduleDetailResponse;
 import com.dh.ondot.schedule.api.response.ScheduleUpdateResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +43,7 @@ import org.springframework.web.bind.annotation.*;
 public interface ScheduleSwagger {
 
     /*──────────────────────────────────────────────────────
-     * 1. 일정 생성
+     * 일정 생성
      *──────────────────────────────────────────────────────*/
     @Operation(
             summary = "일정 생성",
@@ -117,7 +123,7 @@ public interface ScheduleSwagger {
     );
 
     /*──────────────────────────────────────────────────────
-     * 2. 음성(STT) 기반 일정 생성
+     * 음성(STT) 기반 일정 생성
      *──────────────────────────────────────────────────────*/
     @Operation(
             summary = "음성 기반 일정 생성",
@@ -163,7 +169,172 @@ public interface ScheduleSwagger {
     );
 
     /*──────────────────────────────────────────────────────
-     * 3. 일정 수정
+     * 단일 일정 조회
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+            summary     = "단일 일정 상세 조회",
+            description = """
+            <code>scheduleId</code> 로 하나의 스케줄 상세 정보를 반환합니다.<br>
+            홈 화면에서 선택한 <b>일정의 상세 정보(약속, 알람, 장소)</b>를 조회할 때 사용합니다.
+            """,
+            parameters  = {
+                    @Parameter(name="scheduleId", in=ParameterIn.PATH, required=true,
+                            description="조회할 스케줄 ID", example="1001")
+            },
+            responses   = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description  = "조회 성공",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = ScheduleDetailResponse.class),
+                                    examples  = @ExampleObject(value = """
+                    {
+                      "title": "스터디 모임",
+                      "isRepeat": true,
+                      "repeatDays": [2,4,6],
+                      "appointmentAt": "2025-05-10T19:00:00",
+                      "departurePlace": {
+                        "title": "집",
+                        "roadAddress": "서울특별시 강남구 테헤란로 123",
+                        "longitude": 127.0276,
+                        "latitude": 37.4979
+                      },
+                      "arrivalPlace": {
+                        "title": "카페",
+                        "roadAddress": "서울특별시 서초구 서초대로 77",
+                        "longitude": 127.0290,
+                        "latitude": 37.5010
+                      },
+                      "preparationAlarm": {
+                        "alarmMode": "VIBRATE",
+                        "isEnabled": true,
+                        "triggeredAt": "18:30:00",
+                        "isSnoozeEnabled": true,
+                        "snoozeInterval": 5,
+                        "snoozeCount": 3,
+                        "soundCategory": "DEFAULT",
+                        "ringTone": "DEFAULT",
+                        "volume": 7
+                      },
+                      "departureAlarm": {
+                        "alarmMode": "SOUND",
+                        "triggeredAt": "18:50:00",
+                        "isSnoozeEnabled": false,
+                        "snoozeInterval": 1,
+                        "snoozeCount": -1,
+                        "soundCategory": "DEFAULT",
+                        "ringTone": "DEFAULT",
+                        "volume": 8
+                      }
+                    }""")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description  = "스케줄 또는 멤버가 존재하지 않습니다.",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = ErrorResponse.class),
+                                    examples  = {
+                                            @ExampleObject(
+                                                    name   = "NOT_FOUND_SCHEDULE",
+                                                    summary= "스케줄 없음",
+                                                    value  = """
+                            {
+                              "errorCode": "NOT_FOUND_SCHEDULE",
+                              "message": "일정을 찾을 수 없습니다. ScheduleId : 1001"
+                            }
+                            """
+                                            ),
+                                            @ExampleObject(
+                                                    name   = "NOT_FOUND_MEMBER",
+                                                    summary= "멤버 없음",
+                                                    value  = """
+                            {
+                              "errorCode": "NOT_FOUND_MEMBER",
+                              "message": "회원을 찾을 수 없습니다. MemberId : 123"
+                            }
+                            """
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
+    @GetMapping("/{scheduleId}")
+    ScheduleDetailResponse getSchedule(
+            @RequestAttribute("memberId") Long memberId,
+            @PathVariable Long scheduleId
+    );
+
+    /*──────────────────────────────────────────────────────
+     * 홈 화면 일정 목록 조회 (무한 스크롤)
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+            summary     = "홈 화면 일정 목록 조회",
+            description = """
+            <b>가장 빨리 울릴 알람 시각</b>(nextAlarmAt)과 <b>일정 목록</b>(scheduleList)를 반환합니다. <br>
+            • <code>hasNext=true</code> 면 이후 page 를 조회할 수 있습니다. <br>
+            • <code>page</code>와 <code>size</code>를 통해 페이지와 개수를 조정할 수 있습니다.
+            """,
+            parameters  = {
+                    @Parameter(name="page", in= ParameterIn.QUERY,
+                            description="0부터 시작하는 페이지 번호", example="0"),
+                    @Parameter(name="size", in=ParameterIn.QUERY,
+                            description="페이지당 항목 수", example="20")
+            },
+            responses   = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description  = "조회 성공",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = HomeScheduleListResponse.class),
+                                    examples  = @ExampleObject(value = """
+                    {
+                      "earliestAlarmAt": "2025-05-10T18:30:00",
+                      "hasNext": false,
+                      "scheduleList": [
+                        {
+                          "scheduleId": 1001,
+                          "scheduleTitle": "스터디 모임",
+                          "isRepeat": true,
+                          "repeatDays": [2,4,6],
+                          "appointmentAt": "2025-05-10T19:00:00",
+                          "nextAlarmAt": "2025-05-10T18:30:00",
+                          "preparationTriggeredAt": "2025-05-10T18:30:00",
+                          "departureTriggeredAt": "2025-05-10T18:50:00",
+                          "isEnabled": true
+                        }
+                      ]
+                    }""")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description  = "멤버 없음",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = ErrorResponse.class),
+                                    examples  = @ExampleObject(value = """
+                    {
+                      "errorCode": "NOT_FOUND_MEMBER",
+                      "message": "회원을 찾을 수 없습니다. MemberId : 123"
+                    }""")
+                            )
+                    )
+            }
+    )
+    @GetMapping
+    HomeScheduleListResponse getSchedules(
+            @RequestAttribute("memberId") Long memberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    );
+
+    /*──────────────────────────────────────────────────────
+     * 일정 수정
      *──────────────────────────────────────────────────────*/
     @Operation(
             summary = "일정 수정",
@@ -247,7 +418,7 @@ public interface ScheduleSwagger {
     );
 
     /*──────────────────────────────────────────────────────
-     * 4. 일정 삭제
+     * 일정 삭제
      *──────────────────────────────────────────────────────*/
     @Operation(
             summary = "일정 삭제",

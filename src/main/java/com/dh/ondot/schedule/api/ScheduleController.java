@@ -47,6 +47,7 @@ public class ScheduleController implements ScheduleSwagger {
         scheduleFacade.createVoiceSchedule(memberId, request);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{scheduleId}")
     public ScheduleDetailResponse getSchedule(
             @RequestAttribute("memberId") Long memberId,

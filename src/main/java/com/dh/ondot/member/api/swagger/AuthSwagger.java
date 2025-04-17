@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(
         name = "Auth API",
         description = """
-        인증 관련 API입니다.<br><br>
+        <b>인증 관련 API입니다.</b><br><br>
         <b>로그인 후 이용하는 API에서 발생 가능한 토큰 오류</b><br>
         • <code>TOKEN_MISSING</code> : Authorization 헤더 없음<br>
         • <code>INVALID_TOKEN_HEADER</code>: "Bearer " 접두사 누락<br>
