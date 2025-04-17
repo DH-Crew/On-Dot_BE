@@ -2,6 +2,7 @@ package com.dh.ondot.member.api.swagger;
 
 import com.dh.ondot.core.domain.ErrorResponse;
 import com.dh.ondot.member.api.response.AccessToken;
+import com.dh.ondot.member.api.response.LoginResponse;
 import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.domain.enums.OauthProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,12 +43,13 @@ public interface AuthSwagger {
                             responseCode = "200",
                             description = "로그인 성공",
                             content = @Content(
-                                    schema = @Schema(implementation = Token.class),
+                                    schema = @Schema(implementation = LoginResponse.class),
                                     examples = @ExampleObject(
                                             value = """
                         {
                           "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                           "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                          "isOnboardingCompleted": false
                         }"""
                                     )
                             )
@@ -83,7 +85,7 @@ public interface AuthSwagger {
             }
     )
     @PostMapping("/login/oauth")
-    Token loginWithOAuth(
+    LoginResponse loginWithOAuth(
             @Parameter(description = "OAuth 제공자", example = "KAKAO", required = true)
             @RequestParam("provider") OauthProvider provider,
             @Parameter(description = "소셜 Access Token", required = true)

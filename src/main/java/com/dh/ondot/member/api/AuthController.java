@@ -1,6 +1,7 @@
 package com.dh.ondot.member.api;
 
 import com.dh.ondot.member.api.response.AccessToken;
+import com.dh.ondot.member.api.response.LoginResponse;
 import com.dh.ondot.member.api.swagger.AuthSwagger;
 import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.app.AuthFacade;
@@ -23,7 +24,7 @@ public class AuthController implements AuthSwagger {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login/oauth")
-    public Token loginWithOAuth(
+    public LoginResponse loginWithOAuth(
             @RequestParam("provider") OauthProvider oauthProvider,
             @RequestParam("access_token") String accessToken
     ) {
