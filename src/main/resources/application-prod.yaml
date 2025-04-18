@@ -55,6 +55,9 @@ odsay:
   client:
     api-key: ${ODSAY_CLIENT_API_KEY}
 
+openai:
+  api-key: ${OPENAI_API_KEY}
+
 management:
   endpoints:
     web:
