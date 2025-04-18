@@ -203,7 +203,9 @@ public interface ScheduleSwagger {
             }
     )
     @PostMapping("/nlp")
-    ScheduleParsedResponse parse(@RequestBody ScheduleParsedRequest request);
+    ScheduleParsedResponse parse(
+            Long memberId,
+            @RequestBody ScheduleParsedRequest request);
 
     /*──────────────────────────────────────────────────────
      * 단일 일정 조회

@@ -44,6 +44,10 @@ public record ErrorResponse(
         this(e.getErrorCode(), e.getMessage(), null, null);
     }
 
+    public <T extends TooManyRequestsException> ErrorResponse(T e){
+        this(e.getErrorCode(), e.getMessage(), null, null);
+    }
+
     public <T extends InternalServerException> ErrorResponse(T e){
         this(e.getErrorCode(), e.getMessage(), null, null);
     }

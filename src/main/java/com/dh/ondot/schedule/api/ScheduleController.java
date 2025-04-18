@@ -47,9 +47,10 @@ public class ScheduleController implements ScheduleSwagger {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/nlp")
     public ScheduleParsedResponse parse(
+            @RequestAttribute("memberId") Long memberId,
             @Valid @RequestBody ScheduleParsedRequest request
     ) {
-        return parseFacade.parse(request.text());
+        return parseFacade.parse(memberId, request.text());
     }
 
     @ResponseStatus(HttpStatus.OK)
