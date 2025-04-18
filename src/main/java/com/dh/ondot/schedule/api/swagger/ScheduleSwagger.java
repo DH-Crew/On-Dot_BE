@@ -1,10 +1,7 @@
 package com.dh.ondot.schedule.api.swagger;
 
 import com.dh.ondot.core.domain.ErrorResponse;
-import com.dh.ondot.schedule.api.request.AlarmSwitchRequest;
-import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
-import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
-import com.dh.ondot.schedule.api.request.VoiceScheduleCreateRequest;
+import com.dh.ondot.schedule.api.request.*;
 import com.dh.ondot.schedule.api.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -165,6 +162,48 @@ public interface ScheduleSwagger {
             @RequestAttribute("memberId") Long memberId,
             @RequestBody VoiceScheduleCreateRequest request
     );
+
+    @Operation(
+            summary="STT 일정 텍스트 파싱",
+            description="한글 문장(예: “내일 6시에 강남역에 약속 있어”)을 장소명·약속시각 JSON 으로 변환",
+            requestBody= @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description="파싱할 문장",
+                    required=true,
+                    content=@Content(
+                            mediaType=MediaType.APPLICATION_JSON_VALUE,
+                            schema=@Schema(implementation=ScheduleParsedRequest.class),
+                            examples=@ExampleObject(value="""
+                        {
+                          "text":"내일 6시에 강남역에 약속 있어"
+                        }"""
+                            )
+                    )
+            ),
+            responses={
+                    @ApiResponse(responseCode="200",
+                            description="파싱 성공",
+                            content=@Content(
+                                    mediaType=MediaType.APPLICATION_JSON_VALUE,
+                                    schema=@Schema(implementation=ScheduleParsedResponse.class),
+                                    examples=@ExampleObject(value="""
+                        {
+                          "departurePlaceTitle":"강남역",
+                          "appointmentAt":"2025-04-16T18:00:00"
+                        }"""
+                                    )
+                            )
+                    ),
+                    @ApiResponse(responseCode="400",
+                            description="파싱 실패",
+                            content=@Content(
+                                    mediaType=MediaType.APPLICATION_JSON_VALUE,
+                                    schema=@Schema(ref="#/components/schemas/ErrorResponse")
+                            )
+                    )
+            }
+    )
+    @PostMapping("/nlp")
+    ScheduleParsedResponse parse(@RequestBody ScheduleParsedRequest request);
 
     /*──────────────────────────────────────────────────────
      * 단일 일정 조회
