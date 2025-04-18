@@ -57,6 +57,9 @@ public enum ErrorCode {
 
     //Place
     PLACE_HISTORY_SERIALIZATION_FAILED(INTERNAL_SERVER_ERROR, "장소 검색 기록 직렬화 중 오류가 발생했습니다."),
+
+    // AI
+    AI_USAGE_LIMIT_EXCEEDED(TOO_MANY_REQUESTS, "오늘 사용 가능한 AI 사용 횟수를 초과했습니다. MemberId : %d, Date : %s"),
     ;
 
     public final HttpStatus httpStatus;
