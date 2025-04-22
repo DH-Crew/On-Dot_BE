@@ -19,7 +19,7 @@ public enum ErrorCode {
     NO_RESOURCE_FOUND(NOT_FOUND,"요청한 리소스를 찾을 수 없습니다."),
     METHOD_NOT_SUPPORTED(METHOD_NOT_ALLOWED,"허용되지 않은 메서드입니다."),
     MEDIA_TYPE_NOT_SUPPORTED(UNSUPPORTED_MEDIA_TYPE,"허용되지 않은 미디어 타입입니다."),
-    SERVER_ERROR(INTERNAL_SERVER_ERROR,"서버 오류가 발생했습니다. 관리자에게 문의하세요."),
+    SERVER_ERROR(INTERNAL_SERVER_ERROR,"서버 오류가 발생했습니다. 관리자에게 문의해주세요."),
     REDIS_UNAVAILABLE(SERVICE_UNAVAILABLE,"Redis 서버에 연결할 수 없습니다."),
 
     // Token
@@ -60,6 +60,9 @@ public enum ErrorCode {
 
     // AI
     AI_USAGE_LIMIT_EXCEEDED(TOO_MANY_REQUESTS, "오늘 사용 가능한 AI 사용 횟수를 초과했습니다. MemberId : %d, Date : %s"),
+    OPEN_AI_PARSING_ERROR(BAD_REQUEST, "약속 문장을 이해할 수 없습니다. 형식을 확인 후 다시 시도해주세요."),
+    UNAVAILABLE_OPEN_AI_SERVER(BAD_GATEWAY, "일시적으로 Open AI 서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."),
+    UNHANDLED_OPEN_AI(INTERNAL_SERVER_ERROR, "Open AI 요청 과정에서 알 수 없는 문제가 발생했습니다. 관리자에게 문의해주세요."),
     ;
 
     public final HttpStatus httpStatus;
