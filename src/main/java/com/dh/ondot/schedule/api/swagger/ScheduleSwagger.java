@@ -163,49 +163,126 @@ public interface ScheduleSwagger {
             @RequestBody VoiceScheduleCreateRequest request
     );
 
+    /*──────────────────────────────────────────────────────
+     * STT 일정 텍스트 파싱
+     *──────────────────────────────────────────────────────*/
     @Operation(
-            summary="STT 일정 텍스트 파싱",
-            description="한글 문장(예: “내일 6시에 강남역에 약속 있어”)을 장소명·약속시각 JSON 으로 변환",
-            requestBody= @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description="파싱할 문장",
-                    required=true,
-                    content=@Content(
-                            mediaType=MediaType.APPLICATION_JSON_VALUE,
-                            schema=@Schema(implementation=ScheduleParsedRequest.class),
-                            examples=@ExampleObject(value="""
-                        {
-                          "text":"내일 6시에 강남역에 약속 있어"
-                        }"""
-                            )
+            summary = "STT 일정 텍스트 파싱",
+            description = """
+        한글 자연어 문장(예: “내일 6시에 강남역에 약속 있어”)을
+        <code>departurePlaceTitle</code>, <code>appointmentAt</code> JSON 으로 변환합니다.
+        <br/><br/>
+        <b>⚠️ Error Code </b><br/>
+        - 잘못된 JSON 형식 <code>INVALID_JSON</code><br/>
+        - 문장을 이해하지 못하면 <code>OPEN_AI_PARSING_ERROR</code><br/>
+        - 하루 호출 제한(기본 30회)을 초과하면 <code>AI_USAGE_LIMIT_EXCEEDED</code><br/>
+        - OpenAI 서버 장애 시 <code>UNAVAILABLE_OPEN_AI_SERVER</code><br/>
+        - OpenAI 처리 중 예기치 못한 장애 시 <code>UNHANDLED_OPEN_AI</code><br/>
+        - 그 외 예기치 못한 장애 시 <code>SERVER_ERROR</code>
+        """,
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "파싱할 한국어 문장",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema    = @Schema(implementation = ScheduleParsedRequest.class),
+                            examples  = @ExampleObject(name = "예시‑요청", value = """
+            {
+              "text": "내일 6시에 강남역에 약속 있어"
+            }""")
                     )
             ),
-            responses={
-                    @ApiResponse(responseCode="200",
-                            description="파싱 성공",
-                            content=@Content(
-                                    mediaType=MediaType.APPLICATION_JSON_VALUE,
-                                    schema=@Schema(implementation=ScheduleParsedResponse.class),
-                                    examples=@ExampleObject(value="""
-                        {
-                          "departurePlaceTitle":"강남역",
-                          "appointmentAt":"2025-04-16T18:00:00"
-                        }"""
-                                    )
+            responses = {
+                    /* ─────────────────────── 200 ─────────────────────── */
+                    @ApiResponse(
+                            responseCode = "200",
+                            description  = "파싱 성공",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = ScheduleParsedResponse.class),
+                                    examples  = @ExampleObject(name="예시‑응답", value = """
+                {
+                  "departurePlaceTitle": "강남역",
+                  "appointmentAt":      "2025-04-16T18:00:00"
+                }""")
                             )
                     ),
-                    @ApiResponse(responseCode="400",
-                            description="파싱 실패",
-                            content=@Content(
-                                    mediaType=MediaType.APPLICATION_JSON_VALUE,
-                                    schema=@Schema(ref="#/components/schemas/ErrorResponse")
+
+                    /* ─────────────────────── 400 ─────────────────────── */
+                    @ApiResponse(
+                            responseCode = "400",
+                            description  = "AI가 문장을 이해하지 못했거나, 입력 JSON 형식 오류",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                                    examples  = {
+                                            @ExampleObject(name="형식 오류",
+                                                    value = """
+                        {
+                          "errorCode": "INVALID_JSON",
+                          "message":   "잘못된 JSON 형식입니다. 요청 데이터를 확인하세요."
+                        }"""),
+                                            @ExampleObject(name="파싱 실패",
+                                                    value = """
+                        {
+                          "errorCode": "OPEN_AI_PARSING_ERROR",
+                          "message":   "약속 문장을 이해할 수 없습니다. 형식을 확인 후 다시 시도해주세요."
+                        }""")
+                                    }
+                            )
+                    ),
+
+                    /* ─────────────────────── 429 ─────────────────────── */
+                    @ApiResponse(
+                            responseCode = "429",
+                            description  = "하루 허용된 AI 사용량(예: 10회) 초과",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                                    examples  = @ExampleObject(name="호출 제한 초과", value = """
+                {
+                  "errorCode": "AI_USAGE_LIMIT_EXCEEDED",
+                  "message":   "오늘 사용 가능한 AI 사용 횟수를 초과했습니다. MemberId : 42, Date : 2025‑04‑16"
+                }""")
+                            )
+                    ),
+
+                    /* ─────────────────────── 502 ─────────────────────── */
+                    @ApiResponse(
+                            responseCode = "502",
+                            description  = "OpenAI 서버(Downstream) 장애",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                                    examples  = @ExampleObject(name="OpenAI 장애", value = """
+                {
+                  "errorCode": "UNAVAILABLE_OPEN_AI_SERVER",
+                  "message":   "일시적으로 Open AI 서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+                }""")
+                            )
+                    ),
+
+                    /* ─────────────────────── 500 ─────────────────────── */
+                    @ApiResponse(
+                            responseCode = "500",
+                            description  = "OpenAI 처리 과정에서 예기치 못한 오류",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                                    examples  = @ExampleObject(name="미처리 예외", value = """
+                {
+                  "errorCode": "UNHANDLED_OPEN_AI",
+                  "message":   "Open AI 요청 과정에서 알 수 없는 문제가 발생했습니다. 관리자에게 문의해주세요."
+                }""")
                             )
                     )
             }
     )
     @PostMapping("/nlp")
     ScheduleParsedResponse parse(
-            Long memberId,
-            @RequestBody ScheduleParsedRequest request);
+            @RequestAttribute("memberId") Long memberId,
+            @RequestBody ScheduleParsedRequest request
+    );
 
     /*──────────────────────────────────────────────────────
      * 단일 일정 조회
