@@ -52,6 +52,10 @@ public record ErrorResponse(
         this(e.getErrorCode(), e.getMessage(), null, null);
     }
 
+    public <T extends BadGatewayException> ErrorResponse(T e){
+        this(e.getErrorCode(), e.getMessage(), null, null);
+    }
+
     public <T extends ServiceUnavailableException> ErrorResponse(T e) {
 
         this(e.getErrorCode(), e.getMessage(), null, null);

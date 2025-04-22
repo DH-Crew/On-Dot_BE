@@ -150,9 +150,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public ErrorResponse handleBadGatewayException(BadGatewayException e) {
+        log.error(e.getMessage());
+
+        return new ErrorResponse(e);
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorResponse handleServiceUnavailableException(ServiceUnavailableException e) {
-        log.warn(e.getMessage());
+        log.error(e.getMessage());
 
         return new ErrorResponse(e);
     }
