@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.app;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.schedule.api.response.*;
@@ -38,7 +39,7 @@ public class ScheduleQueryFacade {
                 .map(HomeScheduleListItem::from)
                 .toList();
 
-        LocalDateTime now = Instant.now().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+        LocalDateTime now = DateTimeUtils.nowSeoulDateTime();
         LocalDateTime earliest = homeScheduleListItem.stream()
                 .filter(HomeScheduleListItem::isEnabled)
                 .map(HomeScheduleListItem::nextAlarmAt)

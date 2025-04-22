@@ -17,7 +17,7 @@ import java.util.TreeSet;
 
 @Service
 @RequiredArgsConstructor
-public class ScheduleFacade {
+public class ScheduleCommandFacade {
     private final MemberService memberService;
     private final ScheduleService scheduleService;
 

@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.infra;
+package com.dh.ondot.schedule.domain.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

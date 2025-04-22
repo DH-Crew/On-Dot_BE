@@ -1,9 +1,9 @@
 package com.dh.ondot.schedule.api.response;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.domain.Alarm;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public record AlarmDto(
         String alarmMode,
@@ -20,7 +20,7 @@ public record AlarmDto(
         return new AlarmDto(
                 alarm.getMode().name(),
                 alarm.isEnabled(),
-                alarm.getTriggeredAt().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime(),
+                DateTimeUtils.toSeoulDateTime(alarm.getTriggeredAt()),
                 alarm.getSnooze().isSnoozeEnabled(),
                 alarm.getSnooze().getSnoozeInterval().getValue(),
                 alarm.getSnooze().getSnoozeCount().getValue(),

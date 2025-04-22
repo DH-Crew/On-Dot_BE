@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.api.response;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.domain.Schedule;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,9 @@ public record ScheduleCreateResponse(
         LocalDateTime createdAt
 ) {
     public static ScheduleCreateResponse of(Schedule schedule) {
-        return new ScheduleCreateResponse(schedule.getId(), schedule.getCreatedAt());
+        return new ScheduleCreateResponse(
+                schedule.getId(),
+                DateTimeUtils.toSeoulDateTime(schedule.getCreatedAt())
+        );
     }
 }
