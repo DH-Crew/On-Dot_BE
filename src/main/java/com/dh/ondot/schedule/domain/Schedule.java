@@ -2,7 +2,7 @@ package com.dh.ondot.schedule.domain;
 
 import com.dh.ondot.core.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
-import com.dh.ondot.schedule.infra.RepeatDaysConverter;
+import com.dh.ondot.schedule.domain.converter.RepeatDaysConverter;
 import jakarta.persistence.*;
 import lombok.*;
 

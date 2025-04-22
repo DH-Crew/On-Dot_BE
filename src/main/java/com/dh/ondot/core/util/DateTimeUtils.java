@@ -15,6 +15,10 @@ public class DateTimeUtils {
         return instant.atZone(DEFAULT_ZONE).toLocalDateTime();
     }
 
+    public static LocalDateTime nowSeoulDateTime() {
+        return LocalDateTime.now(DEFAULT_ZONE);
+    }
+
     public static LocalDate nowSeoulDate() {
         return LocalDate.now(DEFAULT_ZONE);
     }

@@ -1,26 +1,23 @@
 package com.dh.ondot.schedule.api.response;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.domain.PlaceHistory;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record PlaceHistoryResponse(
         String title,
         Double longitude,
         Double latitude,
-        String searchedAt
+        LocalDateTime searchedAt
 ) {
-    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-
     public static PlaceHistoryResponse from(PlaceHistory history) {
         return new PlaceHistoryResponse(
                 history.title(),
                 history.longitude(),
                 history.latitude(),
-                FORMATTER.format(history.searchedAt().atZone(KST).toLocalDateTime())
+                DateTimeUtils.toSeoulDateTime(history.searchedAt())
         );
     }
     public static List<PlaceHistoryResponse> fromList(List<PlaceHistory> list) {

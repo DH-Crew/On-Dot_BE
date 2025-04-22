@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.app.dto;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.domain.Schedule;
 
 import java.time.*;
@@ -20,10 +21,10 @@ public record HomeScheduleListItem(
         return new HomeScheduleListItem(
                 schedule.getId(), schedule.getTitle(), schedule.getIsRepeat(),
                 schedule.getRepeatDays() == null ? List.of() : List.copyOf(schedule.getRepeatDays()),
-                schedule.getAppointmentAt().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime(),
-                schedule.getNextAlarmAt().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime(),
-                schedule.getPreparationAlarm().getTriggeredAt().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime(),
-                schedule.getDepartureAlarm().getTriggeredAt().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime(),
+                DateTimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
+                DateTimeUtils.toSeoulDateTime(schedule.getNextAlarmAt()),
+                DateTimeUtils.toSeoulDateTime(schedule.getPreparationAlarm().getTriggeredAt()),
+                DateTimeUtils.toSeoulDateTime(schedule.getDepartureAlarm().getTriggeredAt()),
                 schedule.getDepartureAlarm().isEnabled()
         );
     }
