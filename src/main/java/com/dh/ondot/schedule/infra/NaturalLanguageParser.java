@@ -1,13 +1,19 @@
 package com.dh.ondot.schedule.infra;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.api.response.ScheduleParsedResponse;
+import com.dh.ondot.schedule.core.exception.OpenAiParsingException;
+import com.dh.ondot.schedule.core.exception.UnavailableOpenAiServerException;
+import com.dh.ondot.schedule.core.exception.UnhandledOpenAiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 @Component
 @RequiredArgsConstructor
@@ -28,16 +34,37 @@ public class NaturalLanguageParser {
         - No 24‑hr notation; don’t roll times into the next day.
         """;
 
+    @Retryable(
+            retryFor = { HttpServerErrorException.class },
+            maxAttempts = 2,
+            backoff = @Backoff(delay = 500)
+    )
     public ScheduleParsedResponse parse(String userText) {
         String systemPrompt = String.format(
                 SYSTEM_TMPL,
-                LocalDate.now(ZoneId.of("Asia/Seoul"))
+                DateTimeUtils.nowSeoulDate()
         );
 
-        return chat.prompt()
-                .system(systemPrompt)
-                .user(userText)
-                .call()
-                .entity(CONVERTER);
+        try {
+            return chat.prompt()
+                    .system(systemPrompt)
+                    .user(userText)
+                    .call()
+                    .entity(CONVERTER);
+        }
+        catch (HttpClientErrorException ex) {
+            throw new OpenAiParsingException();
+        }
+    }
+
+    @Recover
+    public ScheduleParsedResponse recover(HttpServerErrorException ex, String userText) {
+        // 5xx 재시도 모두 실패했을 때
+        throw new UnavailableOpenAiServerException();
+    }
+
+    @Recover
+    public ScheduleParsedResponse recoverUnhandled(Throwable t, String userText) {
+        throw new UnhandledOpenAiException();
     }
 }
