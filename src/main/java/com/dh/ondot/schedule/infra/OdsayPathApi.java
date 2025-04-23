@@ -1,8 +1,10 @@
 package com.dh.ondot.schedule.infra;
 
 import com.dh.ondot.schedule.infra.config.OdsayApiConfig;
+import com.dh.ondot.schedule.infra.dto.OdsayErrorResponse;
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse;
-import com.dh.ondot.schedule.infra.exception.OdsayServerErrorException;
+import com.dh.ondot.schedule.infra.exception.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -28,7 +30,7 @@ public class OdsayPathApi {
             backoff = @Backoff(delay = 500)
     )
     public OdsayRouteApiResponse searchPublicTransportRoute(Double startX, Double startY, Double endX, Double endY) {
-        return restClient.get()
+        String rawBody = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("apiKey", odsayApiConfig.apiKey())
                         .queryParam("SX", startX)
@@ -37,6 +39,37 @@ public class OdsayPathApi {
                         .queryParam("EY", endY)
                         .build())
                 .retrieve()
-                .body(OdsayRouteApiResponse.class);
+                .body(String.class);
+
+        if (rawBody == null || rawBody.isBlank()) {
+            throw new OdsayUnhandledException("ODSay API 응답이 null 또는 비어 있습니다.");
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            if (rawBody.contains("\"error\"")) {
+                OdsayErrorResponse ers = mapper.readValue(rawBody, OdsayErrorResponse.class);
+                OdsayErrorResponse.Error err = ers.error().get(0);
+                throwOdsayExceptionByCode(err.code(), err.message());
+            }
+
+            return mapper.readValue(rawBody, OdsayRouteApiResponse.class);
+        } catch (Exception e) {
+            throw new OdsayUnhandledException(e.getMessage());
+        }
+    }
+
+    private void throwOdsayExceptionByCode(String code, String msg) {
+        switch (code) {
+            case "500" -> throw new OdsayServerErrorException(msg);
+            case "-8" -> throw new OdsayBadInputException(msg);
+            case "-9" -> throw new OdsayMissingParamException(msg);
+            case "3", "4", "5" -> throw new OdsayNoStopException(msg);
+            case "6" -> throw new OdsayServiceAreaException(msg);
+            case "-98" -> throw new OdsayTooCloseException(msg);
+            case "-99" -> throw new OdsayNoResultException(msg);
+            default -> throw new OdsayUnhandledException(msg);
+        }
     }
 }

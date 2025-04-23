@@ -58,7 +58,7 @@ public class ScheduleController implements ScheduleSwagger {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/estimate-time")
     public EstimateTimeResponse estimateTravelTime(
-            @Valid EstimateTimeRequest request
+            @Valid @RequestBody EstimateTimeRequest request
     ) {
         Integer estimatedTime = routeService.calculateRouteTime(
                 request.startLongitude(), request.startLatitude(),
