@@ -63,6 +63,16 @@ public enum ErrorCode {
     OPEN_AI_PARSING_ERROR(BAD_REQUEST, "약속 문장을 이해할 수 없습니다. 형식을 확인 후 다시 시도해주세요."),
     UNAVAILABLE_OPEN_AI_SERVER(BAD_GATEWAY, "일시적으로 Open AI 서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."),
     UNHANDLED_OPEN_AI(INTERNAL_SERVER_ERROR, "Open AI 요청 과정에서 알 수 없는 문제가 발생했습니다. 관리자에게 문의해주세요."),
+
+    // ODsay API
+    ODSAY_BAD_INPUT(BAD_REQUEST, "필수 입력값 형식 및 범위를 확인해주세요: %s"),
+    ODSAY_MISSING_PARAM(BAD_REQUEST, "필수 입력값이 누락되었습니다: %s"),
+    ODSAY_NO_STOP(BAD_REQUEST, "출발지 또는 도착지 정류장을 찾을 수 없습니다: %s"),
+    ODSAY_SERVICE_AREA(BAD_REQUEST, "서비스 지역이 아닙니다: %s"),
+    ODSAY_TOO_CLOSE(BAD_REQUEST, "출발지와 도착지가 너무 가깝습니다: %s"),
+    ODSAY_NO_RESULT(NOT_FOUND, "검색 결과가 없습니다: %s"),
+    ODSAY_SERVER_ERROR(BAD_GATEWAY, "ODSay 서버 내부 오류가 발생했습니다: %s"),
+    ODSAY_UNHANDLED_ERROR(INTERNAL_SERVER_ERROR, "ODSay API 처리 중 알 수 없는 오류가 발생했습니다: %s"),
     ;
 
     public final HttpStatus httpStatus;
