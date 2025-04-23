@@ -17,7 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 @Component
 @RequiredArgsConstructor
-public class NaturalLanguageParser {
+public class OpenAiPromptApi {
     private static final BeanOutputConverter<ScheduleParsedResponse> CONVERTER =
             new BeanOutputConverter<>(ScheduleParsedResponse.class);
 
@@ -39,7 +39,7 @@ public class NaturalLanguageParser {
             maxAttempts = 2,
             backoff = @Backoff(delay = 500)
     )
-    public ScheduleParsedResponse parse(String userText) {
+    public ScheduleParsedResponse parseNaturalLanguage(String userText) {
         String systemPrompt = String.format(
                 SYSTEM_TMPL,
                 DateTimeUtils.nowSeoulDate()
