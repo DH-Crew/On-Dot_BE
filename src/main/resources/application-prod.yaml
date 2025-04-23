@@ -52,8 +52,7 @@ naver:
     client-secret: ${NAVER_CLIENT_SECRET}
 
 odsay:
-  client:
-    api-key: ${ODSAY_CLIENT_API_KEY}
+  api-key: ${ODSAY_CLIENT_API_KEY}
 
 openai:
   api-key: ${OPENAI_API_KEY}
