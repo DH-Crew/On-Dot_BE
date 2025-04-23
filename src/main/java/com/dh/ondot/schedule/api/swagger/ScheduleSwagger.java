@@ -11,9 +11,10 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Tag(
         name = "Schedule API",
@@ -184,7 +185,7 @@ public interface ScheduleSwagger {
                     required = true,
                     description = "파싱할 한국어 문장",
                     content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            mediaType = APPLICATION_JSON_VALUE,
                             schema    = @Schema(implementation = ScheduleParsedRequest.class),
                             examples  = @ExampleObject(name = "예시‑요청", value = """
             {
@@ -198,7 +199,7 @@ public interface ScheduleSwagger {
                             responseCode = "200",
                             description  = "파싱 성공",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(implementation = ScheduleParsedResponse.class),
                                     examples  = @ExampleObject(name="예시‑응답", value = """
                 {
@@ -213,7 +214,7 @@ public interface ScheduleSwagger {
                             responseCode = "400",
                             description  = "AI가 문장을 이해하지 못했거나, 입력 JSON 형식 오류",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
                                     examples  = {
                                             @ExampleObject(name="형식 오류",
@@ -237,7 +238,7 @@ public interface ScheduleSwagger {
                             responseCode = "429",
                             description  = "하루 허용된 AI 사용량(예: 10회) 초과",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
                                     examples  = @ExampleObject(name="호출 제한 초과", value = """
                 {
@@ -252,7 +253,7 @@ public interface ScheduleSwagger {
                             responseCode = "502",
                             description  = "OpenAI 서버(Downstream) 장애",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
                                     examples  = @ExampleObject(name="OpenAI 장애", value = """
                 {
@@ -267,7 +268,7 @@ public interface ScheduleSwagger {
                             responseCode = "500",
                             description  = "OpenAI 처리 과정에서 예기치 못한 오류",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
                                     examples  = @ExampleObject(name="미처리 예외", value = """
                 {
@@ -282,6 +283,157 @@ public interface ScheduleSwagger {
     ScheduleParsedResponse parse(
             @RequestAttribute("memberId") Long memberId,
             @RequestBody ScheduleParsedRequest request
+    );
+
+    @Operation(
+            summary = "경로에 따른 예상 시간 반환",
+            description = """
+            출발지(startLongitude, startLatitude)와 도착지(endLongitude, endLatitude) 간의
+            대중교통 예상 소요 시간을 분 단위로 계산하여 반환합니다.
+            <br/><br/>
+            <b>⚠️ Error Codes</b><br/>
+            • 요청 JSON 문법 오류: <code>INVALID_JSON</code><br/>
+            • 입력 필드 검증 실패: <code>FIELD_ERROR</code><br/>
+            • 좌표 형식·범위 오류: <code>ODSAY_BAD_INPUT</code>, <code>ODSAY_MISSING_PARAM</code><br/>
+            • 정류장 없음: <code>ODSAY_NO_STOP</code><br/>
+            • 서비스 지역 아님: <code>ODSAY_SERVICE_AREA</code><br/>
+            • 지나치게 가까움(700m 이내): <code>ODSAY_TOO_CLOSE</code><br/>
+            • 검색 결과 없음: <code>ODSAY_NO_RESULT</code><br/>
+            • ODsay 서버 내부 오류: <code>ODSAY_SERVER_ERROR</code><br/>
+            • 예기치 못한 ODsay 오류: <code>ODSAY_UNHANDLED_ERROR</code><br/>
+            • 그 외 서버 오류: <code>SERVER_ERROR</code>
+            """,
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required    = true,
+                    description = "출발·도착 좌표를 담은 요청 바디",
+                    content     = @Content(
+                            mediaType = APPLICATION_JSON_VALUE,
+                            schema    = @Schema(implementation = EstimateTimeRequest.class),
+                            examples  = @ExampleObject(
+                                    name  = "예시-요청",
+                                    value = """
+                        {
+                          "startLongitude": 127.070593415212,
+                          "startLatitude": 37.277975571288,
+                          "endLongitude": 126.94569176914,
+                          "endLatitude": 37.5959199688468
+                        }"""
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description  = "예상 소요 시간 계산 성공",
+                            content      = @Content(
+                                    mediaType = APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = EstimateTimeResponse.class),
+                                    examples  = @ExampleObject(
+                                            name  = "예시-응답",
+                                            value = """
+                            {
+                              "estimatedTimeInMinutes": 12
+                            }"""
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description  = "잘못된 요청: JSON 형식 오류, 필드 검증 오류, ODsay 입력값 오류",
+                            content      = @Content(
+                                    mediaType = APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                                    examples  = {
+                                            @ExampleObject(
+                                                    name  = "JSON 형식 오류",
+                                                    value = """
+                                {
+                                  "errorCode": "INVALID_JSON",
+                                  "message":   "잘못된 JSON 형식입니다. 요청 데이터를 확인하세요."
+                                }"""
+                                            ),
+                                            @ExampleObject(
+                                                    name  = "필드 검증 오류",
+                                                    value = """
+                                {
+                                  "errorCode": "FIELD_ERROR",
+                                  "message":   "입력이 잘못되었습니다."
+                                }"""
+                                            ),
+                                            @ExampleObject(
+                                                    name  = "ODSay 입력값 범위 오류",
+                                                    value = """
+                                {
+                                  "errorCode": "ODSAY_BAD_INPUT",
+                                  "message":   "필수 입력값 형식 및 범위를 확인해주세요: SX"
+                                }"""
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description  = "검색 결과 없음",
+                            content      = @Content(
+                                    mediaType = APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                                    examples  = @ExampleObject(
+                                            name  = "검색 결과 없음",
+                                            value = """
+                            {
+                              "errorCode": "ODSAY_NO_RESULT",
+                              "message":   "검색 결과가 없습니다: 출발지→도착지"
+                            }"""
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "502",
+                            description  = "ODSay 서버(업스트림) 장애",
+                            content      = @Content(
+                                    mediaType = APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                                    examples  = @ExampleObject(
+                                            name  = "ODSay 서버 오류",
+                                            value = """
+                            {
+                              "errorCode": "ODSAY_SERVER_ERROR",
+                              "message":   "ODSay 서버 내부 오류가 발생했습니다: timeout"
+                            }"""
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description  = "ODSay 처리 중 예기치 못한 오류 또는 기타 서버 오류",
+                            content      = @Content(
+                                    mediaType = APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                                    examples  = {
+                                            @ExampleObject(
+                                                    name  = "미처리 ODsay 오류",
+                                                    value = """
+                                {
+                                  "errorCode": "ODSAY_UNHANDLED_ERROR",
+                                  "message":   "ODSay API 처리 중 알 수 없는 오류가 발생했습니다: null"
+                                }"""
+                                            ),
+                                            @ExampleObject(
+                                                    name  = "서버 오류",
+                                                    value = """
+                                {
+                                  "errorCode": "SERVER_ERROR",
+                                  "message":   "서버 오류가 발생했습니다. 관리자에게 문의해주세요."
+                                }"""
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
+    @PostMapping(value = "/estimate-time")
+    EstimateTimeResponse estimateTravelTime(
+            @RequestBody EstimateTimeRequest request
     );
 
     /*──────────────────────────────────────────────────────
@@ -302,7 +454,7 @@ public interface ScheduleSwagger {
                             responseCode = "200",
                             description  = "조회 성공",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(implementation = ScheduleDetailResponse.class),
                                     examples  = @ExampleObject(value = """
                     {
@@ -350,7 +502,7 @@ public interface ScheduleSwagger {
                             responseCode = "404",
                             description  = "스케줄 또는 멤버가 존재하지 않습니다.",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(implementation = ErrorResponse.class),
                                     examples  = {
                                             @ExampleObject(
@@ -405,7 +557,7 @@ public interface ScheduleSwagger {
                             responseCode = "200",
                             description  = "조회 성공",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(implementation = HomeScheduleListResponse.class),
                                     examples  = @ExampleObject(value = """
                     {
@@ -432,7 +584,7 @@ public interface ScheduleSwagger {
                             responseCode = "404",
                             description  = "멤버 없음",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(implementation = ErrorResponse.class),
                                     examples  = @ExampleObject(value = """
                     {
@@ -557,7 +709,7 @@ public interface ScheduleSwagger {
                             responseCode = "404",
                             description  = "멤버 또는 스케줄 없음",
                             content      = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    mediaType = APPLICATION_JSON_VALUE,
                                     schema    = @Schema(implementation = ErrorResponse.class),
                                     examples  = {
                                             @ExampleObject(name="ScheduleNotFound", value="""

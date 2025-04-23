@@ -52,11 +52,12 @@ naver:
     client-secret: ${NAVER_CLIENT_SECRET}
 
 odsay:
-  client:
-    api-key: ${ODSAY_CLIENT_API_KEY}
+  base-url: https://api.odsay.com/v1/api/searchPubTransPathT
+  api-key: ${ODSAY_CLIENT_API_KEY}
 
 openai:
   api-key: ${OPENAI_API_KEY}
+  model: gpt-4o
 
 management:
   endpoints:
