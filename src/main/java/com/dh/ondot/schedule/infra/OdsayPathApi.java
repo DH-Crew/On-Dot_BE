@@ -15,13 +15,16 @@ import org.springframework.web.client.RestClient;
 public class OdsayPathApi {
     private final RestClient restClient;
     private final OdsayApiConfig odsayApiConfig;
+    private final ObjectMapper objectMapper;
 
     public OdsayPathApi(
             @Qualifier("odsayRestClient") RestClient restClient,
-            OdsayApiConfig odsayApiConfig
+            OdsayApiConfig odsayApiConfig,
+            ObjectMapper objectMapper
     ) {
         this.restClient = restClient;
         this.odsayApiConfig = odsayApiConfig;
+        this.objectMapper = objectMapper;
     }
 
     @Retryable(
@@ -46,15 +49,14 @@ public class OdsayPathApi {
         }
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
-
-            if (rawBody.contains("\"error\"")) {
-                OdsayErrorResponse ers = mapper.readValue(rawBody, OdsayErrorResponse.class);
+            try {
+                return objectMapper.readValue(rawBody, OdsayRouteApiResponse.class);
+            } catch (Exception e) {
+                OdsayErrorResponse ers = objectMapper.readValue(rawBody, OdsayErrorResponse.class);
                 OdsayErrorResponse.Error err = ers.error().get(0);
                 throwOdsayExceptionByCode(err.code(), err.message());
             }
-
-            return mapper.readValue(rawBody, OdsayRouteApiResponse.class);
+            throw new OdsayUnhandledException("알 수 없는 응답 형식: " + rawBody);
         } catch (Exception e) {
             throw new OdsayUnhandledException(e.getMessage());
         }

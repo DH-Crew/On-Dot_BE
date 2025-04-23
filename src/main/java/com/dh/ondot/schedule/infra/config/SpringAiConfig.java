@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Configuration;
 public class SpringAiConfig {
     @Bean
     ChatClient chatClient(
-            @Value("${openai.api-key}") String apiKey
+            @Value("${openai.api-key}") String apiKey,
+            @Value("${openai.model}") String model
     ) {
         OpenAiApi openAiApi = OpenAiApi.builder()
                 .apiKey(apiKey)
@@ -22,7 +23,7 @@ public class SpringAiConfig {
         ChatModel chatModel = OpenAiChatModel.builder()
                 .openAiApi(openAiApi)
                 .defaultOptions(OpenAiChatOptions.builder()
-                        .model("gpt-4o")
+                        .model(model)
                         .build())
                 .build();
 
