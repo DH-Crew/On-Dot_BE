@@ -52,6 +52,7 @@ naver:
     client-secret: ${NAVER_CLIENT_SECRET}
 
 odsay:
+  base-url: https://api.odsay.com/v1/api/searchPubTransPathT
   api-key: ${ODSAY_CLIENT_API_KEY}
 
 openai:
