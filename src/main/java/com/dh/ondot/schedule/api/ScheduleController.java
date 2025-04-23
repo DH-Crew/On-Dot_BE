@@ -8,6 +8,7 @@ import com.dh.ondot.schedule.app.ScheduleCommandFacade;
 import com.dh.ondot.schedule.app.ScheduleQueryFacade;
 import com.dh.ondot.schedule.app.dto.UpdateScheduleResult;
 import com.dh.ondot.schedule.domain.Schedule;
+import com.dh.ondot.schedule.domain.service.RouteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ public class ScheduleController implements ScheduleSwagger {
     private final ScheduleQueryFacade scheduleQueryFacade;
     private final ScheduleCommandFacade scheduleCommandFacade;
     private final ParseFacade parseFacade;
+    private final RouteService routeService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -51,6 +53,19 @@ public class ScheduleController implements ScheduleSwagger {
             @Valid @RequestBody ScheduleParsedRequest request
     ) {
         return parseFacade.parse(memberId, request.text());
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/estimate-time")
+    public EstimateTimeResponse estimateTravelTime(
+            @Valid EstimateTimeRequest request
+    ) {
+        Integer estimatedTime = routeService.calculateRouteTime(
+                request.startLongitude(), request.startLatitude(),
+                request.endLongitude(), request.endLatitude()
+        );
+
+        return EstimateTimeResponse.from(estimatedTime);
     }
 
     @ResponseStatus(HttpStatus.OK)

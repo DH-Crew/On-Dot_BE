@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "odsay")
 public record OdsayApiConfig(
+        String baseUrl,
         String apiKey
 ) {
 }
