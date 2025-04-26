@@ -44,7 +44,7 @@ public record ScheduleCreateRequest(
 
             @NotBlank String ringTone,
 
-            @NotNull @Min(1) @Max(10) Integer volume
+            @NotNull @Min(0) @Max(1) Double volume
     ) {}
 
     public record DepartureAlarmDto(
@@ -62,6 +62,6 @@ public record ScheduleCreateRequest(
 
             @NotBlank String ringTone,
 
-            @NotNull @Min(1) @Max(10) Integer volume
+            @NotNull @Min(0) @Max(1) Double volume
     ) {}
 }

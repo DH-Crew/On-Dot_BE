@@ -18,7 +18,7 @@ public record OnboardingRequest(
 
         @NotBlank String ringTone,
 
-        @NotNull @Min(1) @Max(10) int volume,
+        @NotNull @Min(0) @Max(1) double volume,
 
         @NotNull @Size(min = 1) @Valid
         List<@Valid QuestionDto> questions

@@ -45,7 +45,7 @@ public class Alarm extends BaseTimeEntity {
 
     public static Alarm createPreparationAlarm(String alarmMode, boolean isEnabled, LocalDateTime triggeredAt,
                                                boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
-                                               String soundCategory, String ringTone, Integer volume) {
+                                               String soundCategory, String ringTone, Double volume) {
         return Alarm.builder()
                 .mode(AlarmMode.from(alarmMode))
                 .isEnabled(isEnabled)
@@ -58,7 +58,7 @@ public class Alarm extends BaseTimeEntity {
 
     public static Alarm createDepartureAlarm(String alarmMode, LocalDateTime triggeredAt,
                                              boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
-                                             String soundCategory, String ringTone, Integer volume) {
+                                             String soundCategory, String ringTone, Double volume) {
         return Alarm.builder()
                 .mode(AlarmMode.from(alarmMode))
                 .isEnabled(true)
@@ -71,7 +71,7 @@ public class Alarm extends BaseTimeEntity {
     public void updatePreparation(String alarmMode, boolean isEnabled,
                                   LocalDateTime triggeredAt,
                                   boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
-                                  String soundCategory, String ringTone, Integer volume
+                                  String soundCategory, String ringTone, Double volume
     ) {
         this.mode          = AlarmMode.from(alarmMode);
         this.isEnabled     = isEnabled;
@@ -83,7 +83,7 @@ public class Alarm extends BaseTimeEntity {
 
     public void updateDeparture(String alarmMode, boolean isSnoozeEnabled,
                                 Integer snoozeInterval, Integer snoozeCount,
-                                String soundCategory, String ringTone, Integer volume
+                                String soundCategory, String ringTone, Double volume
     ) {
         this.mode        = AlarmMode.from(alarmMode);
         this.snooze      = Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount);
