@@ -4,6 +4,7 @@ import com.dh.ondot.core.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
 import com.dh.ondot.member.domain.enums.MapProvider;
 import com.dh.ondot.member.domain.enums.OauthProvider;
+import com.dh.ondot.schedule.domain.vo.Snooze;
 import com.dh.ondot.schedule.domain.vo.Sound;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,6 +42,14 @@ public class Member extends BaseTimeEntity {
 
     @Embedded
     @AttributeOverrides({
+            @AttributeOverride(name = "isSnoozeEnabled", column = @Column(name = "default_is_snooze_enabled")),
+            @AttributeOverride(name = "snoozeInterval", column = @Column(name = "default_snooze_interval")),
+            @AttributeOverride(name = "snoozeCount", column = @Column(name = "default_snooze_count"))
+    })
+    private Snooze snooze;
+
+    @Embedded
+    @AttributeOverrides({
             @AttributeOverride(name = "soundCategory", column = @Column(name = "default_sound_category")),
             @AttributeOverride(name = "ringTone", column = @Column(name = "default_ring_tone")),
             @AttributeOverride(name = "volume", column = @Column(name = "default_volume"))
@@ -58,8 +67,13 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
-    public void updateOnboarding(Integer preparationTime, String soundCategory, String ringTone, Integer volume) {
+    public void updateOnboarding(
+            Integer preparationTime,
+            boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
+            String soundCategory, String ringTone, Double volume
+    ) {
         this.preparationTime = preparationTime;
+        this.snooze = Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount);
         this.sound = Sound.of(soundCategory, ringTone, volume);
     }
 
