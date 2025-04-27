@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.domain;
 
 import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
 import com.dh.ondot.schedule.domain.vo.Snooze;
 import com.dh.ondot.schedule.domain.vo.Sound;
@@ -68,6 +69,32 @@ public class Alarm extends BaseTimeEntity {
                 .build();
     }
 
+    public static Alarm createPreparationAlarmWithDefaultSetting(
+            AlarmMode alarmMode, Snooze snooze, Sound sound,
+            LocalDateTime appointmentAt, Integer estimatedTime, Integer preparationTime
+    ) {
+        return Alarm.builder()
+                .mode(alarmMode)
+                .isEnabled(true)
+                .triggeredAt(DateTimeUtils.toInstant(appointmentAt.minusMinutes(estimatedTime + preparationTime)))
+                .snooze(snooze)
+                .sound(sound)
+                .build();
+    }
+
+    public static Alarm createDepartureAlarmWithDefaultSetting(
+            AlarmMode alarmMode, Snooze snooze, Sound sound,
+            LocalDateTime appointmentAt, Integer estimatedTime
+    ) {
+        return Alarm.builder()
+                .mode(alarmMode)
+                .isEnabled(true)
+                .triggeredAt(DateTimeUtils.toInstant(appointmentAt.minusMinutes(estimatedTime)))
+                .snooze(snooze)
+                .sound(sound)
+                .build();
+    }
+
     public void updatePreparation(String alarmMode, boolean isEnabled,
                                   LocalDateTime triggeredAt,
                                   boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
@@ -88,6 +115,10 @@ public class Alarm extends BaseTimeEntity {
         this.mode        = AlarmMode.from(alarmMode);
         this.snooze      = Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount);
         this.sound       = Sound.of(soundCategory, ringTone, volume);
+    }
+
+    public void updateTriggeredAt(LocalDateTime triggeredAt) {
+        this.triggeredAt = DateTimeUtils.toInstant(triggeredAt);
     }
 
     public void changeEnabled(boolean enabled) {

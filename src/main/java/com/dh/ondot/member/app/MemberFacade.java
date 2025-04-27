@@ -36,7 +36,7 @@ public class MemberFacade {
     public Member onboarding(Long memberId, OnboardingRequest request) {
         Member member = memberService.findExistingMember(memberId);
         member.updateOnboarding(
-                request.preparationTime(),
+                request.preparationTime(), request.alarmMode(),
                 request.isSnoozeEnabled(), request.snoozeInterval(), request.snoozeCount(),
                 request.soundCategory(), request.ringTone(), request.volume()
         );
