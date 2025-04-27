@@ -204,7 +204,7 @@ public interface ScheduleSwagger {
                                     examples  = @ExampleObject(name="예시‑응답", value = """
                 {
                   "departurePlaceTitle": "강남역",
-                  "appointmentAt":      "2025-04-16T18:00:00"
+                  "appointmentAt": "2025-04-16T18:00:00"
                 }""")
                             )
                     ),
