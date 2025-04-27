@@ -14,7 +14,7 @@ public record AlarmDto(
         Integer snoozeCount,
         String soundCategory,
         String ringTone,
-        Integer volume
+        Double volume
 ) {
     public static AlarmDto of(Alarm alarm) {
         return new AlarmDto(

@@ -1,4 +1,4 @@
-language: ko-KR
+language: "en-US"
 
 enable_free_tier: true
 reviews:

@@ -3,6 +3,9 @@ package com.dh.ondot.schedule.domain;
 import com.dh.ondot.core.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
 import com.dh.ondot.schedule.domain.converter.RepeatDaysConverter;
+import com.dh.ondot.schedule.domain.enums.AlarmMode;
+import com.dh.ondot.schedule.domain.vo.Snooze;
+import com.dh.ondot.schedule.domain.vo.Sound;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -57,9 +60,10 @@ public class Schedule extends BaseTimeEntity {
     @Column(name = "next_alarm_at")
     private Instant nextAlarmAt;
 
-    public static Schedule createSchedule(Long memberId, Place departurePlace, Place arrivalPlace,
-                                          Alarm preparationAlarm, Alarm departureAlarm, String title,
-                                          Boolean isRepeat, SortedSet<Integer> repeatDays, LocalDateTime appointmentAt
+    public static Schedule createSchedule(
+            Long memberId, Place departurePlace, Place arrivalPlace,
+            Alarm preparationAlarm, Alarm departureAlarm, String title,
+            Boolean isRepeat, SortedSet<Integer> repeatDays, LocalDateTime appointmentAt
     ) {
         Schedule schedule = Schedule.builder()
                 .memberId(memberId)
@@ -75,6 +79,24 @@ public class Schedule extends BaseTimeEntity {
 
         schedule.updateNextAlarmAt();
         return schedule;
+    }
+
+    public static Schedule createWithDefaultAlarmSetting(
+            AlarmMode alarmMode, Snooze snooze, Sound sound,
+            LocalDateTime appointmentAt, Integer estimatedTime, Integer preparationTime
+    ) {
+        return Schedule.builder()
+                .preparationAlarm(
+                        Alarm.createPreparationAlarmWithDefaultSetting(
+                                alarmMode, snooze, sound,
+                                appointmentAt, estimatedTime, preparationTime))
+                .departureAlarm(
+                        Alarm.createDepartureAlarmWithDefaultSetting(
+                                alarmMode, snooze, sound,
+                                appointmentAt, estimatedTime
+                        )
+                )
+                .build();
     }
 
     public void updateCore(String title, boolean isRepeat,

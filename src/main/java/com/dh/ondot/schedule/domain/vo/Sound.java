@@ -25,9 +25,9 @@ public class Sound {
     private RingTone ringTone;
 
     @Column(name = "volume", nullable = false)
-    private Integer volume;
+    private Double volume;
 
-    public static Sound of(String soundCategory, String ringTone, Integer volume) {
+    public static Sound of(String soundCategory, String ringTone, Double volume) {
         return new Sound(SoundCategory.from(soundCategory), RingTone.from(ringTone), volume);
     }
 }

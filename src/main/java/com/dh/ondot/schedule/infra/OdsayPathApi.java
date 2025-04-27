@@ -49,14 +49,21 @@ public class OdsayPathApi {
         }
 
         try {
-            try {
-                return objectMapper.readValue(rawBody, OdsayRouteApiResponse.class);
-            } catch (Exception e) {
-                OdsayErrorResponse ers = objectMapper.readValue(rawBody, OdsayErrorResponse.class);
-                OdsayErrorResponse.Error err = ers.error().get(0);
-                throwOdsayExceptionByCode(err.code(), err.message());
+            if (rawBody.contains("\"error\"")) {
+                OdsayErrorResponse errRes = objectMapper.readValue(rawBody, OdsayErrorResponse.class);
+                OdsayErrorResponse.Error err = errRes.error().get(0);
+                throwOdsayExceptionByCode(err.code(), err.message());   // ← 여기서 예외 발생
             }
-            throw new OdsayUnhandledException("알 수 없는 응답 형식: " + rawBody);
+
+            OdsayRouteApiResponse routeRes = objectMapper.readValue(rawBody, OdsayRouteApiResponse.class);
+
+            if (routeRes.result() == null || routeRes.result().path() == null) {
+                throw new OdsayServerErrorException("ODSay API 결과가 비어 있습니다.");
+            }
+
+            return routeRes;
+        } catch (OdsayServerErrorException ex) {
+            throw ex;
         } catch (Exception e) {
             throw new OdsayUnhandledException(e.getMessage());
         }

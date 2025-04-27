@@ -35,7 +35,11 @@ public class MemberFacade {
     @Transactional
     public Member onboarding(Long memberId, OnboardingRequest request) {
         Member member = memberService.findExistingMember(memberId);
-        member.updateOnboarding(request.preparationTime(), request.soundCategory(), request.ringTone(), request.volume());
+        member.updateOnboarding(
+                request.preparationTime(), request.alarmMode(),
+                request.isSnoozeEnabled(), request.snoozeInterval(), request.snoozeCount(),
+                request.soundCategory(), request.ringTone(), request.volume()
+        );
 
         Address address = Address.createByOnboarding(member, request.roadAddress(), request.longitude(), request.latitude());
         addressRepository.save(address);

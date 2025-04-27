@@ -14,11 +14,19 @@ public record OnboardingRequest(
 
         @NotNull @DecimalMin("-90.0") @DecimalMax("90.0") double latitude,
 
+        @NotBlank String alarmMode,
+
+        @NotNull Boolean isSnoozeEnabled,
+
+        @NotNull @Min(1) @Max(60) Integer snoozeInterval,
+
+        @NotNull @Min(-1) @Max(10) Integer snoozeCount,
+
         @NotBlank String soundCategory,
 
         @NotBlank String ringTone,
 
-        @NotNull @Min(1) @Max(10) int volume,
+        @NotNull @Min(0) @Max(1) double volume,
 
         @NotNull @Size(min = 1) @Valid
         List<@Valid QuestionDto> questions

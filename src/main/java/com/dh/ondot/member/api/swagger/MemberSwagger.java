@@ -83,6 +83,15 @@ public interface MemberSwagger {
      *──────────────────────────────────────────────────────*/
     @Operation(
             summary = "온보딩(첫 설정) 완료",
+            description = """
+            사용자 온보딩을 완료합니다. <br>
+            <b>🔔 Alarm ENUM</b><br>
+            • <code>AlarmMode</code>: SILENT, VIBRATE, SOUND<br>
+            • <code>SnoozeInterval</code>: 1, 3, 5, 10, 30, 60 (분)<br>
+            • <code>SnoozeCount</code>: -1(INFINITE), 1, 3, 5, 10 (회)<br>
+            • <code>SoundCategory</code>: <i>DEFAULT …</i><br>
+            • <code>RingTone</code>: <i>DEFAULT …</i>
+            """,
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(schema = @Schema(implementation = OnboardingRequest.class),
@@ -93,9 +102,13 @@ public interface MemberSwagger {
                       "roadAddress": "서울특별시 강남구 테헤란로 123",
                       "longitude": 127.0276,
                       "latitude": 37.4979,
+                      "alarmMode": "VIBRATE",
+                      "isSnoozeEnabled": true,
+                      "snoozeInterval": 5,
+                      "snoozeCount": 3,
                       "soundCategory": "BIRD",
                       "ringTone": "morning.mp3",
-                      "volume": 7,
+                      "volume": 0.1,
                       "questions": [
                         { "questionId": 1, "answerId": 3 },
                         { "questionId": 2, "answerId": 5 }

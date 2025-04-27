@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.api;
 
-import com.dh.ondot.schedule.api.response.LatestAlarmResponse;
+import com.dh.ondot.schedule.api.request.SetAlarmRequest;
+import com.dh.ondot.schedule.api.response.SettingAlarmResponse;
 import com.dh.ondot.schedule.api.swagger.AlarmSwagger;
 import com.dh.ondot.schedule.app.AlarmFacade;
 import com.dh.ondot.schedule.domain.Schedule;
@@ -15,13 +16,18 @@ public class AlarmController implements AlarmSwagger {
     private final AlarmFacade alarmFacade;
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/latest")
-    public LatestAlarmResponse getLatestAlarms(
-            @RequestAttribute("memberId") Long memberId
+    @PostMapping("/setting")
+    public SettingAlarmResponse setAlarm(
+            @RequestAttribute("memberId") Long memberId,
+            @RequestBody SetAlarmRequest request
     ) {
-        Schedule schedule = alarmFacade.getLatestAlarms(memberId);
+        Schedule schedule = alarmFacade.generateAlarmSettingByRoute(
+                memberId, request.appointmentAt(),
+                request.startLongitude(), request.startLatitude(),
+                request.endLongitude(), request.endLatitude()
+        );
 
-        return LatestAlarmResponse.from(
+        return SettingAlarmResponse.from(
                 schedule.getPreparationAlarm(),
                 schedule.getDepartureAlarm()
         );
