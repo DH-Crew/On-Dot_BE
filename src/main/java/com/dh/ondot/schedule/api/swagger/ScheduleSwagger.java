@@ -31,8 +31,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
         • <code>AlarmMode</code>: SILENT, VIBRATE, SOUND<br>
         • <code>SnoozeInterval</code>: 1, 3, 5, 10, 30, 60 (분)<br>
         • <code>SnoozeCount</code>: -1(INFINITE), 1, 3, 5, 10 (회)<br>
-        • <code>SoundCategory</code>: <i>DEFAULT …</i><br>
-        • <code>RingTone</code>: <i>DEFAULT …</i>
+        • <code>SoundCategory</code>: <i>BRIGHT_ENERGY, FAST_INTENSE</i><br>
+        • <code>RingTone</code>: <i>
+          DANCING_IN_THE_STARDUST, IN_THE_CITY_LIGHTS_MIST, FRACTURED_LOVE,<br>
+          CHASING_LIGHTS, ASHES_OF_US, HEATING_SUN, NO_COPYRIGHT_MUSIC,<br>
+          MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY,<br>
+          ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER
+        </i>
         """
 )
 @RequestMapping("/schedules")
@@ -80,9 +85,9 @@ public interface ScheduleSwagger {
                         "isSnoozeEnabled": true,
                         "snoozeInterval": 5,
                         "snoozeCount": 3,
-                        "soundCategory": "DEFAULT",
-                        "ringTone": "DEFAULT",
-                        "volume": 7
+                        "soundCategory": "BRIGHT_ENERGY",
+                        "ringTone": "FRACTURED_LOVE",
+                        "volume": 0.2
                       },
                       "departureAlarm": {
                         "alarmMode": "SOUND",
@@ -90,9 +95,9 @@ public interface ScheduleSwagger {
                         "isSnoozeEnabled": false,
                         "snoozeInterval": 1,
                         "snoozeCount": -1,
-                        "soundCategory": "DEFAULT",
-                        "ringTone": "DEFAULT",
-                        "volume": 8
+                        "soundCategory": "BRIGHT_ENERGY",
+                        "ringTone": "FRACTURED_LOVE",
+                        "volume": 0.2
                       }
                     }"""
                             )
@@ -481,9 +486,9 @@ public interface ScheduleSwagger {
                         "isSnoozeEnabled": true,
                         "snoozeInterval": 5,
                         "snoozeCount": 3,
-                        "soundCategory": "DEFAULT",
-                        "ringTone": "DEFAULT",
-                        "volume": 7
+                        "soundCategory": "BRIGHT_ENERGY",
+                        "ringTone": "FRACTURED_LOVE",
+                        "volume": 0.2
                       },
                       "departureAlarm": {
                         "alarmMode": "SOUND",
@@ -491,9 +496,9 @@ public interface ScheduleSwagger {
                         "isSnoozeEnabled": false,
                         "snoozeInterval": 1,
                         "snoozeCount": -1,
-                        "soundCategory": "DEFAULT",
-                        "ringTone": "DEFAULT",
-                        "volume": 8
+                        "soundCategory": "BRIGHT_ENERGY",
+                        "ringTone": "FRACTURED_LOVE",
+                        "volume": 0.2
                       }
                     }""")
                             )
@@ -644,9 +649,9 @@ public interface ScheduleSwagger {
                         "isSnoozeEnabled": true,
                         "snoozeInterval": 5,
                         "snoozeCount": 3,
-                        "soundCategory": "DEFAULT",
-                        "ringTone": "DEFAULT",
-                        "volume": 7
+                        "soundCategory": "BRIGHT_ENERGY",
+                        "ringTone": "FRACTURED_LOVE",
+                        "volume": 0.2
                       },
                       "departureAlarm": {
                         "alarmMode": "SOUND",
@@ -654,9 +659,9 @@ public interface ScheduleSwagger {
                         "isSnoozeEnabled": false,
                         "snoozeInterval": 1,
                         "snoozeCount": -1,
-                        "soundCategory": "DEFAULT",
-                        "ringTone": "DEFAULT",
-                        "volume": 8
+                        "soundCategory": "BRIGHT_ENERGY",
+                        "ringTone": "FRACTURED_LOVE",
+                        "volume": 0.2
                       }
                     }"""
                             )

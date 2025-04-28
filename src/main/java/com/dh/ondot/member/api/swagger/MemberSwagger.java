@@ -89,8 +89,12 @@ public interface MemberSwagger {
             • <code>AlarmMode</code>: SILENT, VIBRATE, SOUND<br>
             • <code>SnoozeInterval</code>: 1, 3, 5, 10, 30, 60 (분)<br>
             • <code>SnoozeCount</code>: -1(INFINITE), 1, 3, 5, 10 (회)<br>
-            • <code>SoundCategory</code>: <i>DEFAULT …</i><br>
-            • <code>RingTone</code>: <i>DEFAULT …</i>
+            • <code>SoundCategory</code>: <i>BRIGHT_ENERGY, FAST_INTENSE</i><br>
+            • <code>RingTone</code>: <i>
+              DANCING_IN_THE_STARDUST, IN_THE_CITY_LIGHTS_MIST, FRACTURED_LOVE,<br>
+              CHASING_LIGHTS, ASHES_OF_US, HEATING_SUN, NO_COPYRIGHT_MUSIC,<br>
+              MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY,<br>
+              ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER
             """,
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
@@ -106,9 +110,9 @@ public interface MemberSwagger {
                       "isSnoozeEnabled": true,
                       "snoozeInterval": 5,
                       "snoozeCount": 3,
-                      "soundCategory": "BIRD",
-                      "ringTone": "morning.mp3",
-                      "volume": 0.1,
+                      "soundCategory": "BRIGHT_ENERGY",
+                      "ringTone": "FRACTURED_LOVE",
+                      "volume": 0.2
                       "questions": [
                         { "questionId": 1, "answerId": 3 },
                         { "questionId": 2, "answerId": 5 }
