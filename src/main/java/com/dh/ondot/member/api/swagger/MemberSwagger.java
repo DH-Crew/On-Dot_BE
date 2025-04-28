@@ -112,7 +112,7 @@ public interface MemberSwagger {
                       "snoozeCount": 3,
                       "soundCategory": "BRIGHT_ENERGY",
                       "ringTone": "FRACTURED_LOVE",
-                      "volume": 0.2
+                      "volume": 0.2,
                       "questions": [
                         { "questionId": 1, "answerId": 3 },
                         { "questionId": 2, "answerId": 5 }
