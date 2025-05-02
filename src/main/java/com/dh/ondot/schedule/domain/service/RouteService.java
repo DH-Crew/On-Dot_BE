@@ -5,7 +5,6 @@ import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,6 +26,8 @@ public class RouteService {
                 .average()
                 .orElse(0);
 
-        return (int) Math.round(avg);
+        double adjustedAvg = avg * 1.2;
+
+        return (int) Math.round(adjustedAvg);
     }
 }
