@@ -7,7 +7,7 @@ import java.util.List;
 
 public record HomeScheduleListResponse(
         boolean isOnboardingCompleted,
-        LocalDateTime earliestAlarmTime,
+        LocalDateTime earliestAlarmAt,
         List<HomeScheduleListItem> scheduleList,
         boolean hasNext
 ) {
