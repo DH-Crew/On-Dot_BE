@@ -50,8 +50,8 @@ public class AlarmFacade {
 
     private Schedule copySchedule(Schedule original) {
         return Schedule.builder()
-                .preparationAlarm(original.getPreparationAlarm())
-                .departureAlarm(original.getDepartureAlarm())
+                .preparationAlarm(original.getPreparationAlarm().copy())
+                .departureAlarm(original.getDepartureAlarm().copy())
                 .build();
     }
 }
