@@ -3,6 +3,7 @@ package com.dh.ondot.member.api.swagger;
 import com.dh.ondot.member.api.request.OnboardingRequest;
 import com.dh.ondot.member.api.request.UpdateHomeAddressRequest;
 import com.dh.ondot.member.api.request.UpdateMapProviderRequest;
+import com.dh.ondot.member.api.request.WithdrawalRequest;
 import com.dh.ondot.member.api.response.*;
 import com.dh.ondot.core.domain.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /*──────────────────────────────────────────────────────────────
@@ -33,7 +35,56 @@ import org.springframework.web.bind.annotation.*;
 public interface MemberSwagger {
 
     /*──────────────────────────────────────────────────────
-     * 1. HOME 주소 조회
+     * 회원 탈퇴
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+            summary = "회원 탈퇴",
+            description = """
+            회원 탈퇴 요청을 처리합니다. 탈퇴 사유 ID는 필수이며, 기타 사유는 300자 이내로 입력할 수 있습니다.
+        
+            사유 목록(withdrawalReasonId):
+            - ID 1: 지각 방지에 효과를 못 느꼈어요.
+            - ID 2: 일정 등록이나 사용이 번거로웠어요.
+            - ID 3: 알림이 너무 많거나 타이밍이 맞지 않았어요.
+            - ID 4: 제 생활에 딱히 쓸 일이 없었어요.
+            - ID 5: 기타
+            """,
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "탈퇴 요청 정보",
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = WithdrawalRequest.class),
+                            examples = @ExampleObject(value = """
+            {
+              "withdrawalReasonId": 5,
+              "customReason": "서비스가 기대에 미치지 못했어요."
+            }
+            """)
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "탈퇴 완료"),
+                    @ApiResponse(responseCode = "404",
+                            description = "NOT_FOUND_MEMBER",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                                    examples = @ExampleObject(
+                                            value = """
+                        {
+                          "errorCode": "NOT_FOUND_MEMBER",
+                          "message": "회원을 찾을 수 없습니다. MemberId : 42"
+                        }"""
+                                    )))
+            }
+    )
+    @PostMapping("/deactivate")
+    void deactivateMember(
+            @RequestAttribute("memberId") Long memberId,
+            WithdrawalRequest request
+    );
+
+    /*──────────────────────────────────────────────────────
+     * HOME 주소 조회
      *──────────────────────────────────────────────────────*/
     @Operation(
             summary = "회원 HOME 주소 조회",
@@ -79,7 +130,7 @@ public interface MemberSwagger {
     HomeAddressResponse getHomeAddress(@RequestAttribute("memberId") Long memberId);
 
     /*──────────────────────────────────────────────────────
-     * 2. 온보딩 완료
+     * 온보딩 완료
      *──────────────────────────────────────────────────────*/
     @Operation(
             summary = "온보딩(첫 설정) 완료",
@@ -177,7 +228,7 @@ public interface MemberSwagger {
                                   @RequestBody OnboardingRequest request);
 
     /*──────────────────────────────────────────────────────
-     * 3. MapProvider 변경
+     * MapProvider 변경
      *──────────────────────────────────────────────────────*/
     @Operation(
             summary = "지도 공급자(MapProvider) 변경",
@@ -225,7 +276,7 @@ public interface MemberSwagger {
                                                 @RequestBody UpdateMapProviderRequest request);
 
     /*──────────────────────────────────────────────────────
-     * 4. HOME 주소 수정
+     * HOME 주소 수정
      *──────────────────────────────────────────────────────*/
     @Operation(
             summary = "HOME 주소 수정",
@@ -269,26 +320,4 @@ public interface MemberSwagger {
     @PatchMapping("/home-address")
     UpdateHomeAddressResponse updateHomeAddress(@RequestAttribute("memberId") Long memberId,
                                                 @RequestBody UpdateHomeAddressRequest request);
-
-    /*──────────────────────────────────────────────────────
-     * 5. 회원 탈퇴
-     *──────────────────────────────────────────────────────*/
-    @Operation(
-            summary = "회원 탈퇴",
-            responses = {
-                    @ApiResponse(responseCode = "204", description = "탈퇴 완료"),
-                    @ApiResponse(responseCode = "404",
-                            description = "NOT_FOUND_MEMBER",
-                            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(
-                                            value = """
-                        {
-                          "errorCode": "NOT_FOUND_MEMBER",
-                          "message": "회원을 찾을 수 없습니다. MemberId : 42"
-                        }"""
-                                    )))
-            }
-    )
-    @DeleteMapping
-    void deleteMember(@RequestAttribute("memberId") Long memberId);
 }
