@@ -29,7 +29,7 @@ public class MemberFacade {
     @Transactional
     public void deactivateMember(Long memberId, Long withdrawalReasonId, String customReason) {
         Member member = memberService.findExistingMember(memberId);
-        withdrawalService.withdrawMember(memberId, withdrawalReasonId, customReason);
+        withdrawalService.saveWithdrawalReason(memberId, withdrawalReasonId, customReason);
         member.deactivate();
     }
 

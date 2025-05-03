@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class WithdrawalService {
     private final MemberWithdrawalRepository withdrawalRepository;
 
-    public void withdrawMember(Long memberId, Long withdrawalReasonId, String customReason) {
+    public void saveWithdrawalReason(Long memberId, Long withdrawalReasonId, String customReason) {
         MemberWithdrawal withdrawal = MemberWithdrawal.create(
                 memberId,
                 withdrawalReasonId,
