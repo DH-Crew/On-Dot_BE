@@ -35,7 +35,7 @@ public class AlarmFacade {
                 .findFirstByMemberIdOrderByUpdatedAtDesc(memberId);
 
         if (schedule.isPresent()) {
-            Schedule latestSchedule = schedule.get();
+            Schedule latestSchedule = copySchedule(schedule.get());
             latestSchedule.getPreparationAlarm().updateTriggeredAt(appointmentAt.minusMinutes(estimatedTime + member.getPreparationTime()));
             latestSchedule.getDepartureAlarm().updateTriggeredAt(appointmentAt.minusMinutes(estimatedTime));
 
@@ -46,5 +46,12 @@ public class AlarmFacade {
                     appointmentAt, estimatedTime, member.getPreparationTime()
             );
         }
+    }
+
+    private Schedule copySchedule(Schedule original) {
+        return Schedule.builder()
+                .preparationAlarm(original.getPreparationAlarm())
+                .departureAlarm(original.getDepartureAlarm())
+                .build();
     }
 }
