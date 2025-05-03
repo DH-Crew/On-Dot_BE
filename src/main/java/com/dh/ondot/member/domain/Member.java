@@ -45,7 +45,7 @@ public class Member extends BaseTimeEntity {
     private Integer preparationTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "default_alarm_mode", nullable = false)
+    @Column(name = "default_alarm_mode")
     private AlarmMode defaultAlarmMode;
 
     @Embedded
