@@ -12,22 +12,45 @@ import java.util.List;
 public class RouteService {
     private final OdsayPathApi odayPathApi;
 
-    public int calculateRouteTime(Double startX, Double startY, Double endX, Double endY) {
-        OdsayRouteApiResponse response = odayPathApi.searchPublicTransportRoute(startX, startY, endX, endY);
+    public int calculateRouteTime(Double startX, Double startY,
+                                  Double endX,   Double endY) {
 
-        List<Integer> topTimes = response.result()
+        OdsayRouteApiResponse res =
+                odayPathApi.searchPublicTransportRoute(startX, startY, endX, endY);
+
+        // Adjust total time for each path
+        List<Double> adjustedTimes = res.result()
                 .path().stream()
-                .map(p -> p.info().totalTime())
+                .map(path -> {
+
+                    double adjusted = path.info().totalTime();  // base time
+
+                    // Transfer adjustment
+                    long publicLegs = path.subPath().stream()
+                            .filter(sp -> sp.trafficType() == 1 || sp.trafficType() == 2)
+                            .count();
+                    long transferCnt = Math.max(0, publicLegs - 1);
+                    adjusted += transferCnt * 6.5;
+
+                    // Long walking adjustment
+                    long longWalks = path.subPath().stream()
+                            .filter(sp -> sp.trafficType() == 3 && sp.distance() > 800)
+                            .count();
+                    adjusted += longWalks * 4.0;
+
+                    return adjusted;
+                })
+                .sorted()
                 .limit(3)
                 .toList();
 
-        double avg = topTimes.stream()
-                .mapToInt(Integer::intValue)
+        // Calculate average of top 3 paths
+        double avg = adjustedTimes.stream()
+                .mapToDouble(Double::doubleValue)
                 .average()
                 .orElse(0);
 
-        double adjustedAvg = avg * 1.2;
-
-        return (int) Math.round(adjustedAvg);
+        // Add buffer and round
+        return (int) Math.round(avg + 10);
     }
 }

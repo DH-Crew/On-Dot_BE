@@ -2,6 +2,7 @@ package com.dh.ondot.member.domain;
 
 import com.dh.ondot.core.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.member.domain.enums.MapProvider;
 import com.dh.ondot.member.domain.enums.OauthProvider;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
@@ -9,6 +10,8 @@ import com.dh.ondot.schedule.domain.vo.Snooze;
 import com.dh.ondot.schedule.domain.vo.Sound;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.Instant;
 
 @AggregateRoot
 @Entity
@@ -42,7 +45,7 @@ public class Member extends BaseTimeEntity {
     private Integer preparationTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "default_alarm_mode", nullable = false)
+    @Column(name = "default_alarm_mode")
     private AlarmMode defaultAlarmMode;
 
     @Embedded
@@ -64,6 +67,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "map_provider")
     private MapProvider mapProvider;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 
     public static Member registerWithOauth(String email, OauthProvider oauthProvider, String oauthProviderId) {
         return Member.builder()
@@ -89,5 +95,10 @@ public class Member extends BaseTimeEntity {
 
     public boolean checkOnboardingCompleted() {
         return preparationTime != null;
+    }
+
+    public void deactivate() {
+        this.oauthInfo = OauthInfo.of(this.getOauthInfo().getOauthProvider(), "0");
+        this.deletedAt = DateTimeUtils.nowSeoulInstant();
     }
 }

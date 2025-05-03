@@ -2,6 +2,7 @@ package com.dh.ondot.schedule.domain;
 
 import com.dh.ondot.core.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.domain.converter.RepeatDaysConverter;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
 import com.dh.ondot.schedule.domain.vo.Snooze;
@@ -74,7 +75,7 @@ public class Schedule extends BaseTimeEntity {
                 .title(title)
                 .isRepeat(isRepeat)
                 .repeatDays(isRepeat ? repeatDays : null)
-                .appointmentAt(appointmentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant())
+                .appointmentAt(DateTimeUtils.toInstant(appointmentAt))
                 .build();
 
         schedule.updateNextAlarmAt();
@@ -124,6 +125,14 @@ public class Schedule extends BaseTimeEntity {
 
     public void switchAlarm(boolean enabled) {
         this.departureAlarm.changeEnabled(enabled);
+    }
+
+    public boolean isScheduleRepeated() {
+        return isRepeat;
+    }
+
+    public boolean isPastAppointment() {
+        return appointmentAt.isBefore(DateTimeUtils.nowSeoulInstant());
     }
 
     /**

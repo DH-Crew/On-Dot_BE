@@ -124,4 +124,14 @@ public class Alarm extends BaseTimeEntity {
     public void changeEnabled(boolean enabled) {
         this.isEnabled = enabled;
     }
+
+    public Alarm copy() {
+        return Alarm.builder()
+                .mode(this.mode)
+                .isEnabled(this.isEnabled)
+                .triggeredAt(this.triggeredAt)
+                .snooze(this.snooze)
+                .sound(this.sound)
+                .build();
+    }
 }

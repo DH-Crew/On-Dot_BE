@@ -3,6 +3,7 @@ package com.dh.ondot.member.api;
 import com.dh.ondot.member.api.request.OnboardingRequest;
 import com.dh.ondot.member.api.request.UpdateHomeAddressRequest;
 import com.dh.ondot.member.api.request.UpdateMapProviderRequest;
+import com.dh.ondot.member.api.request.WithdrawalRequest;
 import com.dh.ondot.member.api.response.HomeAddressResponse;
 import com.dh.ondot.member.api.response.OnboardingResponse;
 import com.dh.ondot.member.api.response.UpdateHomeAddressResponse;
@@ -21,6 +22,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/members")
 public class MemberController implements MemberSwagger {
     private final MemberFacade memberFacade;
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/deactivate")
+    public void deactivateMember(
+            @RequestAttribute("memberId") Long memberId,
+            @Valid @RequestBody WithdrawalRequest request
+    ) {
+        memberFacade.deactivateMember(memberId, request.withdrawalReasonId(), request.customReason());
+    }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/home-address")
@@ -67,13 +77,5 @@ public class MemberController implements MemberSwagger {
         );
 
         return UpdateHomeAddressResponse.from(address);
-    }
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping()
-    public void deleteMember(
-            @RequestAttribute("memberId") Long memberId
-    ) {
-        memberFacade.deleteMember(memberId);
     }
 }

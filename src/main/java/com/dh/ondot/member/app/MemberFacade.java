@@ -8,6 +8,7 @@ import com.dh.ondot.member.domain.*;
 import com.dh.ondot.member.domain.enums.AddressType;
 import com.dh.ondot.member.domain.repository.*;
 import com.dh.ondot.member.domain.service.MemberService;
+import com.dh.ondot.member.domain.service.WithdrawalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +20,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberFacade {
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
+    private final WithdrawalService withdrawalService;
     private final AddressRepository addressRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final ChoiceRepository choiceRepository;
+
+    @Transactional
+    public void deactivateMember(Long memberId, Long withdrawalReasonId, String customReason) {
+        Member member = memberService.findExistingMember(memberId);
+        withdrawalService.saveWithdrawalReason(memberId, withdrawalReasonId, customReason);
+        member.deactivate();
+    }
 
     @Transactional(readOnly = true)
     public Address getHomeAddress(Long memberId) {
@@ -78,11 +86,5 @@ public class MemberFacade {
         address.update(roadAddress, longitude, latitude);
 
         return address;
-    }
-
-    @Transactional
-    public void deleteMember(Long memberId) {
-        memberService.findExistingMember(memberId);
-        memberRepository.deleteById(memberId);
     }
 }
