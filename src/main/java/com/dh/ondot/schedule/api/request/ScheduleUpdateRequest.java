@@ -33,7 +33,7 @@ public record ScheduleUpdateRequest (
 
             @NotNull LocalTime triggeredAt,
 
-            @NotBlank String mission,
+//            @NotBlank String mission,
 
             @NotNull Boolean isSnoozeEnabled,
 
