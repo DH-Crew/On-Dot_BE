@@ -2,10 +2,7 @@ package com.dh.ondot.core.util;
 
 import lombok.experimental.UtilityClass;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 
 @UtilityClass
 public class DateTimeUtils {
@@ -25,5 +22,9 @@ public class DateTimeUtils {
 
     public static LocalDate nowSeoulDate() {
         return LocalDate.now(DEFAULT_ZONE);
+    }
+
+    public static Instant nowSeoulInstant() {
+        return ZonedDateTime.now(DEFAULT_ZONE).toInstant();
     }
 }
