@@ -38,8 +38,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Create private key file
-        run: echo "${{ secrets.APPLE_PRIVATE_KEY_FILE }}" > src/main/resources/auth/AuthKey.p8
+      - name: Create Apple private key file
+        run: |
+          mkdir -p src/main/resources/auth
+          echo "${{ secrets.APPLE_PRIVATE_KEY_FILE }}" > src/main/resources/auth/AuthKey.p8
 
       # 4) Gradle 빌드 (테스트 제외)
       - name: Build with Gradle
