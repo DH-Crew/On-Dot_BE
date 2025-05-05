@@ -97,6 +97,9 @@ jobs:
               -e JWT_ACCESS_TOKEN_TIME=${{ secrets.JWT_ACCESS_TOKEN_TIME }} \
               -e JWT_REFRESH_TOKEN_TIME=${{ secrets.JWT_REFRESH_TOKEN_TIME }} \
               -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
+              -e APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }} \
+              -e APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }} \
+              -e APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }} \
               -e NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
               -e NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
               -e ODSAY_CLIENT_API_KEY=${{ secrets.ODSAY_CLIENT_API_KEY }} \
