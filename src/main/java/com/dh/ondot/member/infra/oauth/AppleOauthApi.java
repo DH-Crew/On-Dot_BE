@@ -68,11 +68,13 @@ public class AppleOauthApi implements OauthApi {
 
             return response.getBody();
         } catch (HttpClientErrorException e) {
+            log.error("Apple 토큰 요청 실패 - status: {}, body: {}", e.getStatusCode(), e.getResponseBodyAsString());
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST && e.getResponseBodyAsString().contains("invalid_grant")) {
                 throw new AppleAuthorizationCodeExpiredException();
             }
             throw new OauthUserFetchFailedException(OauthProvider.APPLE.name());
         } catch (Exception e) {
+            log.error("Apple 토큰 요청 중 예외 발생: {}", e.getMessage(), e);
             throw new OauthUserFetchFailedException(OauthProvider.APPLE.name());
         }
     }
