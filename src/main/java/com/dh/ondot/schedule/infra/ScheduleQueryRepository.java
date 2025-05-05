@@ -38,6 +38,8 @@ public class ScheduleQueryRepository {
 
     public Slice<Schedule> findPageByMember(Long memberId, Pageable pageable) {
         List<Schedule> content = q.selectFrom(s)
+                .join(s.departurePlace, dp).fetchJoin()
+                .join(s.arrivalPlace, ap).fetchJoin()
                 .join(s.preparationAlarm, pa).fetchJoin()
                 .join(s.departureAlarm, da).fetchJoin()
                 .where(s.memberId.eq(memberId))

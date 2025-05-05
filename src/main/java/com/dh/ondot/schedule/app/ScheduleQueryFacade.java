@@ -45,6 +45,8 @@ public class ScheduleQueryFacade {
                 .filter(schedule -> schedule.isScheduleRepeated() || !schedule.isPastAppointment())
                 .toList();
 
+        // todo: need delete logic for expired schedules
+
         List<HomeScheduleListItem> homeScheduleListItem = filteredSchedules.stream()
                 .map(HomeScheduleListItem::from)
                 .toList();

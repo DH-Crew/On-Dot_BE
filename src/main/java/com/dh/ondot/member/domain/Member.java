@@ -98,6 +98,7 @@ public class Member extends BaseTimeEntity {
     }
 
     public void deactivate() {
+        this.email = "deactivated-" + this.id + "@ondot.com";
         this.oauthInfo = OauthInfo.of(this.getOauthInfo().getOauthProvider(), "0");
         this.deletedAt = DateTimeUtils.nowSeoulInstant();
     }

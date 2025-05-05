@@ -572,6 +572,10 @@ public interface ScheduleSwagger {
                       "scheduleList": [
                         {
                           "scheduleId": 1001,
+                          "startLongitude": 127.0276,
+                          "startLatitude": 37.4979,
+                          "endLongitude": 127.029,
+                          "endLatitude": 37.501,
                           "scheduleTitle": "스터디 모임",
                           "isRepeat": true,
                           "repeatDays": [2,4,6],
