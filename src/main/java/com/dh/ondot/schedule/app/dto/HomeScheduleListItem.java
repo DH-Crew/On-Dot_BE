@@ -8,6 +8,10 @@ import java.util.List;
 
 public record HomeScheduleListItem(
         Long scheduleId,
+        Double startLongitude,
+        Double startLatitude,
+        Double endLongitude,
+        Double endLatitude,
         String scheduleTitle,
         boolean isRepeat,
         List<Integer> repeatDays,
@@ -19,7 +23,12 @@ public record HomeScheduleListItem(
 ) {
     public static HomeScheduleListItem from(Schedule schedule) {
         return new HomeScheduleListItem(
-                schedule.getId(), schedule.getTitle(), schedule.getIsRepeat(),
+                schedule.getId(),
+                schedule.getDeparturePlace().getLongitude(),
+                schedule.getDeparturePlace().getLatitude(),
+                schedule.getArrivalPlace().getLongitude(),
+                schedule.getArrivalPlace().getLatitude(),
+                schedule.getTitle(), schedule.getIsRepeat(),
                 schedule.getRepeatDays() == null ? List.of() : List.copyOf(schedule.getRepeatDays()),
                 DateTimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
                 DateTimeUtils.toSeoulDateTime(schedule.getNextAlarmAt()),
