@@ -1,5 +1,6 @@
 package com.dh.ondot.member.infra.jwt;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.member.core.AppleProperties;
 import com.dh.ondot.member.core.exception.ApplePrivateKeyLoadFailedException;
 import com.dh.ondot.member.core.exception.AppleSignatureInvalidException;
@@ -13,6 +14,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -37,6 +39,7 @@ import java.util.Map;
  *  Apple ID Token 서명 검증 & sub/email 추출
  *  내부에서 Apple Public Key을 조회해서 최종적으로 UserInfo를 반환
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AppleJwtUtil {
@@ -44,21 +47,24 @@ public class AppleJwtUtil {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public String generateClientSecret() {
-        LocalDateTime expiration = LocalDateTime.now().plusMinutes(5);
-        return Jwts.builder()
+        LocalDateTime expiration = DateTimeUtils.nowSeoulDateTime().plusMinutes(5);
+        String clientSecret = Jwts.builder()
                 .header()
                     .add("alg", "ES256")
                     .add("kid", appleProperties.keyId())
                     .and()
                 .issuer(appleProperties.teamId())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(Date.from(expiration.atZone(ZoneId.systemDefault()).toInstant()))
+                .issuedAt(Date.from(DateTimeUtils.nowSeoulInstant()))
+                .expiration(Date.from(DateTimeUtils.toInstant(expiration)))
                 .audience()
                     .add(appleProperties.audience())
                     .and()
                 .subject(appleProperties.clientId())
                 .signWith(getPrivateKey())
                 .compact();
+
+        log.info("Generated client_secret: {}", clientSecret);
+        return clientSecret;
     }
 
     /**
