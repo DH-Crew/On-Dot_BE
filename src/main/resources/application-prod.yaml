@@ -40,6 +40,12 @@ oauth2:
     registration:
       kakao:
         client_id: ${KAKAO_CLIENT_ID} # REST API
+      apple:
+        client-id: ${APPLE_CLIENT_ID}
+        team-id: ${APPLE_TEAM_ID}
+        key-id: ${APPLE_KEY_ID}
+        audience: https://appleid.apple.com
+        grant-type: authorization_code
 
 jwt:
   secret: ${JWT_SECRET}
