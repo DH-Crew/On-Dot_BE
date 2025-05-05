@@ -24,7 +24,7 @@ public class AuthFacade {
         OauthApi oauthApi = oauthApiFactory.getOauthApi(oauthProvider);
         UserInfo userInfo = oauthApi.fetchUser(accessToken);
 
-        Member member = memberRepository.findByOauthInfo(OauthInfo.of(oauthProvider, userInfo.oauthProviderId()))
+        Member member = memberRepository.findByEmail(userInfo.email())
                 .orElseGet(() -> registerMemberWithOauth(userInfo, oauthProvider));
 
         Token token = tokenFacade.issue(member.getId());
