@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -37,14 +38,15 @@ public class ScheduleQueryFacade {
 
         // Refresh nextAlarmAt and filter out expired one-time schedules
         List<Schedule> filteredSchedules = slice.getContent().stream()
-                .peek(Schedule::updateNextAlarmAt)
                 .filter(schedule -> schedule.isScheduleRepeated() || !schedule.isPastAppointment())
+                .peek(Schedule::updateNextAlarmAt)
                 .toList();
 
         // todo: need delete logic for expired schedules
 
         List<HomeScheduleListItem> homeScheduleListItem = filteredSchedules.stream()
                 .map(HomeScheduleListItem::from)
+                .sorted(Comparator.comparing(HomeScheduleListItem::nextAlarmAt))
                 .toList();
 
         LocalDateTime now = DateTimeUtils.nowSeoulDateTime();
