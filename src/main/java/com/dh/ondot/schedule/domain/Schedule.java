@@ -120,7 +120,11 @@ public class Schedule extends BaseTimeEntity {
         Instant preparationTime = calculateNextTriggeredAt(preparationTriggeredAt);
         Instant departureTime = calculateNextTriggeredAt(departureTriggeredAt);
 
-        this.nextAlarmAt = preparationTime.isBefore(departureTime)? preparationTime : departureTime;
+        if (preparationTime.isBefore(DateTimeUtils.nowSeoulInstant())) {
+            this.nextAlarmAt = departureTime;
+        } else {
+            this.nextAlarmAt = preparationTime.isBefore(departureTime)? preparationTime : departureTime;
+        }
     }
 
     public void switchAlarm(boolean enabled) {

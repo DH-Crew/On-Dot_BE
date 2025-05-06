@@ -35,13 +35,9 @@ public class ScheduleQueryFacade {
         Member member = memberService.findExistingMember(memberId);
         Slice<Schedule> slice =  scheduleQueryRepository.findPageByMember(memberId, page);
 
-        // Refresh nextAlarmAt for recurring events and filter out expired one-time schedules
+        // Refresh nextAlarmAt and filter out expired one-time schedules
         List<Schedule> filteredSchedules = slice.getContent().stream()
-                .peek(schedule -> {
-                    if (schedule.isScheduleRepeated()) {
-                        schedule.updateNextAlarmAt();
-                    }
-                })
+                .peek(Schedule::updateNextAlarmAt)
                 .filter(schedule -> schedule.isScheduleRepeated() || !schedule.isPastAppointment())
                 .toList();
 
