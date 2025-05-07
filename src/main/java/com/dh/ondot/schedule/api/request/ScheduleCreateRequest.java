@@ -30,7 +30,7 @@ public record ScheduleCreateRequest(
 
             @NotNull Boolean isEnabled,
 
-            @NotNull LocalTime triggeredAt,
+            @NotNull LocalDateTime triggeredAt,
 
 //            @NotBlank String mission,
 
@@ -50,7 +50,7 @@ public record ScheduleCreateRequest(
     public record DepartureAlarmDto(
             @NotBlank String alarmMode,
 
-            @NotNull LocalTime triggeredAt,
+            @NotNull LocalDateTime triggeredAt,
 
             @NotNull Boolean isSnoozeEnabled,
 
