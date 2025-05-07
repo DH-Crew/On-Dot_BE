@@ -21,7 +21,7 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
-      timeout: 10
+      timeout: 1s
       password: ${REDIS_PASSWORD}
 
   jpa:
