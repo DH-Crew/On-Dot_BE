@@ -50,7 +50,7 @@ public class Alarm extends BaseTimeEntity {
         return Alarm.builder()
                 .mode(AlarmMode.from(alarmMode))
                 .isEnabled(isEnabled)
-                .triggeredAt(triggeredAt.atZone(ZoneId.of("Asia/Seoul")).toInstant())
+                .triggeredAt(DateTimeUtils.toInstant(triggeredAt))
 //                .mission(Mission.from(mission))
                 .snooze(Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount))
                 .sound(Sound.of(soundCategory, ringTone, volume))
@@ -63,7 +63,7 @@ public class Alarm extends BaseTimeEntity {
         return Alarm.builder()
                 .mode(AlarmMode.from(alarmMode))
                 .isEnabled(true)
-                .triggeredAt(triggeredAt.atZone(ZoneId.of("Asia/Seoul")).toInstant())
+                .triggeredAt(DateTimeUtils.toInstant(triggeredAt))
                 .snooze(Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount))
                 .sound(Sound.of(soundCategory, ringTone, volume))
                 .build();
