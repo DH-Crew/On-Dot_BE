@@ -27,10 +27,13 @@ public class AuthFacade {
         Member member = memberRepository.findByEmail(userInfo.email())
                 .orElseGet(() -> registerMemberWithOauth(userInfo, oauthProvider));
 
-        Token token = tokenFacade.issue(member.getId());
-        boolean isOnboardingCompleted = member.checkOnboardingCompleted();
-
-        return LoginResponse.of(token.accessToken(),token.refreshToken(),isOnboardingCompleted);
+        boolean isNewMember = member.isNewMember();
+        if (isNewMember) {
+            return LoginResponse.of(null, null, true);
+        } else {
+            Token token = tokenFacade.issue(member.getId());
+            return LoginResponse.of(token.accessToken(), token.refreshToken(), false);
+        }
     }
 
     private Member registerMemberWithOauth(UserInfo userInfo, OauthProvider oauthProvider) {

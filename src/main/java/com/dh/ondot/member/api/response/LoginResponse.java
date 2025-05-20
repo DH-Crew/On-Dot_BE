@@ -3,9 +3,9 @@ package com.dh.ondot.member.api.response;
 public record LoginResponse(
         String accessToken,
         String refreshToken,
-        boolean isOnboardingCompleted
+        boolean isNewMember
 ) {
-    public static LoginResponse of(String accessToken, String refreshToken, boolean isOnboardingCompleted) {
-        return new LoginResponse(accessToken, refreshToken, isOnboardingCompleted);
+    public static LoginResponse of(String accessToken, String refreshToken, boolean isNewMember) {
+        return new LoginResponse(accessToken, refreshToken, isNewMember);
     }
 }
