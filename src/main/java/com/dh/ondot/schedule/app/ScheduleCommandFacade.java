@@ -166,6 +166,8 @@ public class ScheduleCommandFacade {
 
         schedule.getDepartureAlarm().updateDeparture(
                 request.departureAlarm().alarmMode(),
+                request.appointmentAt().toLocalDate()
+                        .atTime(request.preparationAlarm().triggeredAt()),
                 request.departureAlarm().isSnoozeEnabled(),
                 request.departureAlarm().snoozeInterval(),
                 request.departureAlarm().snoozeCount(),
