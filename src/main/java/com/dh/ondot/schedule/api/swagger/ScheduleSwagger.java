@@ -140,7 +140,6 @@ public interface ScheduleSwagger {
                                     name = "voiceCreateRequest",
                                     value = """
                     {
-                      "title": "회의",
                       "appointmentAt": "2025-06-01T14:00:00",
                       "departurePlace": {
                         "title": "회사",
