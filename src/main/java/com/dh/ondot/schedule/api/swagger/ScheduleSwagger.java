@@ -479,6 +479,7 @@ public interface ScheduleSwagger {
                         "latitude": 37.5010
                       },
                       "preparationAlarm": {
+                        "alarmId": 1001,
                         "alarmMode": "VIBRATE",
                         "isEnabled": true,
                         "triggeredAt": "2025-05-10T18:30:00",
@@ -490,6 +491,7 @@ public interface ScheduleSwagger {
                         "volume": 0.2
                       },
                       "departureAlarm": {
+                        "alarmId": 1002,
                         "alarmMode": "SOUND",
                         "triggeredAt": "2025-05-10T18:50:00",
                         "isSnoozeEnabled": false,
@@ -579,9 +581,30 @@ public interface ScheduleSwagger {
                           "isRepeat": true,
                           "repeatDays": [2,4,6],
                           "appointmentAt": "2025-05-10T19:00:00",
+                          "preparationAlarm": {
+                            "alarmId": 1001,
+                            "alarmMode": "VIBRATE",
+                            "isEnabled": true,
+                            "triggeredAt": "2025-05-10T18:30:00",
+                            "isSnoozeEnabled": true,
+                            "snoozeInterval": 5,
+                            "snoozeCount": 3,
+                            "soundCategory": "BRIGHT_ENERGY",
+                            "ringTone": "FRACTURED_LOVE",
+                            "volume": 0.2
+                          },
+                          "departureAlarm": {
+                            "alarmId": 1002,
+                            "alarmMode": "SOUND",
+                            "triggeredAt": "2025-05-10T18:50:00",
+                            "isSnoozeEnabled": false,
+                            "snoozeInterval": 1,
+                            "snoozeCount": -1,
+                            "soundCategory": "BRIGHT_ENERGY",
+                            "ringTone": "FRACTURED_LOVE",
+                            "volume": 0.2
+                          }
                           "nextAlarmAt": "2025-05-10T18:30:00",
-                          "preparationTriggeredAt": "2025-05-10T18:30:00",
-                          "departureTriggeredAt": "2025-05-10T18:50:00",
                           "isEnabled": true
                         }
                       ]
