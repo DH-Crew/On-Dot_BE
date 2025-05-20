@@ -546,7 +546,7 @@ public interface ScheduleSwagger {
      * 홈 화면 일정 목록 조회 (무한 스크롤)
      *──────────────────────────────────────────────────────*/
     @Operation(
-            summary     = "홈 화면 일정 목록 조회",
+            summary     = "전체 일정 목록 조회",
             description = """
             <b>가장 빨리 울릴 알람 시각</b>(nextAlarmAt)과 <b>일정 목록</b>(scheduleList)를 반환합니다. <br>
             • <code>hasNext=true</code> 면 이후 page 를 조회할 수 있습니다. <br>
@@ -567,7 +567,6 @@ public interface ScheduleSwagger {
                                     schema    = @Schema(implementation = HomeScheduleListResponse.class),
                                     examples  = @ExampleObject(value = """
                     {
-                      "isOnboardingCompleted": true,
                       "earliestAlarmAt": "2025-05-10T18:30:00",
                       "hasNext": false,
                       "scheduleList": [
