@@ -5,6 +5,7 @@ import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.domain.repository.ScheduleRepository;
 import com.dh.ondot.schedule.domain.service.RouteService;
+import com.dh.ondot.schedule.domain.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class AlarmFacade {
     private final MemberService memberService;
     private final RouteService routeService;
-    private final ScheduleRepository scheduleRepository;
+    private final ScheduleService scheduleService;
 
     @Transactional(readOnly = true)
     public Schedule generateAlarmSettingByRoute(
@@ -31,27 +32,8 @@ public class AlarmFacade {
                 endX, endY
         );
 
-        Optional<Schedule> schedule = scheduleRepository
-                .findFirstByMemberIdOrderByUpdatedAtDesc(memberId);
-
-        if (schedule.isPresent()) {
-            Schedule latestSchedule = copySchedule(schedule.get());
-            latestSchedule.getPreparationAlarm().updateTriggeredAt(appointmentAt.minusMinutes(estimatedTime + member.getPreparationTime()));
-            latestSchedule.getDepartureAlarm().updateTriggeredAt(appointmentAt.minusMinutes(estimatedTime));
-
-            return latestSchedule;
-        } else {
-            return Schedule.createWithDefaultAlarmSetting(
-                    member.getDefaultAlarmMode(), member.getSnooze(), member.getSound(),
-                    appointmentAt, estimatedTime, member.getPreparationTime()
-            );
-        }
-    }
-
-    private Schedule copySchedule(Schedule original) {
-        return Schedule.builder()
-                .preparationAlarm(original.getPreparationAlarm().copy())
-                .departureAlarm(original.getDepartureAlarm().copy())
-                .build();
+        return scheduleService.createScheduleBasedOnMemberInfo(
+                member, appointmentAt, estimatedTime
+        );
     }
 }
