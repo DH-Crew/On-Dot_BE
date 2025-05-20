@@ -13,6 +13,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class NaverSearchPlaceApi implements SearchPlaceApi {
+    static Double NAVER_COORDINATE_SCALE = 10_000_000.0;
+
     @Value("${naver.client.client-id}")
     private String clientId;
 
@@ -21,6 +23,8 @@ public class NaverSearchPlaceApi implements SearchPlaceApi {
 
     @Override
     public List<PlaceSearchResult> search(String query) {
+        String refinedQuery = refineQuery(query);
+
         RestClient restClient = RestClient.builder()
                 .baseUrl("https://openapi.naver.com/v1/search/local.json")
                 .defaultHeader("X-Naver-Client-Id", clientId)
@@ -29,7 +33,7 @@ public class NaverSearchPlaceApi implements SearchPlaceApi {
 
         NaverSearchPlaceResponse response = restClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .queryParam("query", query)
+                        .queryParam("query", refinedQuery)
                         .queryParam("display", 5)
                         .build())
                 .retrieve()
@@ -39,9 +43,16 @@ public class NaverSearchPlaceApi implements SearchPlaceApi {
                 .map(place -> new PlaceSearchResult(
                         place.title().replaceAll("<.*?>", ""),
                         place.roadAddress(),
-                        place.mapx() / 1_000_0000.0,
-                        place.mapy() / 1_000_0000.0
+                        place.mapx() / NAVER_COORDINATE_SCALE,
+                        place.mapy() / NAVER_COORDINATE_SCALE
                 ))
                 .toList();
+    }
+
+    private String refineQuery(String query) {
+        if (query.contains("가톨") || query.contains("가톨릭")) {
+            return "가톨릭대";
+        }
+        return query;
     }
 }
