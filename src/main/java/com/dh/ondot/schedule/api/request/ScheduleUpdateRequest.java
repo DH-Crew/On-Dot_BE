@@ -51,6 +51,8 @@ public record ScheduleUpdateRequest (
     public record DepartureAlarmDto(
             @NotBlank String alarmMode,
 
+            @NotNull LocalTime triggeredAt,
+
             @NotNull Boolean isSnoozeEnabled,
 
             @NotNull @Min(1) @Max(60) Integer snoozeInterval,
