@@ -1,7 +1,9 @@
 package com.dh.ondot.schedule.domain.service;
 
+import com.dh.ondot.core.util.GeoUtils;
 import com.dh.ondot.schedule.infra.OdsayPathApi;
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse;
+import com.dh.ondot.schedule.infra.exception.OdsayTooCloseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,18 +14,23 @@ import java.util.List;
 public class RouteService {
     private final OdsayPathApi odayPathApi;
 
-    public int calculateRouteTime(Double startX, Double startY,
-                                  Double endX,   Double endY) {
-
-        OdsayRouteApiResponse res =
-                odayPathApi.searchPublicTransportRoute(startX, startY, endX, endY);
+    public int calculateRouteTime(
+            Double startX, Double startY,
+            Double endX,   Double endY
+    ) {
+        OdsayRouteApiResponse res;
+        try {
+            res = odayPathApi.searchPublicTransportRoute(startX, startY, endX, endY);
+        } catch (OdsayTooCloseException e) {
+            int walkTime = calculateWalkTime(startY, startX, endY, endX);
+            res = OdsayRouteApiResponse.walkOnly(walkTime);
+        }
 
         // Adjust total time for each path
         List<Double> adjustedTimes = res.result()
                 .path().stream()
                 .map(path -> {
-
-                    double adjusted = path.info().totalTime();  // base time
+                    double adjusted = path.info().totalTime(); // base time
 
                     // Transfer adjustment
                     long publicLegs = path.subPath().stream()
@@ -50,7 +57,13 @@ public class RouteService {
                 .average()
                 .orElse(0);
 
-        // Add buffer and round
+        // Add buffer(10) and round
         return (int) Math.round(avg + 10);
+    }
+
+    public int calculateWalkTime(double startX, double startY, double endX, double endY) {
+        double distance = GeoUtils.calculateDistance(startX, startY, endX, endY); // meters
+        double walkingSpeedMps = 1.25;
+        return (int) Math.round(distance / walkingSpeedMps / 60);
     }
 }

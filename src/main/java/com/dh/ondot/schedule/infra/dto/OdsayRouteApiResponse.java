@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.infra.dto;
 
+import java.util.Collections;
 import java.util.List;
 
 public record OdsayRouteApiResponse(
@@ -118,4 +119,33 @@ public record OdsayRouteApiResponse(
             String y,
             String isNonStop
     ) {}
+
+    public static OdsayRouteApiResponse walkOnly(int estimatedMinutes) {
+        Info walkInfo = new Info(
+                0.0, // trafficDistance
+                0, // totalWalk
+                estimatedMinutes,
+                0, // payment
+                0, 0,
+                null, null, null, null, null, null, null,
+                0, 0, 0,
+                0.0, // totalDistance
+                estimatedMinutes,
+                0, null,
+                0
+        );
+
+        Path walkPath = new Path(
+                10, // custom code to indicate walk-only
+                walkInfo,
+                Collections.emptyList()
+        );
+
+        Result result = new Result(
+                0, 0, 0, 0, 0, 0.0, 0, 0,
+                List.of(walkPath)
+        );
+
+        return new OdsayRouteApiResponse(result);
+    }
 }
