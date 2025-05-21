@@ -179,7 +179,8 @@ public interface MemberSwagger {
                                             name = "success",
                                             value = """
                         {
-                          "memberId": 42,
+                          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                           "updatedAt": "2025-05-10T12:34:56"
                         }"""
                                     ))),
@@ -223,7 +224,7 @@ public interface MemberSwagger {
                                     )))
             }
     )
-    @PutMapping("/onboarding")
+    @PostMapping("/onboarding")
     OnboardingResponse onboarding(@RequestAttribute("memberId") Long memberId,
                                   @RequestBody OnboardingRequest request);
 

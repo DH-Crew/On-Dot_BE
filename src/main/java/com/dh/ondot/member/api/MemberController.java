@@ -42,14 +42,12 @@ public class MemberController implements MemberSwagger {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/onboarding")
+    @PostMapping("/onboarding")
     public OnboardingResponse onboarding(
             @RequestAttribute("memberId") Long memberId,
             @Valid @RequestBody OnboardingRequest request
     ) {
-        Member member = memberFacade.onboarding(memberId, request);
-
-        return OnboardingResponse.from(member);
+        return memberFacade.onboarding(memberId, request);
     }
 
     @ResponseStatus(HttpStatus.OK)

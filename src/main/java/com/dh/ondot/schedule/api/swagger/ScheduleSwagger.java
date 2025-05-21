@@ -140,7 +140,6 @@ public interface ScheduleSwagger {
                                     name = "voiceCreateRequest",
                                     value = """
                     {
-                      "title": "회의",
                       "appointmentAt": "2025-06-01T14:00:00",
                       "departurePlace": {
                         "title": "회사",
@@ -302,7 +301,6 @@ public interface ScheduleSwagger {
             • 좌표 형식·범위 오류: <code>ODSAY_BAD_INPUT</code>, <code>ODSAY_MISSING_PARAM</code><br/>
             • 정류장 없음: <code>ODSAY_NO_STOP</code><br/>
             • 서비스 지역 아님: <code>ODSAY_SERVICE_AREA</code><br/>
-            • 지나치게 가까움(700m 이내): <code>ODSAY_TOO_CLOSE</code><br/>
             • 검색 결과 없음: <code>ODSAY_NO_RESULT</code><br/>
             • ODsay 서버 내부 오류: <code>ODSAY_SERVER_ERROR</code><br/>
             • 예기치 못한 ODsay 오류: <code>ODSAY_UNHANDLED_ERROR</code><br/>
@@ -480,6 +478,7 @@ public interface ScheduleSwagger {
                         "latitude": 37.5010
                       },
                       "preparationAlarm": {
+                        "alarmId": 1001,
                         "alarmMode": "VIBRATE",
                         "isEnabled": true,
                         "triggeredAt": "2025-05-10T18:30:00",
@@ -491,6 +490,7 @@ public interface ScheduleSwagger {
                         "volume": 0.2
                       },
                       "departureAlarm": {
+                        "alarmId": 1002,
                         "alarmMode": "SOUND",
                         "triggeredAt": "2025-05-10T18:50:00",
                         "isSnoozeEnabled": false,
@@ -545,7 +545,7 @@ public interface ScheduleSwagger {
      * 홈 화면 일정 목록 조회 (무한 스크롤)
      *──────────────────────────────────────────────────────*/
     @Operation(
-            summary     = "홈 화면 일정 목록 조회",
+            summary     = "전체 일정 목록 조회",
             description = """
             <b>가장 빨리 울릴 알람 시각</b>(nextAlarmAt)과 <b>일정 목록</b>(scheduleList)를 반환합니다. <br>
             • <code>hasNext=true</code> 면 이후 page 를 조회할 수 있습니다. <br>
@@ -566,7 +566,6 @@ public interface ScheduleSwagger {
                                     schema    = @Schema(implementation = HomeScheduleListResponse.class),
                                     examples  = @ExampleObject(value = """
                     {
-                      "isOnboardingCompleted": true,
                       "earliestAlarmAt": "2025-05-10T18:30:00",
                       "hasNext": false,
                       "scheduleList": [
@@ -580,9 +579,30 @@ public interface ScheduleSwagger {
                           "isRepeat": true,
                           "repeatDays": [2,4,6],
                           "appointmentAt": "2025-05-10T19:00:00",
+                          "preparationAlarm": {
+                            "alarmId": 1001,
+                            "alarmMode": "VIBRATE",
+                            "isEnabled": true,
+                            "triggeredAt": "2025-05-10T18:30:00",
+                            "isSnoozeEnabled": true,
+                            "snoozeInterval": 5,
+                            "snoozeCount": 3,
+                            "soundCategory": "BRIGHT_ENERGY",
+                            "ringTone": "FRACTURED_LOVE",
+                            "volume": 0.2
+                          },
+                          "departureAlarm": {
+                            "alarmId": 1002,
+                            "alarmMode": "SOUND",
+                            "triggeredAt": "2025-05-10T18:50:00",
+                            "isSnoozeEnabled": false,
+                            "snoozeInterval": 1,
+                            "snoozeCount": -1,
+                            "soundCategory": "BRIGHT_ENERGY",
+                            "ringTone": "FRACTURED_LOVE",
+                            "volume": 0.2
+                          }
                           "nextAlarmAt": "2025-05-10T18:30:00",
-                          "preparationTriggeredAt": "2025-05-10T18:30:00",
-                          "departureTriggeredAt": "2025-05-10T18:50:00",
                           "isEnabled": true
                         }
                       ]

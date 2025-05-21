@@ -6,6 +6,7 @@ import com.dh.ondot.schedule.domain.Alarm;
 import java.time.LocalDateTime;
 
 public record AlarmDto(
+        Long alarmId,
         String alarmMode,
         boolean isEnabled,
         LocalDateTime triggeredAt,
@@ -18,6 +19,7 @@ public record AlarmDto(
 ) {
     public static AlarmDto of(Alarm alarm) {
         return new AlarmDto(
+                alarm.getId(),
                 alarm.getMode().name(),
                 alarm.isEnabled(),
                 DateTimeUtils.toSeoulDateTime(alarm.getTriggeredAt()),

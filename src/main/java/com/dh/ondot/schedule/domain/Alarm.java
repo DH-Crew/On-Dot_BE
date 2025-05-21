@@ -95,24 +95,26 @@ public class Alarm extends BaseTimeEntity {
                 .build();
     }
 
-    public void updatePreparation(String alarmMode, boolean isEnabled,
-                                  LocalDateTime triggeredAt,
-                                  boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
-                                  String soundCategory, String ringTone, Double volume
+    public void updatePreparation(
+            String alarmMode, boolean isEnabled, LocalDateTime triggeredAt,
+            boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
+            String soundCategory, String ringTone, Double volume
     ) {
         this.mode = AlarmMode.from(alarmMode);
         this.isEnabled = isEnabled;
-        this.triggeredAt = triggeredAt.atZone(ZoneId.of("Asia/Seoul")).toInstant();
+        this.triggeredAt = DateTimeUtils.toInstant(triggeredAt);
 //        this.mission = Mission.from(mission);
         this.snooze = Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount);
         this.sound = Sound.of(soundCategory, ringTone, volume);
     }
 
-    public void updateDeparture(String alarmMode, boolean isSnoozeEnabled,
-                                Integer snoozeInterval, Integer snoozeCount,
-                                String soundCategory, String ringTone, Double volume
+    public void updateDeparture(
+            String alarmMode, LocalDateTime triggeredAt,
+            boolean isSnoozeEnabled, Integer snoozeInterval, Integer snoozeCount,
+            String soundCategory, String ringTone, Double volume
     ) {
         this.mode = AlarmMode.from(alarmMode);
+        this.triggeredAt = DateTimeUtils.toInstant(triggeredAt);
         this.snooze = Snooze.of(isSnoozeEnabled, snoozeInterval, snoozeCount);
         this.sound = Sound.of(soundCategory, ringTone, volume);
     }

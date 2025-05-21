@@ -12,7 +12,12 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "ai_usages")
+@Table(
+        name = "ai_usages",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"member_id", "usage_date"})
+        }
+)
 public class AiUsage extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

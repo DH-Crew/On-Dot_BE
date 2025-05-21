@@ -48,8 +48,8 @@ public interface AuthSwagger {
                                             value = """
                         {
                           "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                          "isOnboardingCompleted": false
+                          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                          "isNewMember": false
                         }"""
                                     )
                             )

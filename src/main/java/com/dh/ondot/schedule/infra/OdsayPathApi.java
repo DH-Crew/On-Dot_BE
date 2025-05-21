@@ -52,7 +52,7 @@ public class OdsayPathApi {
             if (rawBody.contains("\"error\"")) {
                 OdsayErrorResponse errRes = objectMapper.readValue(rawBody, OdsayErrorResponse.class);
                 OdsayErrorResponse.Error err = errRes.error().get(0);
-                throwOdsayExceptionByCode(err.code(), err.message());   // ← 여기서 예외 발생
+                throwOdsayExceptionByCode(err.code(), err.message()); // exception
             }
 
             OdsayRouteApiResponse routeRes = objectMapper.readValue(rawBody, OdsayRouteApiResponse.class);
@@ -62,7 +62,7 @@ public class OdsayPathApi {
             }
 
             return routeRes;
-        } catch (OdsayServerErrorException ex) {
+        } catch (OdsayServerErrorException | OdsayTooCloseException ex) {
             throw ex;
         } catch (Exception e) {
             throw new OdsayUnhandledException(e.getMessage());

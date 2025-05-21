@@ -93,8 +93,8 @@ public class Member extends BaseTimeEntity {
         this.mapProvider = MapProvider.from(mapProvider);
     }
 
-    public boolean checkOnboardingCompleted() {
-        return preparationTime != null;
+    public boolean isNewMember() {
+        return preparationTime == null;
     }
 
     public void deactivate() {

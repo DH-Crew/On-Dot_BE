@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.app;
 
+import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
 import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
@@ -8,6 +9,7 @@ import com.dh.ondot.schedule.app.dto.UpdateScheduleResult;
 import com.dh.ondot.schedule.domain.Alarm;
 import com.dh.ondot.schedule.domain.Place;
 import com.dh.ondot.schedule.domain.Schedule;
+import com.dh.ondot.schedule.domain.service.RouteService;
 import com.dh.ondot.schedule.domain.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.TreeSet;
 public class ScheduleCommandFacade {
     private final MemberService memberService;
     private final ScheduleService scheduleService;
+    private final RouteService routeService;
 
     public Schedule createSchedule(Long memberId, ScheduleCreateRequest request) {
         Place departurePlace = Place.createPlace(
@@ -75,7 +78,10 @@ public class ScheduleCommandFacade {
         return scheduleService.saveSchedule(schedule);
     }
 
+    @Transactional
     public void createVoiceSchedule(Long memberId, VoiceScheduleCreateRequest request) {
+        Member member = memberService.findExistingMember(memberId);
+
         Place departurePlace = Place.createPlace(
                 request.departurePlace().title(),
                 request.departurePlace().roadAddress(),
@@ -89,7 +95,20 @@ public class ScheduleCommandFacade {
                 request.arrivalPlace().longitude(),
                 request.arrivalPlace().latitude()
         );
-        // todo: 시간 계산 후 알람 생성 비동기 처리
+        // todo: 시간 계산 후 알람 생성 비동기 처리 + 생성 알림
+
+        Integer estimatedTime = routeService.calculateRouteTime(
+                request.departurePlace().longitude(), request.departurePlace().latitude(),
+                request.arrivalPlace().longitude(), request.arrivalPlace().latitude()
+        );
+
+        Schedule schedule = scheduleService.createScheduleBasedOnMemberInfo(
+                member, request.appointmentAt(), estimatedTime
+        );
+
+        schedule.registerPlaces(departurePlace, arrivalPlace);
+
+        scheduleService.saveSchedule(schedule);
     }
 
     @Transactional
@@ -148,6 +167,8 @@ public class ScheduleCommandFacade {
 
         schedule.getDepartureAlarm().updateDeparture(
                 request.departureAlarm().alarmMode(),
+                request.appointmentAt().toLocalDate()
+                        .atTime(request.departureAlarm().triggeredAt()),
                 request.departureAlarm().isSnoozeEnabled(),
                 request.departureAlarm().snoozeInterval(),
                 request.departureAlarm().snoozeCount(),

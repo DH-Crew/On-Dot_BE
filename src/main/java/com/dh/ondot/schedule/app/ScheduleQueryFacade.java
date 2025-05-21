@@ -57,8 +57,6 @@ public class ScheduleQueryFacade {
                 .findFirst()
                 .orElse(null);
 
-        boolean isOnboardingCompleted = member.checkOnboardingCompleted();
-
-        return HomeScheduleListResponse.of(isOnboardingCompleted, earliest, homeScheduleListItem, slice.hasNext());
+        return HomeScheduleListResponse.of(earliest, homeScheduleListItem, slice.hasNext());
     }
 }

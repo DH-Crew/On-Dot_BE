@@ -1,15 +1,16 @@
 package com.dh.ondot.member.api.response;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.member.domain.Member;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public record OnboardingResponse(
-        Long memberId,
-        LocalDateTime updatedAt
+        String accessToken,
+        String refreshToken,
+        LocalDateTime createdAt
 ) {
-    public static OnboardingResponse from(Member member) {
-        return new OnboardingResponse(member.getId(), member.getUpdatedAt().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime());
+    public static OnboardingResponse from(String accessToken, String refreshToken, Member member) {
+        return new OnboardingResponse(accessToken, refreshToken, DateTimeUtils.toSeoulDateTime(member.getUpdatedAt()));
     }
 }

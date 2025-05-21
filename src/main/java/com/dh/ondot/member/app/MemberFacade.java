@@ -1,6 +1,8 @@
 package com.dh.ondot.member.app;
 
 import com.dh.ondot.member.api.request.OnboardingRequest;
+import com.dh.ondot.member.api.response.OnboardingResponse;
+import com.dh.ondot.member.app.dto.Token;
 import com.dh.ondot.member.core.exception.NotFoundAddressException;
 import com.dh.ondot.member.core.exception.NotFoundAnswerException;
 import com.dh.ondot.member.core.exception.NotFoundQuestionException;
@@ -19,6 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class MemberFacade {
+    private final TokenFacade tokenFacade;
     private final MemberService memberService;
     private final WithdrawalService withdrawalService;
     private final AddressRepository addressRepository;
@@ -41,7 +44,7 @@ public class MemberFacade {
     }
 
     @Transactional
-    public Member onboarding(Long memberId, OnboardingRequest request) {
+    public OnboardingResponse onboarding(Long memberId, OnboardingRequest request) {
         Member member = memberService.findExistingMember(memberId);
         member.updateOnboarding(
                 request.preparationTime(), request.alarmMode(),
@@ -64,7 +67,9 @@ public class MemberFacade {
         }
         choiceRepository.saveAll(choiceList);
 
-        return member;
+        Token token = tokenFacade.issue(member.getId());
+
+        return OnboardingResponse.from(token.accessToken(), token.refreshToken(), member);
     }
 
     @Transactional

@@ -35,6 +35,11 @@ spring:
       max-file-size: 10MB
       max-request-size: 20MB
 
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      model: gpt-4o
+
 oauth2:
   client:
     registration:
@@ -60,10 +65,6 @@ naver:
 odsay:
   base-url: https://api.odsay.com/v1/api/searchPubTransPathT
   api-key: ${ODSAY_CLIENT_API_KEY}
-
-openai:
-  api-key: ${OPENAI_API_KEY}
-  model: gpt-4o
 
 management:
   endpoints:

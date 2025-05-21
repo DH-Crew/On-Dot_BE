@@ -100,6 +100,11 @@ public class Schedule extends BaseTimeEntity {
                 .build();
     }
 
+    public void registerPlaces(Place departurePlace, Place arrivalPlace) {
+        this.departurePlace = departurePlace;
+        this.arrivalPlace = arrivalPlace;
+    }
+
     public void updateCore(String title, boolean isRepeat,
                            SortedSet<Integer> repeatDays, LocalDateTime appointmentAt
     ) {

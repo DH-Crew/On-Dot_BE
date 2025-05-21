@@ -30,7 +30,8 @@ dependencies {
 
     // Spring AI
     implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
-    implementation 'org.springframework.ai:spring-ai-openai'
+    implementation 'org.springframework.ai:spring-ai-openai:1.0.0-SNAPSHOT'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai:1.0.0-SNAPSHOT'
 
     // 스프링부트 3.xx에서는 p6spy 버전 1.9.0 사용해야됨
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
