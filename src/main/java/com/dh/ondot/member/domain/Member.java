@@ -94,7 +94,7 @@ public class Member extends BaseTimeEntity {
     }
 
     public boolean isNewMember() {
-        return preparationTime != null;
+        return preparationTime == null;
     }
 
     public void deactivate() {
