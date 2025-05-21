@@ -78,6 +78,7 @@ public class ScheduleCommandFacade {
         return scheduleService.saveSchedule(schedule);
     }
 
+    @Transactional
     public void createVoiceSchedule(Long memberId, VoiceScheduleCreateRequest request) {
         Member member = memberService.findExistingMember(memberId);
 
