@@ -301,7 +301,6 @@ public interface ScheduleSwagger {
             • 좌표 형식·범위 오류: <code>ODSAY_BAD_INPUT</code>, <code>ODSAY_MISSING_PARAM</code><br/>
             • 정류장 없음: <code>ODSAY_NO_STOP</code><br/>
             • 서비스 지역 아님: <code>ODSAY_SERVICE_AREA</code><br/>
-            • 지나치게 가까움(700m 이내): <code>ODSAY_TOO_CLOSE</code><br/>
             • 검색 결과 없음: <code>ODSAY_NO_RESULT</code><br/>
             • ODsay 서버 내부 오류: <code>ODSAY_SERVER_ERROR</code><br/>
             • 예기치 못한 ODsay 오류: <code>ODSAY_UNHANDLED_ERROR</code><br/>
