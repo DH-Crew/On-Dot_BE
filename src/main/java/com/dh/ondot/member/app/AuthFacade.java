@@ -29,7 +29,7 @@ public class AuthFacade {
 
         boolean isNewMember = member.isNewMember();
         if (isNewMember) {
-            return LoginResponse.of(null, null, true);
+            return LoginResponse.of("", "", true);
         } else {
             Token token = tokenFacade.issue(member.getId());
             return LoginResponse.of(token.accessToken(), token.refreshToken(), false);
