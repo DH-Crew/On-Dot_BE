@@ -42,7 +42,9 @@ public class NaverSearchPlaceApi implements SearchPlaceApi {
         return response.places().stream()
                 .map(place -> new PlaceSearchResult(
                         place.title().replaceAll("<.*?>", ""),
-                        place.roadAddress() != null ? place.roadAddress() : place.title().replaceAll("<.*?>", ""),
+                        (place.roadAddress() == null || place.roadAddress().isBlank())
+                                ? place.title().replaceAll("<.*?>", "")
+                                : place.roadAddress(),
                         place.mapx() / NAVER_COORDINATE_SCALE,
                         place.mapy() / NAVER_COORDINATE_SCALE
                 ))
