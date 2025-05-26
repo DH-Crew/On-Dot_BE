@@ -119,7 +119,10 @@ public class Schedule extends BaseTimeEntity {
         return !this.appointmentAt.equals(newAppointmentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant());
     }
 
-    public void updateAppointmentAt(LocalDateTime appointmentAt) {
+    public void setupQuickSchedule(Long memberId, LocalDateTime appointmentAt) {
+        this.memberId = memberId;
+        this.title = "새로운 일정";
+        this.isRepeat = false;
         this.appointmentAt = DateTimeUtils.toInstant(appointmentAt);
     }
 

@@ -32,11 +32,11 @@ public class ScheduleService {
             latestSchedule.getDepartureAlarm().updateTriggeredAt(
                     appointmentAt.minusMinutes(estimatedTime)
             );
-            latestSchedule.updateAppointmentAt(appointmentAt);
+            latestSchedule.setupQuickSchedule(member.getId(), appointmentAt);
 
             return latestSchedule;
         } else {
-            return Schedule.createWithDefaultAlarmSetting(
+            Schedule defaultSchedule = Schedule.createWithDefaultAlarmSetting(
                     member.getDefaultAlarmMode(),
                     member.getSnooze(),
                     member.getSound(),
@@ -44,6 +44,9 @@ public class ScheduleService {
                     estimatedTime,
                     member.getPreparationTime()
             );
+            defaultSchedule.setupQuickSchedule(member.getId(), appointmentAt);
+
+            return defaultSchedule;
         }
     }
 
