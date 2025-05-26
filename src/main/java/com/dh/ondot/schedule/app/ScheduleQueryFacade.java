@@ -33,7 +33,7 @@ public class ScheduleQueryFacade {
     }
 
     public HomeScheduleListResponse findAll(Long memberId, Pageable page) {
-        Member member = memberService.findExistingMember(memberId);
+        memberService.findExistingMember(memberId);
         Slice<Schedule> slice =  scheduleQueryRepository.findPageByMember(memberId, page);
 
         // Refresh nextAlarmAt and filter out expired one-time schedules

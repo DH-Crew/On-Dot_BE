@@ -16,7 +16,7 @@ public class Place extends BaseTimeEntity {
     @Column(name = "place_id")
     private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "road_address", nullable = false)

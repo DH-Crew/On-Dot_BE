@@ -8,15 +8,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record ScheduleDetailResponse(
-        Long          scheduleId,
-        String        title,
-        boolean       isRepeat,
+        Long scheduleId,
+        String title,
+        boolean isRepeat,
         List<Integer> repeatDays,
         LocalDateTime appointmentAt,
         AlarmDto preparationAlarm,
         AlarmDto departureAlarm,
         PlaceDto departurePlace,
-        PlaceDto      arrivalPlace
+        PlaceDto arrivalPlace
 ) {
     public static ScheduleDetailResponse from(Schedule s) {
         return new ScheduleDetailResponse(

@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record PlaceDto(
-        String title,
+        @NotBlank String title,
 
         @NotBlank String roadAddress,
 
