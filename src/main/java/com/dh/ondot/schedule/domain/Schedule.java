@@ -97,6 +97,7 @@ public class Schedule extends BaseTimeEntity {
                                 appointmentAt, estimatedTime
                         )
                 )
+                .appointmentAt(DateTimeUtils.toInstant(appointmentAt))
                 .build();
     }
 
@@ -116,6 +117,10 @@ public class Schedule extends BaseTimeEntity {
 
     public boolean isAppointmentTimeChanged(LocalDateTime newAppointmentAt) {
         return !this.appointmentAt.equals(newAppointmentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant());
+    }
+
+    public void updateAppointmentAt(LocalDateTime appointmentAt) {
+        this.appointmentAt = DateTimeUtils.toInstant(appointmentAt);
     }
 
     public void updateNextAlarmAt() {

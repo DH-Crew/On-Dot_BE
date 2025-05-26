@@ -32,6 +32,7 @@ public class ScheduleService {
             latestSchedule.getDepartureAlarm().updateTriggeredAt(
                     appointmentAt.minusMinutes(estimatedTime)
             );
+            latestSchedule.updateAppointmentAt(appointmentAt);
 
             return latestSchedule;
         } else {
