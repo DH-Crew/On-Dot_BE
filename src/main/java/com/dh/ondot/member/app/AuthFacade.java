@@ -28,10 +28,10 @@ public class AuthFacade {
                 .orElseGet(() -> registerMemberWithOauth(userInfo, oauthProvider));
 
         boolean isNewMember = member.isNewMember();
+        Token token = tokenFacade.issue(member.getId());
         if (isNewMember) {
-            return LoginResponse.of("", "", true);
+            return LoginResponse.of(token.accessToken(), "", true);
         } else {
-            Token token = tokenFacade.issue(member.getId());
             return LoginResponse.of(token.accessToken(), token.refreshToken(), false);
         }
     }
