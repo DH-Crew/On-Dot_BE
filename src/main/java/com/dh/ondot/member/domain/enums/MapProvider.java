@@ -8,7 +8,8 @@ import static com.dh.ondot.core.exception.ErrorCode.UNSUPPORTED_MAP_PROVIDER;
 
 public enum MapProvider {
     KAKAO,
-    NAVER;
+    NAVER,
+    APPLE;
 
     public static MapProvider from(String ringTone) {
         try {
