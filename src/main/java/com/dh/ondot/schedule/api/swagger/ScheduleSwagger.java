@@ -601,12 +601,13 @@ public interface ScheduleSwagger {
                             "soundCategory": "BRIGHT_ENERGY",
                             "ringTone": "FRACTURED_LOVE",
                             "volume": 0.2
-                          }
+                          },
                           "nextAlarmAt": "2025-05-10T18:30:00",
                           "isEnabled": true
                         }
                       ]
-                    }""")
+                    }
+                    """)
                             )
                     ),
                     @ApiResponse(
