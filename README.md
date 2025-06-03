@@ -38,4 +38,4 @@
 
 # 🗺️ 시스템 아키텍쳐
 
-<img width="970" alt="image" src="https://github.com/user-attachments/assets/d58bcfab-4326-4314-944a-5edbde7d8db9" />
+<img width="970" alt="image" src="https://github.com/user-attachments/assets/a332f8ee-2f71-45b1-9ca4-de2a3f9bc3a1" />
