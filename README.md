@@ -26,13 +26,6 @@
 
 [온닷 Swagger 주소](https://on-dot.site/swagger-ui/index.html#/)
 
-<br>
-
-# 📑 ERD 설계도
-[온닷 ERD 주소](https://www.erdcloud.com/d/cSRhmhtmesDNvRFn4)
-
-<img width="970" alt="image" src="https://github.com/user-attachments/assets/a2a97c14-af57-4179-9e5c-de16cd1982d3" />
-
 
 <br>
 
