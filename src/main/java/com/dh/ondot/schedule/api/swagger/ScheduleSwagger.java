@@ -225,13 +225,13 @@ public interface ScheduleSwagger {
                                                     value = """
                         {
                           "errorCode": "INVALID_JSON",
-                          "message":   "잘못된 JSON 형식입니다. 요청 데이터를 확인하세요."
+                          "message": "잘못된 JSON 형식입니다. 요청 데이터를 확인하세요."
                         }"""),
                                             @ExampleObject(name="파싱 실패",
                                                     value = """
                         {
                           "errorCode": "OPEN_AI_PARSING_ERROR",
-                          "message":   "약속 문장을 이해할 수 없습니다. 형식을 확인 후 다시 시도해주세요."
+                          "message": "약속 문장을 이해할 수 없습니다. 형식을 확인 후 다시 시도해주세요."
                         }""")
                                     }
                             )
@@ -247,7 +247,7 @@ public interface ScheduleSwagger {
                                     examples  = @ExampleObject(name="호출 제한 초과", value = """
                 {
                   "errorCode": "AI_USAGE_LIMIT_EXCEEDED",
-                  "message":   "오늘 사용 가능한 AI 사용 횟수를 초과했습니다. MemberId : 42, Date : 2025‑04‑16"
+                  "message": "오늘 사용 가능한 AI 사용 횟수를 초과했습니다. MemberId : 42, Date : 2025‑04‑16"
                 }""")
                             )
                     ),
@@ -262,7 +262,7 @@ public interface ScheduleSwagger {
                                     examples  = @ExampleObject(name="OpenAI 장애", value = """
                 {
                   "errorCode": "UNAVAILABLE_OPEN_AI_SERVER",
-                  "message":   "일시적으로 Open AI 서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+                  "message": "일시적으로 Open AI 서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
                 }""")
                             )
                     ),
@@ -277,14 +277,14 @@ public interface ScheduleSwagger {
                                     examples  = @ExampleObject(name="미처리 예외", value = """
                 {
                   "errorCode": "UNHANDLED_OPEN_AI",
-                  "message":   "Open AI 요청 과정에서 알 수 없는 문제가 발생했습니다. 관리자에게 문의해주세요."
+                  "message": "Open AI 요청 과정에서 알 수 없는 문제가 발생했습니다. 관리자에게 문의해주세요."
                 }""")
                             )
                     )
             }
     )
-    @PostMapping("/nlp")
-    ScheduleParsedResponse parse(
+    @PostMapping("/voice")
+    ScheduleParsedResponse parseVoiceSchedule(
             @RequestAttribute("memberId") Long memberId,
             @RequestBody ScheduleParsedRequest request
     );
@@ -352,7 +352,7 @@ public interface ScheduleSwagger {
                                                     value = """
                                 {
                                   "errorCode": "INVALID_JSON",
-                                  "message":   "잘못된 JSON 형식입니다. 요청 데이터를 확인하세요."
+                                  "message": "잘못된 JSON 형식입니다. 요청 데이터를 확인하세요."
                                 }"""
                                             ),
                                             @ExampleObject(
@@ -360,7 +360,7 @@ public interface ScheduleSwagger {
                                                     value = """
                                 {
                                   "errorCode": "FIELD_ERROR",
-                                  "message":   "입력이 잘못되었습니다."
+                                  "message": "입력이 잘못되었습니다."
                                 }"""
                                             ),
                                             @ExampleObject(
@@ -368,7 +368,7 @@ public interface ScheduleSwagger {
                                                     value = """
                                 {
                                   "errorCode": "ODSAY_BAD_INPUT",
-                                  "message":   "필수 입력값 형식 및 범위를 확인해주세요: SX"
+                                  "message": "필수 입력값 형식 및 범위를 확인해주세요: SX"
                                 }"""
                                             )
                                     }
@@ -385,7 +385,7 @@ public interface ScheduleSwagger {
                                             value = """
                             {
                               "errorCode": "ODSAY_NO_RESULT",
-                              "message":   "검색 결과가 없습니다: 출발지→도착지"
+                              "message": "검색 결과가 없습니다: 출발지→도착지"
                             }"""
                                     )
                             )
@@ -401,7 +401,7 @@ public interface ScheduleSwagger {
                                             value = """
                             {
                               "errorCode": "ODSAY_SERVER_ERROR",
-                              "message":   "ODSay 서버 내부 오류가 발생했습니다: timeout"
+                              "message": "ODSay 서버 내부 오류가 발생했습니다: timeout"
                             }"""
                                     )
                             )
@@ -418,7 +418,7 @@ public interface ScheduleSwagger {
                                                     value = """
                                 {
                                   "errorCode": "ODSAY_UNHANDLED_ERROR",
-                                  "message":   "ODSay API 처리 중 알 수 없는 오류가 발생했습니다: null"
+                                  "message": "ODSay API 처리 중 알 수 없는 오류가 발생했습니다: null"
                                 }"""
                                             ),
                                             @ExampleObject(
@@ -426,7 +426,7 @@ public interface ScheduleSwagger {
                                                     value = """
                                 {
                                   "errorCode": "SERVER_ERROR",
-                                  "message":   "서버 오류가 발생했습니다. 관리자에게 문의해주세요."
+                                  "message": "서버 오류가 발생했습니다. 관리자에게 문의해주세요."
                                 }"""
                                             )
                                     }
