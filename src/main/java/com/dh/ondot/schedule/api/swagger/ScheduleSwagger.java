@@ -124,18 +124,18 @@ public interface ScheduleSwagger {
     );
 
     /*──────────────────────────────────────────────────────
-     * 음성(STT) 기반 일정 생성
+     * 음성(STT) 기반 빠른 일정 생성
      *──────────────────────────────────────────────────────*/
     @Operation(
-            summary = "음성 기반 일정 생성",
+            summary = "빠른 일정 생성",
             description = """
-            STT(Speech-to-Text) 음성 인식 결과를 자연어 처리 기반 LLM(GPT)을 통해 구조화된 일정 데이터로 파싱하여 스케줄을 생성합니다.<br>
+            STT(Speech-to-Text) 음성 인식 결과를 자연어 처리 기반 LLM(GPT)을 통해 파싱된 데이터를 통해 스케줄을 생성합니다.<br>
             알람 관련 시간 계산은 비동기적으로 처리되며, 요청이 성공적으로 수신되면 202 Accepted 상태 코드를 반환합니다.
             """,
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
-                            schema = @Schema(implementation = VoiceScheduleCreateRequest.class),
+                            schema = @Schema(implementation = QuickScheduleCreateRequest.class),
                             examples = @ExampleObject(
                                     name = "voiceCreateRequest",
                                     value = """
@@ -162,10 +162,10 @@ public interface ScheduleSwagger {
                     @ApiResponse(responseCode = "400", description = "검증 오류")
             }
     )
-    @PostMapping("/voice")
-    void createVoiceSchedule(
+    @PostMapping("/quick")
+    void createQuickSchedule(
             @RequestAttribute("memberId") Long memberId,
-            @RequestBody VoiceScheduleCreateRequest request
+            @RequestBody QuickScheduleCreateRequest request
     );
 
     /*──────────────────────────────────────────────────────

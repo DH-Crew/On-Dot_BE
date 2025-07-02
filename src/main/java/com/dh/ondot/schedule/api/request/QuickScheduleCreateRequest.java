@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
-public record VoiceScheduleCreateRequest(
+public record QuickScheduleCreateRequest(
         @NotNull LocalDateTime appointmentAt,
 
         @NotNull @Valid PlaceDto departurePlace,

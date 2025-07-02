@@ -4,7 +4,7 @@ import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
 import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
-import com.dh.ondot.schedule.api.request.VoiceScheduleCreateRequest;
+import com.dh.ondot.schedule.api.request.QuickScheduleCreateRequest;
 import com.dh.ondot.schedule.app.dto.UpdateScheduleResult;
 import com.dh.ondot.schedule.domain.Alarm;
 import com.dh.ondot.schedule.domain.Place;
@@ -79,7 +79,7 @@ public class ScheduleCommandFacade {
     }
 
     @Transactional
-    public void createVoiceSchedule(Long memberId, VoiceScheduleCreateRequest request) {
+    public void createQuickSchedule(Long memberId, QuickScheduleCreateRequest request) {
         Member member = memberService.findExistingMember(memberId);
 
         Place departurePlace = Place.createPlace(
