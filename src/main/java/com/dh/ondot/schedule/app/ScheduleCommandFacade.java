@@ -5,12 +5,15 @@ import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
 import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
 import com.dh.ondot.schedule.api.request.QuickScheduleCreateRequest;
+import com.dh.ondot.schedule.api.response.ScheduleParsedResponse;
 import com.dh.ondot.schedule.app.dto.UpdateScheduleResult;
 import com.dh.ondot.schedule.domain.Alarm;
 import com.dh.ondot.schedule.domain.Place;
 import com.dh.ondot.schedule.domain.Schedule;
+import com.dh.ondot.schedule.domain.service.AiUsageService;
 import com.dh.ondot.schedule.domain.service.RouteService;
 import com.dh.ondot.schedule.domain.service.ScheduleService;
+import com.dh.ondot.schedule.infra.OpenAiPromptApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,8 @@ public class ScheduleCommandFacade {
     private final MemberService memberService;
     private final ScheduleService scheduleService;
     private final RouteService routeService;
+    private final AiUsageService aiUsageService;
+    private final OpenAiPromptApi openAiPromptApi;
 
     public Schedule createSchedule(Long memberId, ScheduleCreateRequest request) {
         Place departurePlace = Place.createPlace(
@@ -186,6 +191,13 @@ public class ScheduleCommandFacade {
         // todo: nextAlarmAt 업데이트 로직 추가
 
         return new UpdateScheduleResult(schedule, placeChanged || timeChanged);
+    }
+
+    @Transactional
+    public ScheduleParsedResponse parseVoiceSchedule(Long memberId, String sentence) {
+        memberService.findExistingMember(memberId);
+        aiUsageService.increaseUsage(memberId);
+        return openAiPromptApi.parseNaturalLanguage(sentence);
     }
 
     @Transactional
