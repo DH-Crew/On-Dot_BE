@@ -27,13 +27,13 @@ public class AlarmFacade {
     ) {
         Member member = memberService.findExistingMember(memberId);
 
-        Integer estimatedTime = routeService.calculateRouteTime(
+        int estimatedTimeMin = routeService.calculateRouteTime(
                 startX, startY,
                 endX, endY
         );
 
-        return scheduleService.createScheduleBasedOnMemberInfo(
-                member, appointmentAt, estimatedTime
+        return scheduleService.settingSchedule(
+                member, appointmentAt, estimatedTimeMin
         );
     }
 }
