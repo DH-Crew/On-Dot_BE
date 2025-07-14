@@ -16,38 +16,39 @@ import java.util.Optional;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
-    public Schedule createScheduleBasedOnMemberInfo(
-            Member member,
-            LocalDateTime appointmentAt,
-            Integer estimatedTime
+    public Schedule settingSchedule(
+            Member member, LocalDateTime appointmentAt, int estimatedTimeMin
     ) {
         Optional<Schedule> schedule = scheduleRepository
                 .findFirstByMemberIdOrderByUpdatedAtDesc(member.getId());
 
+        Schedule newSchedule;
         if (schedule.isPresent()) {
-            Schedule latestSchedule = copySchedule(schedule.get());
-            latestSchedule.getPreparationAlarm().updateTriggeredAt(
-                    appointmentAt.minusMinutes(estimatedTime + member.getPreparationTime())
-            );
-            latestSchedule.getDepartureAlarm().updateTriggeredAt(
-                    appointmentAt.minusMinutes(estimatedTime)
-            );
-            latestSchedule.setupQuickSchedule(member.getId(), appointmentAt);
-
-            return latestSchedule;
+            newSchedule = createFromLatestUserSetting(schedule.get(), member, appointmentAt, estimatedTimeMin);
         } else {
-            Schedule defaultSchedule = Schedule.createWithDefaultAlarmSetting(
-                    member.getDefaultAlarmMode(),
-                    member.getSnooze(),
-                    member.getSound(),
-                    appointmentAt,
-                    estimatedTime,
-                    member.getPreparationTime()
+            newSchedule = Schedule.createWithDefaultAlarmSetting(
+                    member.getDefaultAlarmMode(), member.getSnooze(), member.getSound(),
+                    appointmentAt, estimatedTimeMin, member.getPreparationTime()
             );
-            defaultSchedule.setupQuickSchedule(member.getId(), appointmentAt);
-
-            return defaultSchedule;
         }
+        newSchedule.setupQuickSchedule(member.getId(), appointmentAt);
+
+        return newSchedule;
+    }
+
+    private Schedule createFromLatestUserSetting(
+            Schedule latestSchedule, Member member,
+            LocalDateTime appointment, int estimatedTimeMin
+    ) {
+        Schedule copy = copySchedule(latestSchedule);
+
+        LocalDateTime depAlarmAt = appointment.minusMinutes(estimatedTimeMin);
+        LocalDateTime prepAlarmAt = depAlarmAt.minusMinutes(member.getPreparationTime());
+
+        copy.getDepartureAlarm().updateTriggeredAt(depAlarmAt);
+        copy.getPreparationAlarm().updateTriggeredAt(prepAlarmAt);
+
+        return copy;
     }
 
     @Transactional
