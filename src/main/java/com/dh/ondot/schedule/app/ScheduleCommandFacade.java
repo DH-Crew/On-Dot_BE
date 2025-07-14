@@ -6,15 +6,20 @@ import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
 import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
 import com.dh.ondot.schedule.api.request.QuickScheduleCreateRequest;
 import com.dh.ondot.schedule.api.response.ScheduleParsedResponse;
+import com.dh.ondot.schedule.app.command.QuickScheduleCommand;
 import com.dh.ondot.schedule.app.dto.UpdateScheduleResult;
+import com.dh.ondot.schedule.app.mapper.QuickScheduleMapper;
 import com.dh.ondot.schedule.domain.Alarm;
 import com.dh.ondot.schedule.domain.Place;
 import com.dh.ondot.schedule.domain.Schedule;
+import com.dh.ondot.schedule.domain.event.QuickScheduleRequestedEvent;
 import com.dh.ondot.schedule.domain.service.AiUsageService;
+import com.dh.ondot.schedule.domain.service.PlaceService;
 import com.dh.ondot.schedule.domain.service.RouteService;
 import com.dh.ondot.schedule.domain.service.ScheduleService;
 import com.dh.ondot.schedule.infra.OpenAiPromptApi;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +31,11 @@ public class ScheduleCommandFacade {
     private final MemberService memberService;
     private final ScheduleService scheduleService;
     private final RouteService routeService;
+    private final PlaceService placeService;
     private final AiUsageService aiUsageService;
+    private final QuickScheduleMapper quickScheduleMapper;
     private final OpenAiPromptApi openAiPromptApi;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Schedule createSchedule(Long memberId, ScheduleCreateRequest request) {
         Place departurePlace = Place.createPlace(
@@ -87,33 +95,38 @@ public class ScheduleCommandFacade {
     public void createQuickSchedule(Long memberId, QuickScheduleCreateRequest request) {
         Member member = memberService.findExistingMember(memberId);
 
-        Place departurePlace = Place.createPlace(
+        Place dep = Place.createPlace(
                 request.departurePlace().title(),
                 request.departurePlace().roadAddress(),
                 request.departurePlace().longitude(),
                 request.departurePlace().latitude()
         );
-
-        Place arrivalPlace = Place.createPlace(
+        Place arr = Place.createPlace(
                 request.arrivalPlace().title(),
                 request.arrivalPlace().roadAddress(),
                 request.arrivalPlace().longitude(),
                 request.arrivalPlace().latitude()
         );
-        // todo: 시간 계산 후 알람 생성 비동기 처리 + 생성 알림
 
-        Integer estimatedTime = routeService.calculateRouteTime(
+        int estimatedTime = routeService.calculateRouteTime(
                 request.departurePlace().longitude(), request.departurePlace().latitude(),
                 request.arrivalPlace().longitude(), request.arrivalPlace().latitude()
         );
 
-        Schedule schedule = scheduleService.createScheduleBasedOnMemberInfo(
+        Schedule schedule = scheduleService.settingSchedule(
                 member, request.appointmentAt(), estimatedTime
         );
-
-        schedule.registerPlaces(departurePlace, arrivalPlace);
+        schedule.registerPlaces(dep, arr);
 
         scheduleService.saveSchedule(schedule);
+    }
+
+    @Transactional
+    public void createQuickScheduleV1(Long memberId, QuickScheduleCreateRequest request) {
+        memberService.findExistingMember(memberId);
+        QuickScheduleCommand cmd = quickScheduleMapper.toCommand(memberId, request);
+        QuickScheduleRequestedEvent event = placeService.savePlaces(cmd);
+        eventPublisher.publishEvent(event);
     }
 
     @Transactional
@@ -205,10 +218,8 @@ public class ScheduleCommandFacade {
             Long memberId, Long scheduleId, boolean enabled
     ) {
         memberService.findExistingMember(memberId);
-
         Schedule schedule = scheduleService.findScheduleById(scheduleId);
         schedule.switchAlarm(enabled);
-
         return schedule;
     }
 
