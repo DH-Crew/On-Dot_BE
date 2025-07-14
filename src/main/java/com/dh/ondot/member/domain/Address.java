@@ -10,7 +10,13 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "addresses")
+@Table(
+        name = "addresses",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_member_type",
+                columnNames = {"member_id", "type"}
+        )
+)
 public class Address extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
