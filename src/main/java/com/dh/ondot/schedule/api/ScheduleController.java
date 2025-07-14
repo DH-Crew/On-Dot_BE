@@ -44,6 +44,15 @@ public class ScheduleController implements ScheduleSwagger {
         scheduleCommandFacade.createQuickSchedule(memberId, request);
     }
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PostMapping("/quickV1")
+    public void createQuickScheduleV1(
+            @RequestAttribute("memberId") Long memberId,
+            @Valid @RequestBody QuickScheduleCreateRequest request
+    ) {
+        scheduleCommandFacade.createQuickScheduleV1(memberId, request);
+    }
+
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/voice")
     public ScheduleParsedResponse parseVoiceSchedule(
