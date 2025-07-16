@@ -1,7 +1,7 @@
 package com.dh.ondot.schedule.infra;
 
-import com.dh.ondot.schedule.app.SearchRoadAddressApi;
-import com.dh.ondot.schedule.app.dto.PlaceSearchResult;
+import com.dh.ondot.schedule.application.SearchRoadAddressApi;
+import com.dh.ondot.schedule.application.dto.PlaceSearchResult;
 import com.dh.ondot.schedule.infra.dto.KakaoSearchRoadAddressResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

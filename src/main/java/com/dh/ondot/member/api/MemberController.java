@@ -9,7 +9,7 @@ import com.dh.ondot.member.api.response.OnboardingResponse;
 import com.dh.ondot.member.api.response.UpdateHomeAddressResponse;
 import com.dh.ondot.member.api.response.UpdateMapProviderResponse;
 import com.dh.ondot.member.api.swagger.MemberSwagger;
-import com.dh.ondot.member.app.MemberFacade;
+import com.dh.ondot.member.application.MemberFacade;
 import com.dh.ondot.member.domain.Address;
 import com.dh.ondot.member.domain.Member;
 import jakarta.validation.Valid;

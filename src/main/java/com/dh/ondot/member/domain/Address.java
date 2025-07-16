@@ -10,7 +10,13 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "addresses")
+@Table(
+        name = "addresses",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_member_type",
+                columnNames = {"member_id", "type"}
+        )
+)
 public class Address extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +36,7 @@ public class Address extends BaseTimeEntity {
     @Column(name = "road_address", nullable = false)
     private String roadAddress;
 
-    @Column(name = "longtitude", nullable = false)
+    @Column(name = "longitude", nullable = false)
     private Double longitude;
 
     @Column(name = "latitude", nullable = false)

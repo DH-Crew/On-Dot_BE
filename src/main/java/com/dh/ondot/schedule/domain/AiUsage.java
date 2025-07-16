@@ -42,7 +42,7 @@ public class AiUsage extends BaseTimeEntity {
     }
 
     public void increase() {
-        if (this.count >= 30) {
+        if (this.count >= 10) {
             throw new MaxAiUsageLimitExceededException(memberId, LocalDate.now());
         }
         this.count++;

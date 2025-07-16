@@ -3,10 +3,9 @@ package com.dh.ondot.schedule.api;
 import com.dh.ondot.schedule.api.request.*;
 import com.dh.ondot.schedule.api.response.*;
 import com.dh.ondot.schedule.api.swagger.ScheduleSwagger;
-import com.dh.ondot.schedule.app.ParseFacade;
-import com.dh.ondot.schedule.app.ScheduleCommandFacade;
-import com.dh.ondot.schedule.app.ScheduleQueryFacade;
-import com.dh.ondot.schedule.app.dto.UpdateScheduleResult;
+import com.dh.ondot.schedule.application.ScheduleCommandFacade;
+import com.dh.ondot.schedule.application.ScheduleQueryFacade;
+import com.dh.ondot.schedule.application.dto.UpdateScheduleResult;
 import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.domain.service.RouteService;
 import jakarta.validation.Valid;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class ScheduleController implements ScheduleSwagger {
     private final ScheduleQueryFacade scheduleQueryFacade;
     private final ScheduleCommandFacade scheduleCommandFacade;
-    private final ParseFacade parseFacade;
     private final RouteService routeService;
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -38,21 +36,30 @@ public class ScheduleController implements ScheduleSwagger {
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PostMapping("/voice")
-    public void createVoiceSchedule(
+    @PostMapping("/quick")
+    public void createQuickSchedule(
             @RequestAttribute("memberId") Long memberId,
-            @Valid @RequestBody VoiceScheduleCreateRequest request
+            @Valid @RequestBody QuickScheduleCreateRequest request
     ) {
-        scheduleCommandFacade.createVoiceSchedule(memberId, request);
+        scheduleCommandFacade.createQuickSchedule(memberId, request);
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PostMapping("/quickV1")
+    public void createQuickScheduleV1(
+            @RequestAttribute("memberId") Long memberId,
+            @Valid @RequestBody QuickScheduleCreateRequest request
+    ) {
+        scheduleCommandFacade.createQuickScheduleV1(memberId, request);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/nlp")
-    public ScheduleParsedResponse parse(
+    @PostMapping("/voice")
+    public ScheduleParsedResponse parseVoiceSchedule(
             @RequestAttribute("memberId") Long memberId,
             @Valid @RequestBody ScheduleParsedRequest request
     ) {
-        return parseFacade.parse(memberId, request.text());
+        return scheduleCommandFacade.parseVoiceSchedule(memberId, request.text());
     }
 
     @ResponseStatus(HttpStatus.OK)

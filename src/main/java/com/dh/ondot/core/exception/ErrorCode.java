@@ -21,6 +21,7 @@ public enum ErrorCode {
     MEDIA_TYPE_NOT_SUPPORTED(UNSUPPORTED_MEDIA_TYPE,"허용되지 않은 미디어 타입입니다."),
     SERVER_ERROR(INTERNAL_SERVER_ERROR,"서버 오류가 발생했습니다. 관리자에게 문의해주세요."),
     REDIS_UNAVAILABLE(SERVICE_UNAVAILABLE,"Redis 서버에 연결할 수 없습니다."),
+    EVENT_SERIALIZATION_FAILED(INTERNAL_SERVER_ERROR, "이벤트 직렬화 중 오류가 발생했습니다."),
 
     // Token
     INVALID_TOKEN_HEADER(UNAUTHORIZED, "토큰 헤더 형식이 잘못되었습니다."),
@@ -55,7 +56,7 @@ public enum ErrorCode {
     UNSUPPORTED_MISSION(BAD_REQUEST, "지원하지 않는 미션입니다. Mission : %s"),
     NOT_FOUND_SCHEDULE(NOT_FOUND, "일정을 찾을 수 없습니다. ScheduleId : %d"),
 
-    //Place
+    // Place
     PLACE_HISTORY_SERIALIZATION_FAILED(INTERNAL_SERVER_ERROR, "장소 검색 기록 직렬화 중 오류가 발생했습니다."),
 
     // AI
