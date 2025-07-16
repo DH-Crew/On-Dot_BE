@@ -40,6 +40,12 @@ spring:
       api-key: ${OPENAI_API_KEY}
       model: gpt-4o
 
+async:
+  event:
+    core-pool-size: 4
+    max-pool-size: 8
+    queue-capacity: 500
+
 oauth2:
   client:
     registration:
