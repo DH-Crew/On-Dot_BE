@@ -10,6 +10,7 @@ import com.dh.ondot.schedule.domain.service.RouteService;
 import com.dh.ondot.schedule.domain.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class QuickScheduleInternalEventHandler {
     private final ScheduleService scheduleService;
     private final PlaceRepository placeRepository;
 
+    @Transactional
     public void handleEvent(QuickScheduleRequestedEvent event) {
         Member member = memberService.findExistingMember(event.memberId());
         Place dep = placeRepository.getReferenceById(event.departurePlaceId());
