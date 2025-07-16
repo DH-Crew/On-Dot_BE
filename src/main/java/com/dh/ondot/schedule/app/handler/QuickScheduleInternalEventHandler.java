@@ -29,7 +29,7 @@ public class QuickScheduleInternalEventHandler {
                 arr.getLongitude(), arr.getLatitude()
         );
 
-        Schedule schedule = scheduleService.settingSchedule(
+        Schedule schedule = scheduleService.setupSchedule(
                 member, event.appointmentAt(), estimatedTimeMin
         );
         schedule.registerPlaces(dep, arr);

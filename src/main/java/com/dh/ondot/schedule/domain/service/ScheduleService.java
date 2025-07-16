@@ -16,11 +16,10 @@ import java.util.Optional;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
-    public Schedule settingSchedule(
+    public Schedule setupSchedule(
             Member member, LocalDateTime appointmentAt, int estimatedTimeMin
     ) {
-        Optional<Schedule> schedule = scheduleRepository
-                .findFirstByMemberIdOrderByUpdatedAtDesc(member.getId());
+        Optional<Schedule> schedule = scheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc(member.getId());
 
         Schedule newSchedule;
         if (schedule.isPresent()) {

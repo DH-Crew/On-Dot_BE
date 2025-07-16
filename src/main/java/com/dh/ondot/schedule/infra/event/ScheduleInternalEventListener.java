@@ -17,7 +17,7 @@ public class ScheduleInternalEventListener {
 
     @Async(EVENT_ASYNC_TASK_EXECUTOR)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void processOutboxOnCommit(QuickScheduleRequestedEvent event) {
+    public void processOutboxOnCommit(QuickScheduleRequestedEvent ignored) {
         dispatcher.dispatchPendingBatch();
     }
 }

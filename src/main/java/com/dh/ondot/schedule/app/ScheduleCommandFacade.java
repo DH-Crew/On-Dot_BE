@@ -113,7 +113,7 @@ public class ScheduleCommandFacade {
                 request.arrivalPlace().longitude(), request.arrivalPlace().latitude()
         );
 
-        Schedule schedule = scheduleService.settingSchedule(
+        Schedule schedule = scheduleService.setupSchedule(
                 member, request.appointmentAt(), estimatedTime
         );
         schedule.registerPlaces(dep, arr);

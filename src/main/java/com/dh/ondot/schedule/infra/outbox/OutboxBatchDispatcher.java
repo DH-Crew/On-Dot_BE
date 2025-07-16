@@ -32,11 +32,7 @@ public class OutboxBatchDispatcher {
 
     private void dispatchBatch(List<OutboxMessage> messages) {
         for (OutboxMessage msg : messages) {
-            try {
-                handler.handleInNewTx(msg);
-            } catch (Exception e) {
-                log.warn("Failed to process outbox message. It will be retried if possible. messageId={}", msg.getId(), e);
-            }
+            handler.handleInNewTx(msg);
         }
     }
 }

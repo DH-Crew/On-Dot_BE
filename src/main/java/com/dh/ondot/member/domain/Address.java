@@ -36,7 +36,7 @@ public class Address extends BaseTimeEntity {
     @Column(name = "road_address", nullable = false)
     private String roadAddress;
 
-    @Column(name = "longtitude", nullable = false)
+    @Column(name = "longitude", nullable = false)
     private Double longitude;
 
     @Column(name = "latitude", nullable = false)
