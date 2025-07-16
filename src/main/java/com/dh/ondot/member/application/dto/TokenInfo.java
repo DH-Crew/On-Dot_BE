@@ -1,4 +1,4 @@
-package com.dh.ondot.member.app.dto;
+package com.dh.ondot.member.application.dto;
 
 import java.time.Instant;
 

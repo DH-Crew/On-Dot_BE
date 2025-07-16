@@ -1,8 +1,8 @@
-package com.dh.ondot.member.app;
+package com.dh.ondot.member.application;
 
 import com.dh.ondot.member.api.request.OnboardingRequest;
 import com.dh.ondot.member.api.response.OnboardingResponse;
-import com.dh.ondot.member.app.dto.Token;
+import com.dh.ondot.member.application.dto.Token;
 import com.dh.ondot.member.core.exception.NotFoundAddressException;
 import com.dh.ondot.member.core.exception.NotFoundAnswerException;
 import com.dh.ondot.member.core.exception.NotFoundQuestionException;

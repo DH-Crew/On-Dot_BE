@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.app.port;
+package com.dh.ondot.schedule.application.port;
 
 import com.dh.ondot.schedule.core.exception.SerializationException;
 

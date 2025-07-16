@@ -3,7 +3,7 @@ package com.dh.ondot.schedule.api;
 import com.dh.ondot.schedule.api.request.SetAlarmRequest;
 import com.dh.ondot.schedule.api.response.SettingAlarmResponse;
 import com.dh.ondot.schedule.api.swagger.AlarmSwagger;
-import com.dh.ondot.schedule.app.AlarmFacade;
+import com.dh.ondot.schedule.application.AlarmFacade;
 import com.dh.ondot.schedule.domain.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

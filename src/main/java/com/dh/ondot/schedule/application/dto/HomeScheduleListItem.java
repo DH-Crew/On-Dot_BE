@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.app.dto;
+package com.dh.ondot.schedule.application.dto;
 
 import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.api.response.AlarmDto;

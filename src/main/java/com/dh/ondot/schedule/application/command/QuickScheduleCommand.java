@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.app.command;
+package com.dh.ondot.schedule.application.command;
 
 import java.time.LocalDateTime;
 

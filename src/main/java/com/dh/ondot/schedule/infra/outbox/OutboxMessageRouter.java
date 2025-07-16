@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.infra.outbox;
 
-import com.dh.ondot.schedule.app.handler.QuickScheduleInternalEventHandler;
+import com.dh.ondot.schedule.application.handler.QuickScheduleInternalEventHandler;
 import com.dh.ondot.schedule.domain.event.QuickScheduleRequestedEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

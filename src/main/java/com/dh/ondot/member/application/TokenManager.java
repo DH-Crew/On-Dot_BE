@@ -1,6 +1,6 @@
-package com.dh.ondot.member.app;
+package com.dh.ondot.member.application;
 
-import com.dh.ondot.member.app.dto.TokenInfo;
+import com.dh.ondot.member.application.dto.TokenInfo;
 import com.dh.ondot.member.core.exception.RefreshTokenExpiredException;
 import com.dh.ondot.member.core.exception.TokenExpiredException;
 import com.dh.ondot.member.core.exception.TokenInvalidException;

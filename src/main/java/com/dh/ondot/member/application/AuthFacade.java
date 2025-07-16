@@ -1,7 +1,7 @@
-package com.dh.ondot.member.app;
+package com.dh.ondot.member.application;
 
 import com.dh.ondot.member.api.response.LoginResponse;
-import com.dh.ondot.member.app.dto.Token;
+import com.dh.ondot.member.application.dto.Token;
 import com.dh.ondot.member.domain.*;
 import com.dh.ondot.member.domain.dto.UserInfo;
 import com.dh.ondot.member.domain.enums.OauthProvider;

@@ -1,6 +1,6 @@
-package com.dh.ondot.schedule.app;
+package com.dh.ondot.schedule.application;
 
-import com.dh.ondot.schedule.app.dto.PlaceSearchResult;
+import com.dh.ondot.schedule.application.dto.PlaceSearchResult;
 
 import java.util.List;
 

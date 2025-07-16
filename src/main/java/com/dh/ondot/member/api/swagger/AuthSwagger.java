@@ -3,7 +3,7 @@ package com.dh.ondot.member.api.swagger;
 import com.dh.ondot.core.domain.ErrorResponse;
 import com.dh.ondot.member.api.response.AccessToken;
 import com.dh.ondot.member.api.response.LoginResponse;
-import com.dh.ondot.member.app.dto.Token;
+import com.dh.ondot.member.application.dto.Token;
 import com.dh.ondot.member.domain.enums.OauthProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

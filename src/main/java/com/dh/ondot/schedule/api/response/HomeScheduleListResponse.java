@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.api.response;
 
-import com.dh.ondot.schedule.app.dto.HomeScheduleListItem;
+import com.dh.ondot.schedule.application.dto.HomeScheduleListItem;
 
 import java.time.LocalDateTime;
 import java.util.List;

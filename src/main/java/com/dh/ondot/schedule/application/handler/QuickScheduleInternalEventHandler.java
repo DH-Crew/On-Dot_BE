@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.app.handler;
+package com.dh.ondot.schedule.application.handler;
 
 import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.service.MemberService;

@@ -1,6 +1,6 @@
-package com.dh.ondot.schedule.app;
+package com.dh.ondot.schedule.application;
 
-import com.dh.ondot.schedule.app.dto.PlaceSearchResult;
+import com.dh.ondot.schedule.application.dto.PlaceSearchResult;
 import com.dh.ondot.schedule.domain.PlaceHistory;
 import com.dh.ondot.schedule.domain.service.PlaceHistoryService;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.dh.ondot.core.interceptor;
 
-import com.dh.ondot.member.app.TokenFacade;
+import com.dh.ondot.member.application.TokenFacade;
 import com.dh.ondot.member.core.exception.InvalidTokenHeaderException;
 import com.dh.ondot.member.core.exception.TokenMissingException;
 import jakarta.servlet.http.HttpServletRequest;

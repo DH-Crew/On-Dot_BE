@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.app;
+package com.dh.ondot.schedule.application;
 
 import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.service.MemberService;
@@ -6,9 +6,9 @@ import com.dh.ondot.schedule.api.request.ScheduleCreateRequest;
 import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest;
 import com.dh.ondot.schedule.api.request.QuickScheduleCreateRequest;
 import com.dh.ondot.schedule.api.response.ScheduleParsedResponse;
-import com.dh.ondot.schedule.app.command.QuickScheduleCommand;
-import com.dh.ondot.schedule.app.dto.UpdateScheduleResult;
-import com.dh.ondot.schedule.app.mapper.QuickScheduleMapper;
+import com.dh.ondot.schedule.application.command.QuickScheduleCommand;
+import com.dh.ondot.schedule.application.dto.UpdateScheduleResult;
+import com.dh.ondot.schedule.application.mapper.QuickScheduleMapper;
 import com.dh.ondot.schedule.domain.Alarm;
 import com.dh.ondot.schedule.domain.Place;
 import com.dh.ondot.schedule.domain.Schedule;

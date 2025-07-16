@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.app.dto;
+package com.dh.ondot.schedule.application.dto;
 
 public record PlaceSearchResult(
         String title,

@@ -1,10 +1,9 @@
-package com.dh.ondot.schedule.app;
+package com.dh.ondot.schedule.application;
 
 import com.dh.ondot.core.util.DateTimeUtils;
-import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.schedule.api.response.*;
-import com.dh.ondot.schedule.app.dto.HomeScheduleListItem;
+import com.dh.ondot.schedule.application.dto.HomeScheduleListItem;
 import com.dh.ondot.schedule.core.exception.NotFoundScheduleException;
 import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.infra.ScheduleQueryRepository;

@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.domain.service;
 
-import com.dh.ondot.schedule.app.command.QuickScheduleCommand;
+import com.dh.ondot.schedule.application.command.QuickScheduleCommand;
 import com.dh.ondot.schedule.domain.Place;
 import com.dh.ondot.schedule.domain.event.QuickScheduleRequestedEvent;
 import com.dh.ondot.schedule.domain.repository.PlaceRepository;
