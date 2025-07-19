@@ -1,7 +1,7 @@
 package com.dh.ondot.schedule.domain.service;
 
 import com.dh.ondot.core.util.GeoUtils;
-import com.dh.ondot.schedule.infra.OdsayPathApi;
+import com.dh.ondot.schedule.infra.api.OdsayPathApi;
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse;
 import com.dh.ondot.schedule.infra.exception.OdsayTooCloseException;
 import lombok.RequiredArgsConstructor;
