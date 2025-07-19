@@ -103,6 +103,8 @@ jobs:
               -e NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
               -e NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
               -e ODSAY_CLIENT_API_KEY=${{ secrets.ODSAY_CLIENT_API_KEY }} \
+              -e SEOUL_TRANSPORTATION_SERVICE_KEY=${{ secrets.SEOUL_TRANSPORTATION_SERVICE_KEY }} \
+              -e SAFETY_DATA_SERVICE_KEY=${{ secrets.SAFETY_DATA_SERVICE_KEY }} \
               -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
               -e PROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }} \
               --name ${{ secrets.DOCKER_REPOSITORY }} \
