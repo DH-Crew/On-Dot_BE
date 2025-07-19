@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -538,6 +539,66 @@ public interface ScheduleSwagger {
     @GetMapping("/{scheduleId}")
     ScheduleDetailResponse getSchedule(
             @RequestAttribute("memberId") Long memberId,
+            @PathVariable Long scheduleId
+    );
+
+    /*──────────────────────────────────────────────────────
+     * 일정별 이슈 조회
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+            summary     = "일정별 이슈 조회",
+            description = """
+            <code>scheduleId</code>에 해당하는 일정의 <b>도착지</b> 주변 긴급 재난문자 및 지하철 알림 메시지를 한데 모아<br>
+            각 메시지를 줄바꿈(`\\n`)으로 구분한 단일 문자열로 반환합니다.<br>
+            사용자가 설정한 일정의 도착지에 등록된 이슈를 빠르게 확인할 때 사용합니다.
+            """,
+            parameters  = {
+                    @Parameter(
+                            name        = "scheduleId",
+                            in          = ParameterIn.PATH,
+                            required    = true,
+                            description = "조회할 스케줄 ID",
+                            example     = "1001"
+                    )
+            },
+            responses   = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description  = "이슈 조회 성공",
+                            content      = @Content(
+                                    mediaType = MediaType.TEXT_PLAIN_VALUE,
+                                    schema    = @Schema(type = "string"),
+                                    examples  = @ExampleObject(value = """
+                        목적지 인근에 다음과 같은 이슈가 있습니다.  
+                        오늘 06:09:03: 3호선 특정장애인단체 시위 예정으로 지연될 수 있습니다.  
+                        오늘 03:07:04: 서울특별시 동작구에 호우경보가 발령되었습니다.  
+                        """
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description  = "스케줄 또는 멤버를 찾을 수 없음",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = ErrorResponse.class),
+                                    examples  = {
+                                            @ExampleObject(
+                                                    name    = "NOT_FOUND_SCHEDULE",
+                                                    summary = "스케줄 없음",
+                                                    value   = """
+                            {
+                              "errorCode": "NOT_FOUND_SCHEDULE",
+                              "message": "일정을 찾을 수 없습니다. ScheduleId : 1001"
+                            }
+                            """
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
+    public String getScheduleIssues(
             @PathVariable Long scheduleId
     );
 

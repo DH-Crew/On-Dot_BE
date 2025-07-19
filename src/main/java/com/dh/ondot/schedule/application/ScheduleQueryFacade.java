@@ -2,6 +2,7 @@ package com.dh.ondot.schedule.application;
 
 import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.member.domain.service.MemberService;
+import com.dh.ondot.notification.domain.service.EmergencyAlertService;
 import com.dh.ondot.schedule.api.response.*;
 import com.dh.ondot.schedule.application.dto.HomeScheduleListItem;
 import com.dh.ondot.schedule.core.exception.NotFoundScheduleException;
@@ -22,7 +23,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ScheduleQueryFacade {
     private final MemberService memberService;
-    private final ScheduleQueryRepository  scheduleQueryRepository;
+    private final EmergencyAlertService emergencyAlertService;
+    private final ScheduleQueryRepository scheduleQueryRepository;
 
     public Schedule findOne(Long memberId, Long scheduleId) {
         memberService.findExistingMember(memberId);
@@ -57,5 +59,14 @@ public class ScheduleQueryFacade {
                 .orElse(null);
 
         return HomeScheduleListResponse.of(earliest, homeScheduleListItem, slice.hasNext());
+    }
+
+    @Transactional(readOnly = true)
+    public String getIssues(Long scheduleId) {
+        Schedule schedule = scheduleQueryRepository.findScheduleById(scheduleId)
+                .orElseThrow(() -> new NotFoundScheduleException(scheduleId));
+        String roadAddress = schedule.getArrivalPlace().getRoadAddress();
+        // todo: 출발지 기반 긴급 알림, 지하철 알림 추가
+        return emergencyAlertService.getIssuesByAddress(roadAddress);
     }
 }

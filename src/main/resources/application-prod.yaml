@@ -72,6 +72,14 @@ odsay:
   base-url: https://api.odsay.com/v1/api/searchPubTransPathT
   api-key: ${ODSAY_CLIENT_API_KEY}
 
+external-api:
+  seoul-transportation:
+    base-url: https://apis.data.go.kr/B553766/ntce/getNtceList
+    service-key: ${SEOUL_TRANSPORTATION_SERVICE_KEY}
+  safety-data:
+    base-url: https://www.safetydata.go.kr//V2/api/DSSP-IF-00247
+    service-key: ${SAFETY_DATA_SERVICE_KEY}
+
 management:
   endpoints:
     web:

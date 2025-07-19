@@ -17,13 +17,22 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class ScheduleQueryRepository {
-    private final JPAQueryFactory q;
-
     private static final QSchedule s  = QSchedule.schedule;
     private static final QAlarm pa = new QAlarm("pa");// preparationAlarm
     private static final QAlarm da = new QAlarm("da");// departureAlarm
     private static final QPlace dp = new QPlace("dp");// departurePlace
     private static final QPlace ap = new QPlace("ap");// arrivalPlace
+
+    private final JPAQueryFactory q;
+
+    public Optional<Schedule> findScheduleById(Long scheduleId) {
+        Schedule result = q.selectFrom(s)
+                .join(s.departurePlace, dp).fetchJoin()
+                .join(s.arrivalPlace, ap).fetchJoin()
+                .where(s.id.eq(scheduleId))
+                .fetchOne();
+        return Optional.ofNullable(result);
+    }
 
     public Optional<Schedule> findScheduleByMemberIdAndId(Long memberId, Long scheduleId) {
         Schedule result = q.selectFrom(s)

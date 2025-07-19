@@ -17,7 +17,7 @@ import com.dh.ondot.schedule.domain.service.AiUsageService;
 import com.dh.ondot.schedule.domain.service.PlaceService;
 import com.dh.ondot.schedule.domain.service.RouteService;
 import com.dh.ondot.schedule.domain.service.ScheduleService;
-import com.dh.ondot.schedule.infra.OpenAiPromptApi;
+import com.dh.ondot.schedule.infra.api.OpenAiPromptApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

@@ -87,6 +87,14 @@ public class ScheduleController implements ScheduleSwagger {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{scheduleId}/issues")
+    public String getScheduleIssues(
+            @PathVariable Long scheduleId
+    ) {
+        return scheduleQueryFacade.getIssues(scheduleId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public HomeScheduleListResponse getSchedules(
             @RequestAttribute("memberId") Long memberId,
