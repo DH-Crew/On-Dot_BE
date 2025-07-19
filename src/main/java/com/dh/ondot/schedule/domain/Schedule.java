@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.domain;
 
-import com.dh.ondot.core.AggregateRoot;
+import com.dh.ondot.core.annotation.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
 import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.domain.converter.RepeatDaysConverter;

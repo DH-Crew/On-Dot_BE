@@ -1,5 +1,7 @@
-package com.dh.ondot.notification.domain;
+package com.dh.ondot.notification.domain.service;
 
+import com.dh.ondot.notification.domain.EmergencyAlert;
+import com.dh.ondot.notification.domain.SubwayAlert;
 import com.dh.ondot.notification.domain.dto.EmergencyAlertDto;
 import com.dh.ondot.notification.domain.dto.SubwayAlertDto;
 import com.dh.ondot.notification.domain.repository.EmergencyAlertRepository;

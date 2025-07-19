@@ -1,7 +1,7 @@
 package com.dh.ondot.notification.infra;
 
 import com.dh.ondot.core.util.DateTimeUtils;
-import com.dh.ondot.notification.domain.AlertService;
+import com.dh.ondot.notification.domain.service.AlertService;
 import com.dh.ondot.notification.domain.dto.EmergencyAlertDto;
 import com.dh.ondot.notification.domain.dto.SubwayAlertDto;
 import com.dh.ondot.notification.infra.api.EmergencyAlertApi;
