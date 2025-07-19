@@ -1,8 +1,10 @@
 package com.dh.ondot.notification.domain;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,7 +26,7 @@ public class EmergencyAlert {
     String regionName;
 
     @Column(name="created_at", nullable = false, unique = true)
-    LocalDateTime createdAt;
+    Instant createdAt;
 
     public static EmergencyAlert create(
             String content,
@@ -34,7 +36,7 @@ public class EmergencyAlert {
         return EmergencyAlert.builder()
                 .content(content)
                 .regionName(regionName)
-                .createdAt(createdAt)
+                .createdAt(DateTimeUtils.toInstant(createdAt))
                 .build();
     }
 }

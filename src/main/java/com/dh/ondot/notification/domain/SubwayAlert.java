@@ -1,8 +1,10 @@
 package com.dh.ondot.notification.domain;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,10 +29,10 @@ public class SubwayAlert {
     String lineName;
 
     @Column(name="start_time")
-    LocalDateTime startTime;
+    Instant startTime;
 
     @Column(name="created_at", nullable = false, unique = true)
-    LocalDateTime createdAt;
+    Instant createdAt;
 
     public static SubwayAlert create(
             String title,
@@ -43,8 +45,8 @@ public class SubwayAlert {
                 .title(title)
                 .content(content)
                 .lineName(lineName)
-                .startTime(startTime)
-                .createdAt(createdAt)
+                .startTime(DateTimeUtils.toInstant(startTime))
+                .createdAt(DateTimeUtils.toInstant(createdAt))
                 .build();
     }
 }

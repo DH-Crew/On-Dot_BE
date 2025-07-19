@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,8 +23,8 @@ public class EmergencyAlertService {
         String allRegion = provinceKey + " 전체";
 
         LocalDate today = DateTimeUtils.nowSeoulDate();
-        LocalDateTime from = today.atStartOfDay();
-        LocalDateTime to   = today.plusDays(1).atStartOfDay();
+        Instant from = DateTimeUtils.toInstant(today.atStartOfDay());
+        Instant to = DateTimeUtils.toInstant(today.plusDays(1).atStartOfDay());
         List<EmergencyAlert> alerts = emergencyAlertRepository.findAllByCreatedAtBetween(from, to);
 
         List<String> contents = alerts.stream()

@@ -57,11 +57,15 @@ public class SubwayAlertApi {
                 // build(true) → 컴포넌트들(여기서는 serviceKey 등)이 이미 인코딩된 상태라고 보고 다시 인코딩하지 않도록 처리
                 .build(true)
                 .toUri();
-
-        return restClient.get()
-                .uri(uri)
-                .retrieve()
-                .body(String.class);
+        try {
+            return restClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .body(String.class);
+        } catch (Exception e) {
+            log.error("Failed to fetch subway alerts for date: {}", date, e);
+            throw new RuntimeException("Failed to fetch subway alerts", e);
+        }
     }
 
     private JsonNode extractItemsNode(String rawJson) {
@@ -99,8 +103,15 @@ public class SubwayAlertApi {
         String lineName = node.path("lineNmLst").asText();
         String beginDateTime = node.path("xcseSitnBgngDt").asText();
         String notificationOccurrenceTime = node.path("noftOcrnDt").asText();
-        LocalDateTime startAt = LocalDateTime.parse(beginDateTime);
-        LocalDateTime createdAt = LocalDateTime.parse(notificationOccurrenceTime);
+        LocalDateTime startAt;
+        LocalDateTime createdAt;
+        try {
+            startAt = LocalDateTime.parse(beginDateTime);
+            createdAt = LocalDateTime.parse(notificationOccurrenceTime);
+        } catch (Exception e) {
+            log.error("Failed to parse datetime fields: beginDateTime={}, notificationOccurrenceTime={}", beginDateTime, notificationOccurrenceTime, e);
+            throw new IllegalArgumentException("Invalid datetime format in subway alert data", e);
+        }
 
         return new SubwayAlertDto(title, content, lineName, startAt, createdAt);
     }

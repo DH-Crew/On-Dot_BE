@@ -66,7 +66,7 @@ public class ScheduleQueryFacade {
         Schedule schedule = scheduleQueryRepository.findScheduleById(scheduleId)
                 .orElseThrow(() -> new NotFoundScheduleException(scheduleId));
         String roadAddress = schedule.getArrivalPlace().getRoadAddress();
-        // todo: 지하철 알림 추가
+        // todo: 출발지 기반 긴급 알림, 지하철 알림 추가
         return emergencyAlertService.getIssuesByAddress(roadAddress);
     }
 }

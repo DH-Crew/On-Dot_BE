@@ -1,5 +1,6 @@
 package com.dh.ondot.notification.domain.service;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.notification.domain.EmergencyAlert;
 import com.dh.ondot.notification.domain.SubwayAlert;
 import com.dh.ondot.notification.domain.dto.EmergencyAlertDto;
@@ -10,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,17 +30,17 @@ public class AlertService {
     ) {
         if (dtos.isEmpty()) return;
 
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime nextDay = date.plusDays(1).atStartOfDay();
+        Instant startOfDay = DateTimeUtils.toInstant(date.atStartOfDay());
+        Instant nextDay = DateTimeUtils.toInstant(date.plusDays(1).atStartOfDay());
 
-        Set<LocalDateTime> existing = subwayAlertRepository
+        Set<Instant> existing = subwayAlertRepository
                 .findAllByCreatedAtBetween(startOfDay, nextDay)
                 .stream()
                 .map(SubwayAlert::getCreatedAt)
                 .collect(Collectors.toSet());
 
         List<SubwayAlert> toSave = dtos.stream()
-                .filter(dto -> !existing.contains(dto.createdAt()))
+                .filter(dto -> !existing.contains(DateTimeUtils.toInstant(dto.createdAt())))
                 .map(dto -> SubwayAlert.create(
                         dto.title(),
                         dto.content(),
@@ -61,17 +62,17 @@ public class AlertService {
     ) {
         if (dtos.isEmpty()) return;
 
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime nextDay = date.plusDays(1).atStartOfDay();
+        Instant startOfDay = DateTimeUtils.toInstant(date.atStartOfDay());
+        Instant nextDay = DateTimeUtils.toInstant(date.plusDays(1).atStartOfDay());
 
-        Set<LocalDateTime> existing = emergencyAlertRepository
+        Set<Instant> existing = emergencyAlertRepository
                 .findAllByCreatedAtBetween(startOfDay, nextDay)
                 .stream()
                 .map(EmergencyAlert::getCreatedAt)
                 .collect(Collectors.toSet());
 
         List<EmergencyAlert> toSave = dtos.stream()
-                .filter(dto -> !existing.contains(dto.createdAt()))
+                .filter(dto -> !existing.contains(DateTimeUtils.toInstant(dto.createdAt())))
                 .map(dto -> EmergencyAlert.create(
                         dto.content(),
                         dto.regionName(),
