@@ -18,11 +18,7 @@ import org.springframework.web.client.HttpServerErrorException;
 @Component
 @RequiredArgsConstructor
 public class OpenAiPromptApi {
-    private static final BeanOutputConverter<ScheduleParsedResponse> CONVERTER =
-            new BeanOutputConverter<>(ScheduleParsedResponse.class);
-
-    private final ChatClient chat;
-
+    private static final BeanOutputConverter<ScheduleParsedResponse> CONVERTER = new BeanOutputConverter<>(ScheduleParsedResponse.class);
     private static final String SYSTEM_TMPL = """
         Date: %s KST.
         Parse the Korean appointment sentence into JSON:
@@ -33,6 +29,8 @@ public class OpenAiPromptApi {
         - Bare hours (e.g., “6시”) → assume 18:00.
         - No 24‑hr notation; don’t roll times into the next day.
         """;
+
+    private final ChatClient chat;
 
     @Retryable(
             retryFor = { HttpServerErrorException.class },
