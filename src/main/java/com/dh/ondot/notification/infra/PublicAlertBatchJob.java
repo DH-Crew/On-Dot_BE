@@ -15,7 +15,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class EmergencyAlertBatchJob {
+public class PublicAlertBatchJob {
     private static final String EVERY_20_MINUTES = "0 0/20 * * * *";
 
     private final SubwayAlertApi subwayAlertApi;
