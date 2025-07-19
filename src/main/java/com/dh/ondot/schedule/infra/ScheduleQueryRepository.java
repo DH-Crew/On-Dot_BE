@@ -25,6 +25,15 @@ public class ScheduleQueryRepository {
 
     private final JPAQueryFactory q;
 
+    public Optional<Schedule> findScheduleById(Long scheduleId) {
+        Schedule result = q.selectFrom(s)
+                .join(s.departurePlace, dp).fetchJoin()
+                .join(s.arrivalPlace, ap).fetchJoin()
+                .where(s.id.eq(scheduleId))
+                .fetchOne();
+        return Optional.ofNullable(result);
+    }
+
     public Optional<Schedule> findScheduleByMemberIdAndId(Long memberId, Long scheduleId) {
         Schedule result = q.selectFrom(s)
                 .join(s.preparationAlarm, pa).fetchJoin()
