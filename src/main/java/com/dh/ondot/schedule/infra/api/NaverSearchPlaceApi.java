@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.infra;
+package com.dh.ondot.schedule.infra.api;
 
 import com.dh.ondot.schedule.application.SearchPlaceApi;
 import com.dh.ondot.schedule.application.dto.PlaceSearchResult;

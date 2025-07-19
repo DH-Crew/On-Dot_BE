@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.infra;
+package com.dh.ondot.schedule.infra.api;
 
 import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.schedule.api.response.ScheduleParsedResponse;
