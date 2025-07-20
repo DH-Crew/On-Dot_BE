@@ -7,6 +7,7 @@ import com.dh.ondot.schedule.api.response.*;
 import com.dh.ondot.schedule.application.dto.HomeScheduleListItem;
 import com.dh.ondot.schedule.core.exception.NotFoundScheduleException;
 import com.dh.ondot.schedule.domain.Schedule;
+import com.dh.ondot.schedule.domain.repository.ScheduleRepository;
 import com.dh.ondot.schedule.infra.ScheduleQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import java.util.List;
 public class ScheduleQueryFacade {
     private final MemberService memberService;
     private final EmergencyAlertService emergencyAlertService;
+    private final ScheduleRepository scheduleRepository;
     private final ScheduleQueryRepository scheduleQueryRepository;
 
     public Schedule findOne(Long memberId, Long scheduleId) {
@@ -61,7 +63,11 @@ public class ScheduleQueryFacade {
         return HomeScheduleListResponse.of(earliest, homeScheduleListItem, slice.hasNext());
     }
 
-    @Transactional(readOnly = true)
+    public Schedule getPreparationInfo(Long scheduleId) {
+        return scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new NotFoundScheduleException(scheduleId));
+    }
+
     public String getIssues(Long scheduleId) {
         Schedule schedule = scheduleQueryRepository.findScheduleById(scheduleId)
                 .orElseThrow(() -> new NotFoundScheduleException(scheduleId));

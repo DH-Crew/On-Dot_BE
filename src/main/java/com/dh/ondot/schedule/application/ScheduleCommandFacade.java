@@ -85,7 +85,9 @@ public class ScheduleCommandFacade {
                 request.title(),
                 request.isRepeat(),
                 new TreeSet<>(request.repeatDays()),
-                request.appointmentAt()
+                request.appointmentAt(),
+                request.isMedicationRequired(),
+                request.preparationNote()
         );
 
         return scheduleService.saveSchedule(schedule);

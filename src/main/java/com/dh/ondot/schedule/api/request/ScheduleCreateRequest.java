@@ -3,7 +3,6 @@ package com.dh.ondot.schedule.api.request;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 public record ScheduleCreateRequest(
@@ -16,6 +15,10 @@ public record ScheduleCreateRequest(
         List<@Min(1) @Max(7) Integer> repeatDays,
 
         @NotNull LocalDateTime appointmentAt,
+
+        @NotNull Boolean isMedicationRequired,
+
+        @Size(max = 100) String preparationNote,
 
         @NotNull @Valid PlaceDto departurePlace,
 

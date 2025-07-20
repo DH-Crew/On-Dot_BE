@@ -54,6 +54,8 @@ public interface ScheduleSwagger {
             <ul>
               <li><code>repeatDays</code> 는 1(일)~7(토) 숫자 배열입니다.</li>
               <li><code>triggeredAt</code> 은 <code>HH:mm:ss</code> 형태의 ISO‑8601 시간 문자열입니다.</li>
+              <li><code>isMedicationRequired</code> 는 복약 여부를 나타내는 boolean 값입니다.</li>
+              <li><code>preparationNote</code> 는 준비물 관련 메모이며 최대 100자까지 입력 가능합니다.</li>
             </ul>""",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
@@ -67,6 +69,8 @@ public interface ScheduleSwagger {
                       "isRepeat": true,
                       "repeatDays": [2, 4, 6],
                       "appointmentAt": "2025-05-10T19:00:00",
+                      "isMedicationRequired": true,
+                      "preparationNote": "준비물: 노트북, 충전기, 약",
                       "departurePlace": {
                         "title": "집",
                         "roadAddress": "서울특별시 강남구 테헤란로 123",
@@ -539,6 +543,64 @@ public interface ScheduleSwagger {
     @GetMapping("/{scheduleId}")
     ScheduleDetailResponse getSchedule(
             @RequestAttribute("memberId") Long memberId,
+            @PathVariable Long scheduleId
+    );
+
+    /*──────────────────────────────────────────────────────
+     * 일정 준비 정보 조회
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+            summary     = "일정 준비 정보 조회",
+            description = """
+        <code>scheduleId</code>에 해당하는 일정의 <b>준비 정보</b>를 반환합니다.  
+        - <code>isMedicationRequired</code>: 복약 여부  
+        - <code>preparationNote</code>: 준비물 메모 (최대 100자)
+        """,
+            parameters  = {
+                    @Parameter(
+                            name        = "scheduleId",
+                            in          = ParameterIn.PATH,
+                            required    = true,
+                            description = "조회할 스케줄 ID",
+                            example     = "1001"
+                    )
+            },
+            responses   = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description  = "준비 정보 조회 성공",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = SchedulePreparationResponse.class),
+                                    examples  = @ExampleObject(value = """
+                    {
+                      "isMedicationRequired": true,
+                      "preparationNote": "노트북, 충전기, 처방약 준비"
+                    }
+                """)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description  = "스케줄을 찾을 수 없음",
+                            content      = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema    = @Schema(implementation = ErrorResponse.class),
+                                    examples  = @ExampleObject(
+                                            name    = "NOT_FOUND_SCHEDULE",
+                                            summary = "스케줄 없음",
+                                            value   = """
+                        {
+                          "errorCode": "NOT_FOUND_SCHEDULE",
+                          "message": "일정을 찾을 수 없습니다. ScheduleId : 1001"
+                        }
+                    """
+                                    )
+                            )
+                    )
+            }
+    )
+    public SchedulePreparationResponse getPreparationInfo(
             @PathVariable Long scheduleId
     );
 

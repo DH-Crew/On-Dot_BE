@@ -61,10 +61,17 @@ public class Schedule extends BaseTimeEntity {
     @Column(name = "next_alarm_at")
     private Instant nextAlarmAt;
 
+    @Column(name = "is_medication_required", nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean isMedicationRequired;
+
+    @Column(name = "preparation_note", length = 100)
+    private String preparationNote;
+
     public static Schedule createSchedule(
             Long memberId, Place departurePlace, Place arrivalPlace,
             Alarm preparationAlarm, Alarm departureAlarm, String title,
-            Boolean isRepeat, SortedSet<Integer> repeatDays, LocalDateTime appointmentAt
+            Boolean isRepeat, SortedSet<Integer> repeatDays, LocalDateTime appointmentAt,
+            Boolean isMedicationRequired, String preparationNote
     ) {
         Schedule schedule = Schedule.builder()
                 .memberId(memberId)
@@ -76,6 +83,8 @@ public class Schedule extends BaseTimeEntity {
                 .isRepeat(isRepeat)
                 .repeatDays(isRepeat ? repeatDays : null)
                 .appointmentAt(DateTimeUtils.toInstant(appointmentAt))
+                .isMedicationRequired(isMedicationRequired)
+                .preparationNote(preparationNote)
                 .build();
 
         schedule.updateNextAlarmAt();
