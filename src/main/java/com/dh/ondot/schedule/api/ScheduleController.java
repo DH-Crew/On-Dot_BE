@@ -81,7 +81,7 @@ public class ScheduleController implements ScheduleSwagger {
             @RequestAttribute("memberId") Long memberId,
             @PathVariable Long scheduleId
     ) {
-        Schedule schedule = scheduleQueryFacade.findOne(memberId, scheduleId);
+        Schedule schedule = scheduleQueryFacade.findOneByMemberAndSchedule(memberId, scheduleId);
 
         return ScheduleDetailResponse.from(schedule);
     }
@@ -91,7 +91,7 @@ public class ScheduleController implements ScheduleSwagger {
     public SchedulePreparationResponse getPreparationInfo(
             @PathVariable Long scheduleId
     ) {
-        Schedule schedule = scheduleQueryFacade.getPreparationInfo(scheduleId);
+        Schedule schedule = scheduleQueryFacade.findOne(scheduleId);
 
         return SchedulePreparationResponse.from(schedule);
     }
@@ -112,7 +112,7 @@ public class ScheduleController implements ScheduleSwagger {
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return scheduleQueryFacade.findAll(memberId, pageable);
+        return scheduleQueryFacade.findAllActiveSchedules(memberId, pageable);
     }
 
     @PutMapping("/{scheduleId}")

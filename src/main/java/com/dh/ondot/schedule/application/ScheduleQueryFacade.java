@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.application;
 
+import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.notification.domain.service.EmergencyAlertService;
 import com.dh.ondot.schedule.api.response.*;
@@ -7,7 +8,6 @@ import com.dh.ondot.schedule.application.dto.HomeScheduleListItem;
 import com.dh.ondot.schedule.application.mapper.HomeScheduleListItemMapper;
 import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.domain.service.ScheduleQueryService;
-import com.dh.ondot.schedule.domain.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -22,12 +22,15 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ScheduleQueryFacade {
     private final MemberService memberService;
-    private final ScheduleService scheduleService;
     private final ScheduleQueryService scheduleQueryService;
     private final EmergencyAlertService emergencyAlertService;
     private final HomeScheduleListItemMapper homeScheduleListItemMapper;
 
-    public Schedule findOne(Long memberId, Long scheduleId) {
+    public Schedule findOne(Long scheduleId) {
+        return scheduleQueryService.findScheduleById(scheduleId);
+    }
+
+    public Schedule findOneByMemberAndSchedule(Long memberId, Long scheduleId) {
         memberService.findExistingMember(memberId);
         return scheduleQueryService.findScheduleByMemberIdAndId(memberId, scheduleId);
     }
@@ -36,13 +39,19 @@ public class ScheduleQueryFacade {
         memberService.findExistingMember(memberId);
         Slice<Schedule> slice = scheduleQueryService.getActiveSchedules(memberId, page);
         List<HomeScheduleListItem> items = homeScheduleListItemMapper.toListOrderedByNextAlarmAt(slice.getContent());
-        LocalDateTime earliest = scheduleService.findEarliestAlarmTime(items);
+        LocalDateTime earliest = findEarliestAlarmTime(items);
 
         return HomeScheduleListResponse.of(earliest, items, slice.hasNext());
     }
 
-    public Schedule getPreparationInfo(Long scheduleId) {
-        return scheduleQueryService.findScheduleById(scheduleId);
+    private LocalDateTime findEarliestAlarmTime(List<HomeScheduleListItem> items) {
+        LocalDateTime now = DateTimeUtils.nowSeoulDateTime();
+        return items.stream()
+                .filter(HomeScheduleListItem::isEnabled)
+                .map(HomeScheduleListItem::nextAlarmAt)
+                .filter(next -> next.isAfter(now))
+                .findFirst()
+                .orElse(null);
     }
 
     public String getIssues(Long scheduleId) {
