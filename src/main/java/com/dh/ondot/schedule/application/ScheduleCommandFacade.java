@@ -13,10 +13,7 @@ import com.dh.ondot.schedule.domain.Alarm;
 import com.dh.ondot.schedule.domain.Place;
 import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.domain.event.QuickScheduleRequestedEvent;
-import com.dh.ondot.schedule.domain.service.AiUsageService;
-import com.dh.ondot.schedule.domain.service.PlaceService;
-import com.dh.ondot.schedule.domain.service.RouteService;
-import com.dh.ondot.schedule.domain.service.ScheduleService;
+import com.dh.ondot.schedule.domain.service.*;
 import com.dh.ondot.schedule.infra.api.OpenAiPromptApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,6 +27,7 @@ import java.util.TreeSet;
 public class ScheduleCommandFacade {
     private final MemberService memberService;
     private final ScheduleService scheduleService;
+    private final ScheduleQueryService scheduleQueryService;
     private final RouteService routeService;
     private final PlaceService placeService;
     private final AiUsageService aiUsageService;
@@ -134,7 +132,7 @@ public class ScheduleCommandFacade {
     @Transactional
     public UpdateScheduleResult updateSchedule(Long memberId, Long scheduleId, ScheduleUpdateRequest request) {
         memberService.findExistingMember(memberId);
-        Schedule schedule = scheduleService.findScheduleById(scheduleId);
+        Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
 
         // 장소 변경 여부 확인
         boolean departureChanged = schedule.getDeparturePlace().isPlaceChanged(
@@ -220,14 +218,14 @@ public class ScheduleCommandFacade {
             Long memberId, Long scheduleId, boolean enabled
     ) {
         memberService.findExistingMember(memberId);
-        Schedule schedule = scheduleService.findScheduleById(scheduleId);
+        Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
         schedule.switchAlarm(enabled);
         return schedule;
     }
 
     public void deleteSchedule(Long memberId, Long scheduleId) {
         memberService.findExistingMember(memberId);
-        Schedule schedule = scheduleService.findScheduleById(scheduleId);
+        Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
         scheduleService.deleteSchedule(schedule);
     }
 }

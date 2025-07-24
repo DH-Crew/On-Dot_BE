@@ -114,10 +114,14 @@ public interface ScheduleSwagger {
                             content = @Content(schema = @Schema(implementation = ScheduleCreateResponse.class),
                                     examples = @ExampleObject(
                                             value = """
-                        {
-                          "scheduleId": 1001,
-                          "createdAt": "2025-05-10T18:29:30"
-                        }"""
+                                                      {
+                                                          "scheduleId": 1001,
+                                                          "estimateTime": 15,
+                                                          "preparationAlarmTime": "2025-05-10T18:30:00",
+                                                          "departureAlarmTime": "2025-05-10T18:50:00",
+                                                          "createdAt": "2025-05-10T18:29:30"
+                                                      }
+                                                    """
                                     ))),
                     @ApiResponse(responseCode = "400", description = "검증 오류")
             }

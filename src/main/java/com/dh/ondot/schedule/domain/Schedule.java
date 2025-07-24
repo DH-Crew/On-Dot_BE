@@ -135,6 +135,18 @@ public class Schedule extends BaseTimeEntity {
         this.appointmentAt = DateTimeUtils.toInstant(appointmentAt);
     }
 
+    public Instant computeNextAlarmAt() {
+        Instant now = DateTimeUtils.nowSeoulInstant();
+
+        Instant prepNext = calculateNextTriggeredAt(preparationAlarm.getTriggeredAt());
+        Instant deptNext = calculateNextTriggeredAt(departureAlarm.getTriggeredAt());
+
+        if (prepNext.isBefore(now)) {
+            return deptNext;
+        }
+        return prepNext.isBefore(deptNext) ? prepNext : deptNext;
+    }
+
     public void updateNextAlarmAt() {
         Instant preparationTriggeredAt = this.preparationAlarm.getTriggeredAt();
         Instant departureTriggeredAt = this.departureAlarm.getTriggeredAt();
@@ -151,14 +163,6 @@ public class Schedule extends BaseTimeEntity {
 
     public void switchAlarm(boolean enabled) {
         this.departureAlarm.changeEnabled(enabled);
-    }
-
-    public boolean isScheduleRepeated() {
-        return isRepeat;
-    }
-
-    public boolean isPastAppointment() {
-        return appointmentAt.isBefore(DateTimeUtils.nowSeoulInstant());
     }
 
     /**
