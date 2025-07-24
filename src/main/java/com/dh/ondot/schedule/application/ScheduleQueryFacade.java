@@ -1,14 +1,13 @@
 package com.dh.ondot.schedule.application;
 
-import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.notification.domain.service.EmergencyAlertService;
 import com.dh.ondot.schedule.api.response.*;
 import com.dh.ondot.schedule.application.dto.HomeScheduleListItem;
-import com.dh.ondot.schedule.core.exception.NotFoundScheduleException;
+import com.dh.ondot.schedule.application.mapper.HomeScheduleListItemMapper;
 import com.dh.ondot.schedule.domain.Schedule;
-import com.dh.ondot.schedule.domain.repository.ScheduleRepository;
-import com.dh.ondot.schedule.infra.ScheduleQueryRepository;
+import com.dh.ondot.schedule.domain.service.ScheduleQueryService;
+import com.dh.ondot.schedule.domain.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -24,53 +22,31 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ScheduleQueryFacade {
     private final MemberService memberService;
+    private final ScheduleService scheduleService;
+    private final ScheduleQueryService scheduleQueryService;
     private final EmergencyAlertService emergencyAlertService;
-    private final ScheduleRepository scheduleRepository;
-    private final ScheduleQueryRepository scheduleQueryRepository;
+    private final HomeScheduleListItemMapper homeScheduleListItemMapper;
 
     public Schedule findOne(Long memberId, Long scheduleId) {
         memberService.findExistingMember(memberId);
-
-        return scheduleQueryRepository.findScheduleByMemberIdAndId(memberId, scheduleId)
-                .orElseThrow(() -> new NotFoundScheduleException(scheduleId));
+        return scheduleQueryService.findScheduleByMemberIdAndId(memberId, scheduleId);
     }
 
-    public HomeScheduleListResponse findAll(Long memberId, Pageable page) {
+    public HomeScheduleListResponse findAllActiveSchedules(Long memberId, Pageable page) {
         memberService.findExistingMember(memberId);
-        Slice<Schedule> slice =  scheduleQueryRepository.findPageByMember(memberId, page);
+        Slice<Schedule> slice = scheduleQueryService.getActiveSchedules(memberId, page);
+        List<HomeScheduleListItem> items = homeScheduleListItemMapper.toListOrderedByNextAlarmAt(slice.getContent());
+        LocalDateTime earliest = scheduleService.findEarliestAlarmTime(items);
 
-        // Refresh nextAlarmAt and filter out expired one-time schedules
-        List<Schedule> filteredSchedules = slice.getContent().stream()
-                .filter(schedule -> schedule.isScheduleRepeated() || !schedule.isPastAppointment())
-                .peek(Schedule::updateNextAlarmAt)
-                .toList();
-
-        // todo: need delete logic for expired schedules
-
-        List<HomeScheduleListItem> homeScheduleListItem = filteredSchedules.stream()
-                .map(HomeScheduleListItem::from)
-                .sorted(Comparator.comparing(HomeScheduleListItem::nextAlarmAt))
-                .toList();
-
-        LocalDateTime now = DateTimeUtils.nowSeoulDateTime();
-        LocalDateTime earliest = homeScheduleListItem.stream()
-                .filter(HomeScheduleListItem::isEnabled)
-                .map(HomeScheduleListItem::nextAlarmAt)
-                .filter(next -> next.isAfter(now))
-                .findFirst()
-                .orElse(null);
-
-        return HomeScheduleListResponse.of(earliest, homeScheduleListItem, slice.hasNext());
+        return HomeScheduleListResponse.of(earliest, items, slice.hasNext());
     }
 
     public Schedule getPreparationInfo(Long scheduleId) {
-        return scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new NotFoundScheduleException(scheduleId));
+        return scheduleQueryService.findScheduleById(scheduleId);
     }
 
     public String getIssues(Long scheduleId) {
-        Schedule schedule = scheduleQueryRepository.findScheduleById(scheduleId)
-                .orElseThrow(() -> new NotFoundScheduleException(scheduleId));
+        Schedule schedule = scheduleQueryService.findScheduleByIdEager(scheduleId);
         String roadAddress = schedule.getArrivalPlace().getRoadAddress();
         // todo: 출발지 기반 긴급 알림, 지하철 알림 추가
         return emergencyAlertService.getIssuesByAddress(roadAddress);
