@@ -11,13 +11,14 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class ScheduleQueryRepository {
-    private static final QSchedule s  = QSchedule.schedule;
+    private static final QSchedule s = QSchedule.schedule;
     private static final QAlarm pa = new QAlarm("pa");// preparationAlarm
     private static final QAlarm da = new QAlarm("da");// departureAlarm
     private static final QPlace dp = new QPlace("dp");// departurePlace
@@ -45,21 +46,24 @@ public class ScheduleQueryRepository {
         return Optional.ofNullable(result);
     }
 
-    public Slice<Schedule> findPageByMember(Long memberId, Pageable pageable) {
+    public Slice<Schedule> findActiveSchedulesByMember(Long memberId, Instant now, Pageable pageable) {
         List<Schedule> content = q.selectFrom(s)
                 .join(s.departurePlace, dp).fetchJoin()
                 .join(s.arrivalPlace, ap).fetchJoin()
                 .join(s.preparationAlarm, pa).fetchJoin()
                 .join(s.departureAlarm, da).fetchJoin()
-                .where(s.memberId.eq(memberId))
+                .where(s.memberId.eq(memberId)
+                        .and(s.isRepeat.isTrue().or(s.appointmentAt.goe(now)))
+                )
                 .orderBy(s.nextAlarmAt.asc(), s.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
         boolean hasNext = content.size() > pageable.getPageSize();
-        if (hasNext) content.remove(content.size() - 1);
-
+        if (hasNext) {
+            content.remove(content.size() - 1);
+        }
         return new SliceImpl<>(content, pageable, hasNext);
     }
 }
