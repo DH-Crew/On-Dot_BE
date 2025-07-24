@@ -35,8 +35,6 @@ public class ScheduleQueryService {
 
     public Slice<Schedule> getActiveSchedules(Long memberId, Pageable page) {
         Instant now = DateTimeUtils.nowSeoulInstant();
-        Slice<Schedule> slice = scheduleQueryRepository.findActiveSchedulesByMember(memberId, now, page);
-        slice.getContent().forEach(Schedule::updateNextAlarmAt);
-        return slice;
+        return scheduleQueryRepository.findActiveSchedulesByMember(memberId, now, page);
     }
 }
