@@ -2,7 +2,12 @@ package com.dh.ondot.notification.domain.service;
 
 import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.notification.domain.EmergencyAlert;
+import com.dh.ondot.notification.domain.dto.EmergencyAlertDto;
 import com.dh.ondot.notification.domain.repository.EmergencyAlertRepository;
+import com.dh.ondot.notification.infra.emergency.EmergencyAlertApi;
+import com.dh.ondot.notification.infra.emergency.EmergencyAlertDtoMapper;
+import com.dh.ondot.notification.infra.emergency.EmergencyAlertJsonExtractor;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +19,16 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EmergencyAlertService {
+    private final EmergencyAlertApi emergencyAlertApi;
+    private final EmergencyAlertJsonExtractor emergencyAlertJsonExtractor;
+    private final EmergencyAlertDtoMapper emergencyAlertDtoMapper;
     private final EmergencyAlertRepository emergencyAlertRepository;
+
+    public List<EmergencyAlertDto> fetchAlertsByDate(LocalDate date) {
+        String rawJson = emergencyAlertApi.fetchAlertsByDate(date);
+        JsonNode alertsNode = emergencyAlertJsonExtractor.extractAlerts(rawJson);
+        return emergencyAlertDtoMapper.toDto(alertsNode);
+    }
 
     @Transactional(readOnly = true)
     public String getIssuesByAddress(String roadAddress) {
