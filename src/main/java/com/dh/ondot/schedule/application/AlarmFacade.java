@@ -23,7 +23,7 @@ public class AlarmFacade {
             Long memberId, LocalDateTime appointmentAt,
             Double startX, Double startY, Double endX, Double endY
     ) {
-        Member member = memberService.findExistingMember(memberId);
+        Member member = memberService.getMemberIfExists(memberId);
 
         int estimatedTimeMin = routeService.calculateRouteTime(
                 startX, startY,

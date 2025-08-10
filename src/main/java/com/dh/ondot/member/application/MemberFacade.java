@@ -31,21 +31,25 @@ public class MemberFacade {
 
     @Transactional
     public void deactivateMember(Long memberId, Long withdrawalReasonId, String customReason) {
-        Member member = memberService.findExistingMember(memberId);
+        Member member = memberService.getMemberIfExists(memberId);
         withdrawalService.saveWithdrawalReason(memberId, withdrawalReasonId, customReason);
         member.deactivate();
     }
 
+    public Member getMember(Long memberId) {
+        return memberService.getMemberIfExists(memberId);
+    }
+
     @Transactional(readOnly = true)
     public Address getHomeAddress(Long memberId) {
-        memberService.findExistingMember(memberId);
+        memberService.getMemberIfExists(memberId);
         return addressRepository.findByMemberIdAndType(memberId, AddressType.HOME)
                 .orElseThrow(() -> new NotFoundAddressException(memberId));
     }
 
     @Transactional
     public OnboardingResponse onboarding(Long memberId, OnboardingRequest request) {
-        Member member = memberService.findExistingMember(memberId);
+        Member member = memberService.getMemberIfExists(memberId);
         member.updateOnboarding(
                 request.preparationTime(), request.alarmMode(),
                 request.isSnoozeEnabled(), request.snoozeInterval(), request.snoozeCount(),
@@ -74,7 +78,7 @@ public class MemberFacade {
 
     @Transactional
     public Member updateMapProvider(Long memberId, String mapProvider) {
-        Member member = memberService.findExistingMember(memberId);
+        Member member = memberService.getMemberIfExists(memberId);
         member.updateMapProvider(mapProvider);
 
         return member;
@@ -83,7 +87,7 @@ public class MemberFacade {
     @Transactional
     public Address updateHomeAddress(Long memberId, String roadAddress,
                                      double longitude, double latitude) {
-        memberService.findExistingMember(memberId);
+        memberService.getMemberIfExists(memberId);
 
         Address address = addressRepository.findByMemberIdAndType(memberId, AddressType.HOME)
                 .orElseThrow(() -> new NotFoundAddressException(memberId));
