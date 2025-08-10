@@ -140,7 +140,7 @@ public interface MemberSwagger {
         mapProvider:
         - NAVER
         - KAKAO
-        - APPLW
+        - APPLE
         """,
             responses = {
                     @ApiResponse(responseCode = "200",
