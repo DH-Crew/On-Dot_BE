@@ -130,6 +130,48 @@ public interface MemberSwagger {
     HomeAddressResponse getHomeAddress(@RequestAttribute("memberId") Long memberId);
 
     /*──────────────────────────────────────────────────────
+     * MAP 제공자 조회
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+            summary = "회원 MAP 제공자 조회",
+            description = """
+        로그인한 회원의 현재 MAP 제공자 정보를 조회합니다.
+        
+        mapProvider:
+        - NAVER
+        - KAKAO
+        - APPLE
+        """,
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "조회 성공",
+                            content = @Content(schema = @Schema(implementation = MapProviderResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "success",
+                                            value = """
+                        {
+                          "mapProvider": "KAKAO",
+                          "updatedAt": "2025-08-10T14:32:00"
+                        }"""
+                                    ))),
+                    @ApiResponse(responseCode = "404",
+                            description = "회원 없음",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "memberNotFound",
+                                            summary = "NOT_FOUND_MEMBER",
+                                            value = """
+                            {
+                              "errorCode": "NOT_FOUND_MEMBER",
+                              "message": "회원을 찾을 수 없습니다. MemberId : 42"
+                            }"""
+                                    )))
+            }
+    )
+    @GetMapping("/map-provider")
+    MapProviderResponse getMapProvider(@RequestAttribute("memberId") Long memberId);
+
+    /*──────────────────────────────────────────────────────
      * 온보딩 완료
      *──────────────────────────────────────────────────────*/
     @Operation(
@@ -241,12 +283,12 @@ public interface MemberSwagger {
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "변경 성공",
-                            content = @Content(schema = @Schema(implementation = UpdateMapProviderResponse.class),
+                            content = @Content(schema = @Schema(implementation = MapProviderResponse.class),
                                     examples = @ExampleObject(
                                             name = "success",
                                             value = """
                         {
-                          "memberId": 42,
+                          "mapProvider": "KAKAO",
                           "updatedAt": "2025-05-11T09:00:00"
                         }"""
                                     ))),
@@ -273,8 +315,8 @@ public interface MemberSwagger {
             }
     )
     @PatchMapping("/map-provider")
-    UpdateMapProviderResponse updateMapProvider(@RequestAttribute("memberId") Long memberId,
-                                                @RequestBody UpdateMapProviderRequest request);
+    MapProviderResponse updateMapProvider(@RequestAttribute("memberId") Long memberId,
+                                          @RequestBody UpdateMapProviderRequest request);
 
     /*──────────────────────────────────────────────────────
      * HOME 주소 수정

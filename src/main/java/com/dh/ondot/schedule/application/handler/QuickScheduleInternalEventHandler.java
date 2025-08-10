@@ -22,7 +22,7 @@ public class QuickScheduleInternalEventHandler {
 
     @Transactional
     public void handleEvent(QuickScheduleRequestedEvent event) {
-        Member member = memberService.findExistingMember(event.memberId());
+        Member member = memberService.getMemberIfExists(event.memberId());
         Place dep = placeRepository.getReferenceById(event.departurePlaceId());
         Place arr = placeRepository.getReferenceById(event.arrivalPlaceId());
 

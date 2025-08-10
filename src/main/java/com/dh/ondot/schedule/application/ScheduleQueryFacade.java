@@ -31,12 +31,12 @@ public class ScheduleQueryFacade {
     }
 
     public Schedule findOneByMemberAndSchedule(Long memberId, Long scheduleId) {
-        memberService.findExistingMember(memberId);
+        memberService.getMemberIfExists(memberId);
         return scheduleQueryService.findScheduleByMemberIdAndId(memberId, scheduleId);
     }
 
     public HomeScheduleListResponse findAllActiveSchedules(Long memberId, Pageable page) {
-        memberService.findExistingMember(memberId);
+        memberService.getMemberIfExists(memberId);
         Slice<Schedule> slice = scheduleQueryService.getActiveSchedules(memberId, page);
         List<HomeScheduleListItem> items = homeScheduleListItemMapper.toListOrderedByNextAlarmAt(slice.getContent());
         LocalDateTime earliest = findEarliestAlarmTime(items);

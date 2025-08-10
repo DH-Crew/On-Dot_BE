@@ -93,7 +93,7 @@ public class ScheduleCommandFacade {
 
     @Transactional
     public void createQuickSchedule(Long memberId, QuickScheduleCreateRequest request) {
-        Member member = memberService.findExistingMember(memberId);
+        Member member = memberService.getMemberIfExists(memberId);
 
         Place dep = Place.createPlace(
                 request.departurePlace().title(),
@@ -123,7 +123,7 @@ public class ScheduleCommandFacade {
 
     @Transactional
     public void createQuickScheduleV1(Long memberId, QuickScheduleCreateRequest request) {
-        memberService.findExistingMember(memberId);
+        memberService.getMemberIfExists(memberId);
         QuickScheduleCommand cmd = quickScheduleMapper.toCommand(memberId, request);
         QuickScheduleRequestedEvent event = placeService.savePlaces(cmd);
         eventPublisher.publishEvent(event);
@@ -131,7 +131,7 @@ public class ScheduleCommandFacade {
 
     @Transactional
     public UpdateScheduleResult updateSchedule(Long memberId, Long scheduleId, ScheduleUpdateRequest request) {
-        memberService.findExistingMember(memberId);
+        memberService.getMemberIfExists(memberId);
         Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
 
         // 장소 변경 여부 확인
@@ -208,7 +208,7 @@ public class ScheduleCommandFacade {
 
     @Transactional
     public ScheduleParsedResponse parseVoiceSchedule(Long memberId, String sentence) {
-        memberService.findExistingMember(memberId);
+        memberService.getMemberIfExists(memberId);
         aiUsageService.increaseUsage(memberId);
         return openAiPromptApi.parseNaturalLanguage(sentence);
     }
@@ -217,14 +217,14 @@ public class ScheduleCommandFacade {
     public Schedule switchAlarm(
             Long memberId, Long scheduleId, boolean enabled
     ) {
-        memberService.findExistingMember(memberId);
+        memberService.getMemberIfExists(memberId);
         Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
         schedule.switchAlarm(enabled);
         return schedule;
     }
 
     public void deleteSchedule(Long memberId, Long scheduleId) {
-        memberService.findExistingMember(memberId);
+        memberService.getMemberIfExists(memberId);
         Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
         scheduleService.deleteSchedule(schedule);
     }

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    public Member findExistingMember(Long memberId) {
+    public Member getMemberIfExists(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundMemberException(memberId));
     }

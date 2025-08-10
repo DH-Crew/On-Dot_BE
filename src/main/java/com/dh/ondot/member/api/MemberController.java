@@ -7,7 +7,7 @@ import com.dh.ondot.member.api.request.WithdrawalRequest;
 import com.dh.ondot.member.api.response.HomeAddressResponse;
 import com.dh.ondot.member.api.response.OnboardingResponse;
 import com.dh.ondot.member.api.response.UpdateHomeAddressResponse;
-import com.dh.ondot.member.api.response.UpdateMapProviderResponse;
+import com.dh.ondot.member.api.response.MapProviderResponse;
 import com.dh.ondot.member.api.swagger.MemberSwagger;
 import com.dh.ondot.member.application.MemberFacade;
 import com.dh.ondot.member.domain.Address;
@@ -33,15 +33,6 @@ public class MemberController implements MemberSwagger {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/home-address")
-    public HomeAddressResponse getHomeAddress(
-            @RequestAttribute("memberId") Long memberId
-    ) {
-        Address address = memberFacade.getHomeAddress(memberId);
-        return HomeAddressResponse.from(address);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/onboarding")
     public OnboardingResponse onboarding(
             @RequestAttribute("memberId") Long memberId,
@@ -51,14 +42,32 @@ public class MemberController implements MemberSwagger {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/home-address")
+    public HomeAddressResponse getHomeAddress(
+            @RequestAttribute("memberId") Long memberId
+    ) {
+        Address address = memberFacade.getHomeAddress(memberId);
+        return HomeAddressResponse.from(address);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/map-provider")
+    public MapProviderResponse getMapProvider(
+            @RequestAttribute("memberId") Long memberId
+    ) {
+        Member member = memberFacade.getMember(memberId);
+        return MapProviderResponse.from(member);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/map-provider")
-    public UpdateMapProviderResponse updateMapProvider(
+    public MapProviderResponse updateMapProvider(
             @RequestAttribute("memberId") Long memberId,
             @Valid @RequestBody UpdateMapProviderRequest request
     ) {
         Member member = memberFacade.updateMapProvider(memberId, request.mapProvider());
 
-        return UpdateMapProviderResponse.from(member);
+        return MapProviderResponse.from(member);
     }
 
     @ResponseStatus(HttpStatus.OK)
