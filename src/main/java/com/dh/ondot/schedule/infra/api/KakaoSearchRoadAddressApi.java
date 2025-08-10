@@ -29,7 +29,9 @@ public class KakaoSearchRoadAddressApi implements SearchRoadAddressApi {
                 .body(KakaoSearchRoadAddressResponse.class);
 
         return response.documents().stream()
-                .filter(doc -> doc.roadAddress() != null)
+                .filter(doc -> doc.roadAddress() != null
+                        && doc.roadAddress().x() != null
+                        && doc.roadAddress().y() != null)
                 .map(doc -> new PlaceSearchResult(
                         doc.roadAddress().addressName(),
                         doc.roadAddress().addressName(),
