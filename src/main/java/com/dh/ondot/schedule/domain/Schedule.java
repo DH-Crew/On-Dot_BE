@@ -162,6 +162,7 @@ public class Schedule extends BaseTimeEntity {
     }
 
     public void switchAlarm(boolean enabled) {
+        this.preparationAlarm.changeEnabled(enabled);
         this.departureAlarm.changeEnabled(enabled);
     }
 
