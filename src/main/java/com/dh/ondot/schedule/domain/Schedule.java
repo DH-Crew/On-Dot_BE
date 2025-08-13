@@ -118,14 +118,14 @@ public class Schedule extends BaseTimeEntity {
     public void updateCore(String title, boolean isRepeat,
                            SortedSet<Integer> repeatDays, LocalDateTime appointmentAt
     ) {
-        this.title         = title;
-        this.isRepeat      = isRepeat;
-        this.repeatDays    = isRepeat ? repeatDays : null;
-        this.appointmentAt = appointmentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant();
+        this.title = title;
+        this.isRepeat = isRepeat;
+        this.repeatDays = isRepeat ? repeatDays : null;
+        this.appointmentAt = DateTimeUtils.toInstant(appointmentAt);
     }
 
     public boolean isAppointmentTimeChanged(LocalDateTime newAppointmentAt) {
-        return !this.appointmentAt.equals(newAppointmentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant());
+        return !this.appointmentAt.equals(DateTimeUtils.toInstant(newAppointmentAt));
     }
 
     public void setupQuickSchedule(Long memberId, LocalDateTime appointmentAt) {
@@ -157,7 +157,7 @@ public class Schedule extends BaseTimeEntity {
         if (preparationTime.isBefore(DateTimeUtils.nowSeoulInstant())) {
             this.nextAlarmAt = departureTime;
         } else {
-            this.nextAlarmAt = preparationTime.isBefore(departureTime)? preparationTime : departureTime;
+            this.nextAlarmAt = preparationTime.isBefore(departureTime) ? preparationTime : departureTime;
         }
     }
 
@@ -170,8 +170,9 @@ public class Schedule extends BaseTimeEntity {
      * 반복 여부에 따라 “다음에 실제로 울릴 시각”을 계산한다
      * 일회성 알람이면, base 그대로
      * 반복 알람이면, today ~ today+6 사이에 repeatDay에 해당하고 now 이후인 첫 시각
-     * @param base  저장된 알람 시간(Instant)
-     * @return      앞으로 7 일 이내에 가장 빠르게 작동하는 알람 시간(Instant)
+     *
+     * @param base 저장된 알람 시간(Instant)
+     * @return 앞으로 7 일 이내에 가장 빠르게 작동하는 알람 시간(Instant)
      */
     private Instant calculateNextTriggeredAt(Instant base) {
         Instant now = Instant.now();
