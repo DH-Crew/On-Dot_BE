@@ -172,8 +172,7 @@ public class ScheduleCommandFacade {
         schedule.getPreparationAlarm().updatePreparation(
                 request.preparationAlarm().alarmMode(),
                 request.preparationAlarm().isEnabled(),
-                request.appointmentAt().toLocalDate()
-                        .atTime(request.preparationAlarm().triggeredAt()),
+                request.preparationAlarm().triggeredAt(),
 //                request.preparationAlarm().mission(),
                 request.preparationAlarm().isSnoozeEnabled(),
                 request.preparationAlarm().snoozeInterval(),
@@ -185,8 +184,7 @@ public class ScheduleCommandFacade {
 
         schedule.getDepartureAlarm().updateDeparture(
                 request.departureAlarm().alarmMode(),
-                request.appointmentAt().toLocalDate()
-                        .atTime(request.departureAlarm().triggeredAt()),
+                request.departureAlarm().triggeredAt(),
                 request.departureAlarm().isSnoozeEnabled(),
                 request.departureAlarm().snoozeInterval(),
                 request.departureAlarm().snoozeCount(),
