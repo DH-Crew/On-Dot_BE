@@ -730,7 +730,7 @@ public interface ScheduleSwagger {
                             "volume": 0.2
                           },
                           "nextAlarmAt": "2025-05-10T18:30:00",
-                          "isEnabled": true
+                          "hasActiveAlarm": true
                         }
                       ]
                     }
