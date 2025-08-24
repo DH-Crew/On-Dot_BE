@@ -106,7 +106,7 @@ public class ScheduleController implements ScheduleSwagger {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public HomeScheduleListResponse getSchedules(
+    public HomeScheduleListResponse getActiveSchedules(
             @RequestAttribute("memberId") Long memberId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size

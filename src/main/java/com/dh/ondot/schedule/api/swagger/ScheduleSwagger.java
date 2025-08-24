@@ -753,7 +753,7 @@ public interface ScheduleSwagger {
             }
     )
     @GetMapping
-    HomeScheduleListResponse getSchedules(
+    HomeScheduleListResponse getActiveSchedules(
             @RequestAttribute("memberId") Long memberId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
