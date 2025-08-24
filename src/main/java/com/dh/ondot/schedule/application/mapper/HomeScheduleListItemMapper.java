@@ -17,33 +17,35 @@ public class HomeScheduleListItemMapper {
 
     public List<HomeScheduleListItem> toListOrderedByNextAlarmAt(List<Schedule> schedules) {
         return schedules.stream()
-                .map(this::toDto)
+                .map(this::toHomeScheduleItem)
                 .sorted(Comparator.comparing(HomeScheduleListItem::nextAlarmAt))
                 .toList();
     }
 
-    public HomeScheduleListItem toDto(Schedule schedule) {
-        Place departure = schedule.getDeparturePlace();
-        Place arrival = schedule.getArrivalPlace();
-        Instant nextInstant = schedule.computeNextAlarmAt();
-        LocalDateTime nextDateTime = DateTimeUtils.toSeoulDateTime(nextInstant);
+    public HomeScheduleListItem toHomeScheduleItem(Schedule schedule) {
+        Place departurePlace = schedule.getDeparturePlace();
+        Place arrivalPlace = schedule.getArrivalPlace();
+        
+        // 활성 알람만 고려하여 다음 알람 시간 계산
+        Instant nextAlarmInstant = schedule.computeNextAlarmAt();
+        LocalDateTime nextAlarmDateTime = DateTimeUtils.toSeoulDateTime(nextAlarmInstant);
 
         return new HomeScheduleListItem(
                 schedule.getId(),
-                departure.getLongitude(),
-                departure.getLatitude(),
-                arrival.getLongitude(),
-                arrival.getLatitude(),
+                departurePlace.getLongitude(),
+                departurePlace.getLatitude(),
+                arrivalPlace.getLongitude(),
+                arrivalPlace.getLatitude(),
                 schedule.getTitle(),
                 schedule.getIsRepeat(),
-                schedule.getRepeatDays() == null
-                        ? List.of()
+                schedule.getRepeatDays() == null 
+                        ? List.of() 
                         : List.copyOf(schedule.getRepeatDays()),
                 DateTimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
                 AlarmDto.of(schedule.getPreparationAlarm()),
                 AlarmDto.of(schedule.getDepartureAlarm()),
-                nextDateTime,
-                schedule.getDepartureAlarm().isEnabled()
+                nextAlarmDateTime,
+                schedule.hasAnyActiveAlarm()
         );
     }
 }
