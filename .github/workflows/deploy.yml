@@ -40,6 +40,7 @@ jobs:
 
       - name: Create Apple private key file
         run: |
+          rm -f src/main/resources/auth/ApplePrivateKey.p8
           mkdir -p src/main/resources/auth
           echo "${{ secrets.APPLE_PRIVATE_KEY_FILE }}" > src/main/resources/auth/ApplePrivateKey.p8
 
