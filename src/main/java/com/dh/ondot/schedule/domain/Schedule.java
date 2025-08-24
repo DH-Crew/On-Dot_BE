@@ -137,28 +137,15 @@ public class Schedule extends BaseTimeEntity {
 
     public Instant computeNextAlarmAt() {
         Instant now = DateTimeUtils.nowSeoulInstant();
-
-        Instant prepNext = calculateNextTriggeredAt(preparationAlarm.getTriggeredAt());
-        Instant deptNext = calculateNextTriggeredAt(departureAlarm.getTriggeredAt());
-
-        if (prepNext.isBefore(now)) {
-            return deptNext;
-        }
-        return prepNext.isBefore(deptNext) ? prepNext : deptNext;
+        
+        Instant nextPreparationTime = getNextActivePreparationAlarmTime();
+        Instant nextDepartureTime = getNextActiveDepartureAlarmTime();
+        
+        return selectEarliestActiveAlarmAfter(now, nextPreparationTime, nextDepartureTime);
     }
 
     public void updateNextAlarmAt() {
-        Instant preparationTriggeredAt = this.preparationAlarm.getTriggeredAt();
-        Instant departureTriggeredAt = this.departureAlarm.getTriggeredAt();
-
-        Instant preparationTime = calculateNextTriggeredAt(preparationTriggeredAt);
-        Instant departureTime = calculateNextTriggeredAt(departureTriggeredAt);
-
-        if (preparationTime.isBefore(DateTimeUtils.nowSeoulInstant())) {
-            this.nextAlarmAt = departureTime;
-        } else {
-            this.nextAlarmAt = preparationTime.isBefore(departureTime) ? preparationTime : departureTime;
-        }
+        this.nextAlarmAt = computeNextAlarmAt();
     }
 
     public void switchAlarm(boolean enabled) {
@@ -166,42 +153,76 @@ public class Schedule extends BaseTimeEntity {
         this.departureAlarm.changeEnabled(enabled);
     }
 
-    /**
-     * 반복 여부에 따라 “다음에 실제로 울릴 시각”을 계산한다
-     * 일회성 알람이면, base 그대로
-     * 반복 알람이면, today ~ today+6 사이에 repeatDay에 해당하고 now 이후인 첫 시각
-     *
-     * @param base 저장된 알람 시간(Instant)
-     * @return 앞으로 7 일 이내에 가장 빠르게 작동하는 알람 시간(Instant)
-     */
-    private Instant calculateNextTriggeredAt(Instant base) {
-        Instant now = Instant.now();
-        ZoneId zone = ZoneId.of("Asia/Seoul");
-        LocalTime alarmTime = base.atZone(zone).toLocalTime();
-        LocalDate today = LocalDate.now(zone);
+    public boolean hasAnyActiveAlarm() {
+        return preparationAlarm.isEnabled() || departureAlarm.isEnabled();
+    }
 
+    private Instant getNextActivePreparationAlarmTime() {
+        if (!preparationAlarm.isEnabled()) {
+            return Instant.MAX;
+        }
+        return calculateNextAlarmTimeByRepeatSettings(preparationAlarm.getTriggeredAt());
+    }
+
+    private Instant getNextActiveDepartureAlarmTime() {
+        if (!departureAlarm.isEnabled()) {
+            return Instant.MAX;
+        }
+        return calculateNextAlarmTimeByRepeatSettings(departureAlarm.getTriggeredAt());
+    }
+
+    private Instant selectEarliestActiveAlarmAfter(Instant now, Instant preparationTime, Instant departureTime) {
+        // 둘 다 비활성화된 경우
+        if (preparationTime.equals(Instant.MAX) && departureTime.equals(Instant.MAX)) {
+            return now;
+        }
+        
+        // 준비 알람이 이미 지난 경우 출발 알람 반환
+        if (preparationTime.isBefore(now)) {
+            return departureTime.equals(Instant.MAX) ? now : departureTime;
+        }
+        
+        // 둘 중 더 빠른 알람 반환
+        return preparationTime.isBefore(departureTime) ? preparationTime : departureTime;
+    }
+
+    /**
+     * 반복 설정에 따라 다음 알람 시간을 계산한다.
+     * 일회성 알람: 기본 시간 그대로 반환
+     * 반복 알람: 오늘부터 7일 이내에 해당 요일에 울릴 다음 시간 계산
+     */
+    private Instant calculateNextAlarmTimeByRepeatSettings(Instant baseAlarmTime) {
         if (!isRepeat) {
-            return base;
+            return baseAlarmTime;
         }
 
-        /* 반복 알람: 앞으로 7 일 탐색
-         * today(+0) ~ today(+6) 를 돌면서
-         * 요일이 repeatDay 에 포함되고 지금(now) 이후인 첫 시간을 찾는다
-         */
-        for (int plus = 0; plus < 7; plus++) {
-            LocalDate candidateDate = today.plusDays(plus);
-            int myDayValue = (candidateDate.getDayOfWeek().getValue() % 7) + 1;
+        Instant now = Instant.now();
+        ZoneId seoulZone = ZoneId.of("Asia/Seoul");
+        LocalTime alarmTime = baseAlarmTime.atZone(seoulZone).toLocalTime();
+        LocalDate today = LocalDate.now(seoulZone);
 
-            // repeatDays : [1(Sun) .. 7(Sat)]
-            if (repeatDays.contains(myDayValue)) {
-                LocalDateTime candidateDateTime = candidateDate.atTime(alarmTime);
-                Instant candidateInstant = candidateDateTime.atZone(zone).toInstant();
+        final int DAYS_IN_WEEK = 7;
 
-                if (candidateInstant.isAfter(now)) {
-                    return candidateInstant;
+        for (int daysAhead = 0; daysAhead < DAYS_IN_WEEK; daysAhead++) {
+            LocalDate candidateDate = today.plusDays(daysAhead);
+
+            if (isScheduledForDayOfWeek(candidateDate)) {
+                Instant candidateAlarmTime = DateTimeUtils.toInstant(candidateDate.atTime(alarmTime));
+
+                if (candidateAlarmTime.isAfter(now)) {
+                    return candidateAlarmTime;
                 }
             }
         }
-        return base;
+
+        return baseAlarmTime;
+    }
+    
+    // 특정 날짜가 반복 요일에 해당하는지 확인한다
+    private boolean isScheduledForDayOfWeek(LocalDate date) {
+        // repeatDays: [1(일) .. 7(토)], DayOfWeek: [1(월) .. 7(일)]
+        // 변환 로직: 월(1)->2, 화(2)->3, ..., 토(6)->7, 일(7)->1
+        int dayValue = (date.getDayOfWeek().getValue() % 7) + 1;
+        return repeatDays != null && repeatDays.contains(dayValue);
     }
 }
