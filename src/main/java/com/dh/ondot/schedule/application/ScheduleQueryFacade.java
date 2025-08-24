@@ -37,20 +37,22 @@ public class ScheduleQueryFacade {
 
     public HomeScheduleListResponse findAllActiveSchedules(Long memberId, Pageable page) {
         memberService.getMemberIfExists(memberId);
-        Slice<Schedule> slice = scheduleQueryService.getActiveSchedules(memberId, page);
-        List<HomeScheduleListItem> items = homeScheduleListItemMapper.toListOrderedByNextAlarmAt(slice.getContent());
-        LocalDateTime earliest = findEarliestAlarmTime(items);
+        
+        Slice<Schedule> scheduleSlice = scheduleQueryService.getActiveSchedules(memberId, page);
+        List<HomeScheduleListItem> scheduleItems = homeScheduleListItemMapper.toListOrderedByNextAlarmAt(scheduleSlice.getContent());
+        LocalDateTime earliestActiveAlarmTime = findEarliestActiveAlarmTime(scheduleItems);
 
-        return HomeScheduleListResponse.of(earliest, items, slice.hasNext());
+        return HomeScheduleListResponse.of(earliestActiveAlarmTime, scheduleItems, scheduleSlice.hasNext());
     }
 
-    private LocalDateTime findEarliestAlarmTime(List<HomeScheduleListItem> items) {
+    private LocalDateTime findEarliestActiveAlarmTime(List<HomeScheduleListItem> scheduleItems) {
         LocalDateTime now = DateTimeUtils.nowSeoulDateTime();
-        return items.stream()
-                .filter(HomeScheduleListItem::isEnabled)
+        
+        return scheduleItems.stream()
+                .filter(HomeScheduleListItem::hasActiveAlarm)  // 활성 알람이 있는 일정만 필터링
                 .map(HomeScheduleListItem::nextAlarmAt)
-                .filter(next -> next.isAfter(now))
-                .findFirst()
+                .filter(alarmTime -> alarmTime.isAfter(now))  // 현재 시간 이후의 알람만 고려
+                .findFirst()  // 가장 빠른 시간 선택
                 .orElse(null);
     }
 
