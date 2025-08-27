@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.domain.service;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.core.exception.NotFoundScheduleException;
 import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.domain.repository.ScheduleRepository;
@@ -34,7 +34,7 @@ public class ScheduleQueryService {
     }
 
     public Slice<Schedule> getActiveSchedules(Long memberId, Pageable page) {
-        Instant now = DateTimeUtils.nowSeoulInstant();
+        Instant now = TimeUtils.nowSeoulInstant();
         return scheduleQueryRepository.findActiveSchedulesByMember(memberId, now, page);
     }
 }

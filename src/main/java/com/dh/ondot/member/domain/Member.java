@@ -2,7 +2,7 @@ package com.dh.ondot.member.domain;
 
 import com.dh.ondot.core.annotation.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.member.domain.enums.MapProvider;
 import com.dh.ondot.member.domain.enums.OauthProvider;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
@@ -100,6 +100,6 @@ public class Member extends BaseTimeEntity {
     public void deactivate() {
         this.email = "deactivated-" + this.id + "@ondot.com";
         this.oauthInfo = OauthInfo.of(this.getOauthInfo().getOauthProvider(), "0");
-        this.deletedAt = DateTimeUtils.nowSeoulInstant();
+        this.deletedAt = TimeUtils.nowSeoulInstant();
     }
 }

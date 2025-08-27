@@ -55,7 +55,7 @@ public class ScheduleQueryRepository {
                 .where(s.memberId.eq(memberId)
                         .and(s.isRepeat.isTrue().or(s.appointmentAt.goe(now)))
                 )
-                .orderBy(s.nextAlarmAt.asc(), s.id.desc())
+                .orderBy(s.appointmentAt.asc(), s.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();

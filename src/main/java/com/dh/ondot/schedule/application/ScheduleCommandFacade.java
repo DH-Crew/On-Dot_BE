@@ -199,7 +199,6 @@ public class ScheduleCommandFacade {
                 new TreeSet<>(request.repeatDays()),
                 request.appointmentAt()
         );
-        // todo: nextAlarmAt 업데이트 로직 추가
 
         return new UpdateScheduleResult(schedule, placeChanged || timeChanged);
     }

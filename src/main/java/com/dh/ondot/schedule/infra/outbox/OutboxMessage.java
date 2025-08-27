@@ -1,7 +1,7 @@
 package com.dh.ondot.schedule.infra.outbox;
 
 import com.dh.ondot.core.domain.BaseTimeEntity;
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -59,7 +59,7 @@ public class OutboxMessage extends BaseTimeEntity {
             this.status = MessageStatus.DEAD;
         } else {
             this.status = MessageStatus.SEND_FAIL;
-            this.nextTryAt = DateTimeUtils.toInstant(DateTimeUtils.nowSeoulDateTime().plusMinutes((long) this.tryCount * 5));
+            this.nextTryAt = TimeUtils.toInstant(TimeUtils.nowSeoulDateTime().plusMinutes((long) this.tryCount * 5));
         }
     }
 }

@@ -2,7 +2,7 @@ package com.dh.ondot.schedule.domain;
 
 import com.dh.ondot.core.annotation.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.converter.RepeatDaysConverter;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
 import com.dh.ondot.schedule.domain.vo.Snooze;
@@ -58,9 +58,6 @@ public class Schedule extends BaseTimeEntity {
     @Column(name = "appointment_at", nullable = false)
     private Instant appointmentAt;
 
-    @Column(name = "next_alarm_at")
-    private Instant nextAlarmAt;
-
     @Column(name = "is_medication_required", nullable = false, columnDefinition = "TINYINT(1)")
     private Boolean isMedicationRequired;
 
@@ -73,7 +70,7 @@ public class Schedule extends BaseTimeEntity {
             Boolean isRepeat, SortedSet<Integer> repeatDays, LocalDateTime appointmentAt,
             Boolean isMedicationRequired, String preparationNote
     ) {
-        Schedule schedule = Schedule.builder()
+        return Schedule.builder()
                 .memberId(memberId)
                 .departurePlace(departurePlace)
                 .arrivalPlace(arrivalPlace)
@@ -82,13 +79,10 @@ public class Schedule extends BaseTimeEntity {
                 .title(title)
                 .isRepeat(isRepeat)
                 .repeatDays(isRepeat ? repeatDays : null)
-                .appointmentAt(DateTimeUtils.toInstant(appointmentAt))
+                .appointmentAt(TimeUtils.toInstant(appointmentAt))
                 .isMedicationRequired(isMedicationRequired)
                 .preparationNote(preparationNote)
                 .build();
-
-        schedule.updateNextAlarmAt();
-        return schedule;
     }
 
     public static Schedule createWithDefaultAlarmSetting(
@@ -106,7 +100,7 @@ public class Schedule extends BaseTimeEntity {
                                 appointmentAt, estimatedTime
                         )
                 )
-                .appointmentAt(DateTimeUtils.toInstant(appointmentAt))
+                .appointmentAt(TimeUtils.toInstant(appointmentAt))
                 .build();
     }
 
@@ -121,44 +115,18 @@ public class Schedule extends BaseTimeEntity {
         this.title = title;
         this.isRepeat = isRepeat;
         this.repeatDays = isRepeat ? repeatDays : null;
-        this.appointmentAt = DateTimeUtils.toInstant(appointmentAt);
+        this.appointmentAt = TimeUtils.toInstant(appointmentAt);
     }
 
     public boolean isAppointmentTimeChanged(LocalDateTime newAppointmentAt) {
-        return !this.appointmentAt.equals(DateTimeUtils.toInstant(newAppointmentAt));
+        return !this.appointmentAt.equals(TimeUtils.toInstant(newAppointmentAt));
     }
 
     public void setupQuickSchedule(Long memberId, LocalDateTime appointmentAt) {
         this.memberId = memberId;
         this.title = "새로운 일정";
         this.isRepeat = false;
-        this.appointmentAt = DateTimeUtils.toInstant(appointmentAt);
-    }
-
-    public Instant computeNextAlarmAt() {
-        Instant now = DateTimeUtils.nowSeoulInstant();
-
-        Instant prepNext = calculateNextTriggeredAt(preparationAlarm.getTriggeredAt());
-        Instant deptNext = calculateNextTriggeredAt(departureAlarm.getTriggeredAt());
-
-        if (prepNext.isBefore(now)) {
-            return deptNext;
-        }
-        return prepNext.isBefore(deptNext) ? prepNext : deptNext;
-    }
-
-    public void updateNextAlarmAt() {
-        Instant preparationTriggeredAt = this.preparationAlarm.getTriggeredAt();
-        Instant departureTriggeredAt = this.departureAlarm.getTriggeredAt();
-
-        Instant preparationTime = calculateNextTriggeredAt(preparationTriggeredAt);
-        Instant departureTime = calculateNextTriggeredAt(departureTriggeredAt);
-
-        if (preparationTime.isBefore(DateTimeUtils.nowSeoulInstant())) {
-            this.nextAlarmAt = departureTime;
-        } else {
-            this.nextAlarmAt = preparationTime.isBefore(departureTime) ? preparationTime : departureTime;
-        }
+        this.appointmentAt = TimeUtils.toInstant(appointmentAt);
     }
 
     public void switchAlarm(boolean enabled) {
@@ -166,42 +134,64 @@ public class Schedule extends BaseTimeEntity {
         this.departureAlarm.changeEnabled(enabled);
     }
 
-    /**
-     * 반복 여부에 따라 “다음에 실제로 울릴 시각”을 계산한다
-     * 일회성 알람이면, base 그대로
-     * 반복 알람이면, today ~ today+6 사이에 repeatDay에 해당하고 now 이후인 첫 시각
-     *
-     * @param base 저장된 알람 시간(Instant)
-     * @return 앞으로 7 일 이내에 가장 빠르게 작동하는 알람 시간(Instant)
-     */
-    private Instant calculateNextTriggeredAt(Instant base) {
-        Instant now = Instant.now();
-        ZoneId zone = ZoneId.of("Asia/Seoul");
-        LocalTime alarmTime = base.atZone(zone).toLocalTime();
-        LocalDate today = LocalDate.now(zone);
+    public boolean hasAnyActiveAlarm() {
+        return preparationAlarm.isEnabled() || departureAlarm.isEnabled();
+    }
 
+    /**
+     * 반복 설정에 따라 다음 알람 시간을 계산한다
+     * hasAnyActiveAlarm이 true인 경우 사용한다
+     * 일회성 알람: preparationAlarm과 departureAlarm 중 활성화된 것 중 현재 시간 이후 가장 빠른 것 반환
+     * 반복 알람: repeatDays를 고려해서 현재 시간 이후 가장 먼저 울릴 알람 시간 계산
+     */
+    public Instant calculateNextAlarmAt() {
         if (!isRepeat) {
-            return base;
+            Instant prepAlarmAt = preparationAlarm.isEnabled() ? preparationAlarm.getTriggeredAt() : null;
+            Instant deptAlarmAt = departureAlarm.isEnabled() ? departureAlarm.getTriggeredAt() : null;
+            return TimeUtils.findEarliestAfterNow(prepAlarmAt, deptAlarmAt);
         }
 
-        /* 반복 알람: 앞으로 7 일 탐색
-         * today(+0) ~ today(+6) 를 돌면서
-         * 요일이 repeatDay 에 포함되고 지금(now) 이후인 첫 시간을 찾는다
-         */
-        for (int plus = 0; plus < 7; plus++) {
-            LocalDate candidateDate = today.plusDays(plus);
-            int myDayValue = (candidateDate.getDayOfWeek().getValue() % 7) + 1;
+        // 반복 일정 처리
+        Instant nextPrepAlarmAt = preparationAlarm.isEnabled()
+            ? calculateNextRepeatTime(preparationAlarm.getTriggeredAt()) 
+            : null;
+            
+        Instant nextDeptAlarmAt = departureAlarm.isEnabled()
+            ? calculateNextRepeatTime(departureAlarm.getTriggeredAt()) 
+            : null;
+            
+        return TimeUtils.findEarliestAfterNow(nextPrepAlarmAt, nextDeptAlarmAt);
+    }
 
-            // repeatDays : [1(Sun) .. 7(Sat)]
-            if (repeatDays.contains(myDayValue)) {
-                LocalDateTime candidateDateTime = candidateDate.atTime(alarmTime);
-                Instant candidateInstant = candidateDateTime.atZone(zone).toInstant();
-
-                if (candidateInstant.isAfter(now)) {
-                    return candidateInstant;
+    /**
+     * 반복 설정에 따라 다음 알람 시간을 계산한다.
+     * 현재 시간 이후 7일 이내에서 해당 요일에 맞는 가장 빠른 시간을 찾는다.
+     */
+    private Instant calculateNextRepeatTime(Instant baseAlarmTime) {
+        Instant now = Instant.now();
+        LocalTime alarmTime = TimeUtils.toSeoulTime(baseAlarmTime);
+        LocalDate today = TimeUtils.nowSeoulDate();
+        
+        for (int daysAhead = 0; daysAhead <= 7; daysAhead++) {
+            LocalDate candidateDate = today.plusDays(daysAhead);
+            
+            if (isScheduledForDayOfWeek(candidateDate)) {
+                Instant candidateTime = TimeUtils.toInstant(candidateDate.atTime(alarmTime));
+                
+                if (candidateTime.isAfter(now)) {
+                    return candidateTime;
                 }
             }
         }
-        return base;
+        
+        return null;
+    }
+    
+    // 특정 날짜가 반복 요일에 해당하는지 확인한다
+    private boolean isScheduledForDayOfWeek(LocalDate date) {
+        // repeatDays: [1(일) .. 7(토)], DayOfWeek: [1(월) .. 7(일)]
+        // 변환 로직: 월(1)->2, 화(2)->3, ..., 토(6)->7, 일(7)->1
+        int dayValue = (date.getDayOfWeek().getValue() % 7) + 1;
+        return repeatDays.contains(dayValue);
     }
 }

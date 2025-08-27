@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.api.response;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.Schedule;
 
 import java.time.Duration;
@@ -14,15 +14,15 @@ public record ScheduleCreateResponse(
         LocalDateTime createdAt
 ) {
     public static ScheduleCreateResponse of(Schedule schedule) {
-        LocalDateTime prepAt = DateTimeUtils.toSeoulDateTime(
+        LocalDateTime prepAt = TimeUtils.toSeoulDateTime(
                 schedule.getPreparationAlarm().getTriggeredAt()
         );
-        LocalDateTime deptAt = DateTimeUtils.toSeoulDateTime(
+        LocalDateTime deptAt = TimeUtils.toSeoulDateTime(
                 schedule.getDepartureAlarm().getTriggeredAt()
         );
-        LocalDateTime created = DateTimeUtils.toSeoulDateTime(schedule.getCreatedAt());
+        LocalDateTime created = TimeUtils.toSeoulDateTime(schedule.getCreatedAt());
         int estimateTime = Math.toIntExact(
-                Duration.between(deptAt, DateTimeUtils.toSeoulDateTime(schedule.getAppointmentAt()))
+                Duration.between(deptAt, TimeUtils.toSeoulDateTime(schedule.getAppointmentAt()))
                         .toMinutes()
         );
 

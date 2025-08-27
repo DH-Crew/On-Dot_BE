@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.infra.outbox;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +26,7 @@ public class OutboxBatchDispatcher {
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void dispatchRetryBatch() {
         PageRequest pageable = PageRequest.of(0, 100);
-        List<OutboxMessage> retryableMessages = repository.findRetryableMessages(DateTimeUtils.nowSeoulInstant(), pageable);
+        List<OutboxMessage> retryableMessages = repository.findRetryableMessages(TimeUtils.nowSeoulInstant(), pageable);
         dispatchBatch(retryableMessages);
     }
 

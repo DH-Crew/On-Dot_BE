@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.api.response;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.Alarm;
 
 import java.time.LocalDateTime;
@@ -22,7 +22,7 @@ public record AlarmDto(
                 alarm.getId(),
                 alarm.getMode().name(),
                 alarm.isEnabled(),
-                DateTimeUtils.toSeoulDateTime(alarm.getTriggeredAt()),
+                TimeUtils.toSeoulDateTime(alarm.getTriggeredAt()),
                 alarm.getSnooze().isSnoozeEnabled(),
                 alarm.getSnooze().getSnoozeInterval().getValue(),
                 alarm.getSnooze().getSnoozeCount().getValue(),

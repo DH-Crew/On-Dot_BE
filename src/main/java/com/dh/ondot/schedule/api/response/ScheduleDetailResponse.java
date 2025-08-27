@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.api.response;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.api.request.PlaceDto;
 import com.dh.ondot.schedule.domain.Schedule;
 
@@ -22,7 +22,7 @@ public record ScheduleDetailResponse(
         return new ScheduleDetailResponse(
                 s.getId(), s.getTitle(), s.getIsRepeat(),
                 s.getRepeatDays() == null ? List.of() : List.copyOf(s.getRepeatDays()),
-                DateTimeUtils.toSeoulDateTime(s.getAppointmentAt()),
+                TimeUtils.toSeoulDateTime(s.getAppointmentAt()),
                 AlarmDto.of(s.getPreparationAlarm()),
                 AlarmDto.of(s.getDepartureAlarm()),
                 PlaceDto.from(s.getDeparturePlace()),

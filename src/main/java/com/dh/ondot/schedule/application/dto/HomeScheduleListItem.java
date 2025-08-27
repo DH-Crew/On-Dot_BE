@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.application.dto;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.api.response.AlarmDto;
 import com.dh.ondot.schedule.domain.Schedule;
 
@@ -19,8 +19,7 @@ public record HomeScheduleListItem(
         LocalDateTime appointmentAt,
         AlarmDto preparationAlarm,
         AlarmDto departureAlarm,
-        LocalDateTime nextAlarmAt,
-        boolean isEnabled
+        boolean hasActiveAlarm
 ) {
     public static HomeScheduleListItem from(Schedule schedule) {
         return new HomeScheduleListItem(
@@ -29,13 +28,13 @@ public record HomeScheduleListItem(
                 schedule.getDeparturePlace().getLatitude(),
                 schedule.getArrivalPlace().getLongitude(),
                 schedule.getArrivalPlace().getLatitude(),
-                schedule.getTitle(), schedule.getIsRepeat(),
+                schedule.getTitle(),
+                schedule.getIsRepeat(),
                 schedule.getRepeatDays() == null ? List.of() : List.copyOf(schedule.getRepeatDays()),
-                DateTimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
+                TimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
                 AlarmDto.of(schedule.getPreparationAlarm()),
                 AlarmDto.of(schedule.getDepartureAlarm()),
-                DateTimeUtils.toSeoulDateTime(schedule.getNextAlarmAt()),
-                schedule.getDepartureAlarm().isEnabled()
+                schedule.hasAnyActiveAlarm()
         );
     }
 }

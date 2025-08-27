@@ -1,6 +1,6 @@
 package com.dh.ondot.notification.domain;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,8 +45,8 @@ public class SubwayAlert {
                 .title(title)
                 .content(content)
                 .lineName(lineName)
-                .startTime(DateTimeUtils.toInstant(startTime))
-                .createdAt(DateTimeUtils.toInstant(createdAt))
+                .startTime(TimeUtils.toInstant(startTime))
+                .createdAt(TimeUtils.toInstant(createdAt))
                 .build();
     }
 }

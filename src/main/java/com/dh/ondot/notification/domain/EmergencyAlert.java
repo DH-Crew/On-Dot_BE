@@ -1,6 +1,6 @@
 package com.dh.ondot.notification.domain;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +36,7 @@ public class EmergencyAlert {
         return EmergencyAlert.builder()
                 .content(content)
                 .regionName(regionName)
-                .createdAt(DateTimeUtils.toInstant(createdAt))
+                .createdAt(TimeUtils.toInstant(createdAt))
                 .build();
     }
 }

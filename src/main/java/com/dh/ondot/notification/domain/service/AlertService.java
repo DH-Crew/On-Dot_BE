@@ -1,6 +1,6 @@
 package com.dh.ondot.notification.domain.service;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.notification.domain.EmergencyAlert;
 import com.dh.ondot.notification.domain.SubwayAlert;
 import com.dh.ondot.notification.domain.dto.EmergencyAlertDto;
@@ -30,8 +30,8 @@ public class AlertService {
     ) {
         if (dtos.isEmpty()) return;
 
-        Instant startOfDay = DateTimeUtils.toInstant(date.atStartOfDay());
-        Instant nextDay = DateTimeUtils.toInstant(date.plusDays(1).atStartOfDay());
+        Instant startOfDay = TimeUtils.toInstant(date.atStartOfDay());
+        Instant nextDay = TimeUtils.toInstant(date.plusDays(1).atStartOfDay());
 
         Set<Instant> existing = subwayAlertRepository
                 .findAllByCreatedAtBetween(startOfDay, nextDay)
@@ -40,7 +40,7 @@ public class AlertService {
                 .collect(Collectors.toSet());
 
         List<SubwayAlert> toSave = dtos.stream()
-                .filter(dto -> !existing.contains(DateTimeUtils.toInstant(dto.createdAt())))
+                .filter(dto -> !existing.contains(TimeUtils.toInstant(dto.createdAt())))
                 .map(dto -> SubwayAlert.create(
                         dto.title(),
                         dto.content(),
@@ -62,8 +62,8 @@ public class AlertService {
     ) {
         if (dtos.isEmpty()) return;
 
-        Instant startOfDay = DateTimeUtils.toInstant(date.atStartOfDay());
-        Instant nextDay = DateTimeUtils.toInstant(date.plusDays(1).atStartOfDay());
+        Instant startOfDay = TimeUtils.toInstant(date.atStartOfDay());
+        Instant nextDay = TimeUtils.toInstant(date.plusDays(1).atStartOfDay());
 
         Set<Instant> existing = emergencyAlertRepository
                 .findAllByCreatedAtBetween(startOfDay, nextDay)
@@ -72,7 +72,7 @@ public class AlertService {
                 .collect(Collectors.toSet());
 
         List<EmergencyAlert> toSave = dtos.stream()
-                .filter(dto -> !existing.contains(DateTimeUtils.toInstant(dto.createdAt())))
+                .filter(dto -> !existing.contains(TimeUtils.toInstant(dto.createdAt())))
                 .map(dto -> EmergencyAlert.create(
                         dto.content(),
                         dto.regionName(),

@@ -674,7 +674,7 @@ public interface ScheduleSwagger {
     @Operation(
             summary     = "전체 일정 목록 조회",
             description = """
-            <b>가장 빨리 울릴 알람 시각</b>(nextAlarmAt)과 <b>일정 목록</b>(scheduleList)를 반환합니다. <br>
+            <b>가장 빨리 울릴 알람 시각</b>(earliestAlarmAt)과 <b>일정 목록</b>(scheduleList)를 반환합니다. <br>
             • <code>hasNext=true</code> 면 이후 page 를 조회할 수 있습니다. <br>
             • <code>page</code>와 <code>size</code>를 통해 페이지와 개수를 조정할 수 있습니다.
             """,
@@ -721,6 +721,7 @@ public interface ScheduleSwagger {
                           "departureAlarm": {
                             "alarmId": 1002,
                             "alarmMode": "SOUND",
+                            "isEnabled": true,
                             "triggeredAt": "2025-05-10T18:50:00",
                             "isSnoozeEnabled": false,
                             "snoozeInterval": 1,
@@ -729,8 +730,7 @@ public interface ScheduleSwagger {
                             "ringTone": "FRACTURED_LOVE",
                             "volume": 0.2
                           },
-                          "nextAlarmAt": "2025-05-10T18:30:00",
-                          "isEnabled": true
+                          "hasActiveAlarm": true
                         }
                       ]
                     }
@@ -753,7 +753,7 @@ public interface ScheduleSwagger {
             }
     )
     @GetMapping
-    HomeScheduleListResponse getSchedules(
+    HomeScheduleListResponse getActiveSchedules(
             @RequestAttribute("memberId") Long memberId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size

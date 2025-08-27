@@ -1,6 +1,6 @@
 package com.dh.ondot.member.api.response;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.enums.MapProvider;
 
@@ -13,7 +13,7 @@ public record MapProviderResponse(
     public static MapProviderResponse from(Member member) {
         return new MapProviderResponse(
                 member.getMapProvider(),
-                DateTimeUtils.toSeoulDateTime(member.getUpdatedAt())
+                TimeUtils.toSeoulDateTime(member.getUpdatedAt())
         );
     }
 }

@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -52,6 +55,15 @@ public class ScheduleService {
                 .preparationAlarm(original.getPreparationAlarm().copy())
                 .departureAlarm(original.getDepartureAlarm().copy())
                 .build();
+    }
+
+    public Instant getEarliestActiveAlarmAt(List<Schedule> schedules) {
+        return schedules.stream()
+                .filter(Schedule::hasAnyActiveAlarm)
+                .map(Schedule::calculateNextAlarmAt)
+                .filter(Objects::nonNull)
+                .min(Instant::compareTo)
+                .orElse(null);
     }
 
     @Transactional

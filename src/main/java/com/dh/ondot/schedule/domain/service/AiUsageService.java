@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.domain.service;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.AiUsage;
 import com.dh.ondot.schedule.domain.repository.AiUsageRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ public class AiUsageService {
 
     /** 호출 1회당 사용량 +1 */
     public void increaseUsage(Long memberId) {
-        LocalDate today = DateTimeUtils.nowSeoulDate();
+        LocalDate today = TimeUtils.nowSeoulDate();
 
         repo.findByMemberIdAndUsageDate(memberId, today)
                 .ifPresentOrElse(AiUsage::increase,

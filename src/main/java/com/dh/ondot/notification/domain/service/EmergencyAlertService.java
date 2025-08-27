@@ -1,6 +1,6 @@
 package com.dh.ondot.notification.domain.service;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.notification.domain.EmergencyAlert;
 import com.dh.ondot.notification.domain.dto.EmergencyAlertDto;
 import com.dh.ondot.notification.domain.repository.EmergencyAlertRepository;
@@ -36,9 +36,9 @@ public class EmergencyAlertService {
         String provinceKey = extractProvince(roadAddress);
         String allRegion = provinceKey + " 전체";
 
-        LocalDate today = DateTimeUtils.nowSeoulDate();
-        Instant from = DateTimeUtils.toInstant(today.atStartOfDay());
-        Instant to = DateTimeUtils.toInstant(today.plusDays(1).atStartOfDay());
+        LocalDate today = TimeUtils.nowSeoulDate();
+        Instant from = TimeUtils.toInstant(today.atStartOfDay());
+        Instant to = TimeUtils.toInstant(today.plusDays(1).atStartOfDay());
         List<EmergencyAlert> alerts = emergencyAlertRepository.findAllByCreatedAtBetween(from, to);
 
         List<String> contents = alerts.stream()
