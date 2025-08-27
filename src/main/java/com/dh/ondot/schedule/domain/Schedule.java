@@ -172,7 +172,7 @@ public class Schedule extends BaseTimeEntity {
         LocalTime alarmTime = TimeUtils.toSeoulTime(baseAlarmTime);
         LocalDate today = TimeUtils.nowSeoulDate();
         
-        for (int daysAhead = 0; daysAhead < 7; daysAhead++) {
+        for (int daysAhead = 0; daysAhead <= 7; daysAhead++) {
             LocalDate candidateDate = today.plusDays(daysAhead);
             
             if (isScheduledForDayOfWeek(candidateDate)) {

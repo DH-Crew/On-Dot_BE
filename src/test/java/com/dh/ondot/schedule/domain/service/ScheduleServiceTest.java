@@ -107,7 +107,8 @@ class ScheduleServiceTest {
         Instant result = scheduleService.getEarliestActiveAlarmAt(schedules);
 
         // then
-        assertThat(result).isNotNull();
+        Instant expected = schedule.getPreparationAlarm().getTriggeredAt();
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
@@ -132,8 +133,8 @@ class ScheduleServiceTest {
         Instant result = scheduleService.getEarliestActiveAlarmAt(schedules);
 
         // then
-        assertThat(result).isNotNull();
-        // 더 이른 시간의 알람이 선택되어야 함
+        Instant expected = earlierSchedule.getPreparationAlarm().getTriggeredAt();
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
@@ -170,7 +171,8 @@ class ScheduleServiceTest {
         Instant result = scheduleService.getEarliestActiveAlarmAt(schedules);
 
         // then
-        assertThat(result).isNotNull();
+        Instant expected = oneTimeSchedule.getPreparationAlarm().getTriggeredAt(); // 60m
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
