@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 import java.time.*;
 
 @UtilityClass
-public class DateTimeUtils {
+public class TimeUtils {
     private static final ZoneId DEFAULT_ZONE = ZoneId.of("Asia/Seoul");
 
     public static LocalDateTime toSeoulDateTime(Instant instant) {

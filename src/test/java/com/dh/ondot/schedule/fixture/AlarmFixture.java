@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.fixture;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.Alarm;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
 import com.dh.ondot.schedule.domain.vo.Snooze;
@@ -26,7 +26,7 @@ public class AlarmFixture {
         return Alarm.builder()
                 .mode(AlarmMode.SOUND)
                 .isEnabled(true)
-                .triggeredAt(DateTimeUtils.toInstant(triggeredAt))
+                .triggeredAt(TimeUtils.toInstant(triggeredAt))
                 .snooze(defaultSnooze())
                 .sound(defaultSound())
                 .build();
@@ -40,7 +40,7 @@ public class AlarmFixture {
         return Alarm.builder()
                 .mode(AlarmMode.SOUND)
                 .isEnabled(false)
-                .triggeredAt(DateTimeUtils.toInstant(triggeredAt))
+                .triggeredAt(TimeUtils.toInstant(triggeredAt))
                 .snooze(defaultSnooze())
                 .sound(defaultSound())
                 .build();

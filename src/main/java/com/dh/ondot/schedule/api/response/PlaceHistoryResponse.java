@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.api.response;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.PlaceHistory;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ public record PlaceHistoryResponse(
                 history.title(),
                 history.longitude(),
                 history.latitude(),
-                DateTimeUtils.toSeoulDateTime(history.searchedAt())
+                TimeUtils.toSeoulDateTime(history.searchedAt())
         );
     }
     public static List<PlaceHistoryResponse> fromList(List<PlaceHistory> list) {

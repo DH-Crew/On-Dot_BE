@@ -1,6 +1,6 @@
 package com.dh.ondot.member.infra.jwt;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.member.core.AppleProperties;
 import com.dh.ondot.member.core.exception.ApplePrivateKeyLoadFailedException;
 import com.dh.ondot.member.core.exception.AppleSignatureInvalidException;
@@ -30,7 +30,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
@@ -47,15 +46,15 @@ public class AppleJwtUtil {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public String generateClientSecret() {
-        LocalDateTime expiration = DateTimeUtils.nowSeoulDateTime().plusMinutes(5);
+        LocalDateTime expiration = TimeUtils.nowSeoulDateTime().plusMinutes(5);
         String clientSecret = Jwts.builder()
                 .header()
                     .add("alg", "ES256")
                     .add("kid", appleProperties.keyId())
                     .and()
                 .issuer(appleProperties.teamId())
-                .issuedAt(Date.from(DateTimeUtils.nowSeoulInstant()))
-                .expiration(Date.from(DateTimeUtils.toInstant(expiration)))
+                .issuedAt(Date.from(TimeUtils.nowSeoulInstant()))
+                .expiration(Date.from(TimeUtils.toInstant(expiration)))
                 .audience()
                     .add(appleProperties.audience())
                     .and()

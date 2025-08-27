@@ -11,7 +11,7 @@ import java.time.ZoneId;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("DateTimeUtils 테스트")
-class DateTimeUtilsTest {
+class TimeUtilsTest {
 
     @Test
     @DisplayName("Instant를 서울 LocalDateTime으로 변환한다")
@@ -20,7 +20,7 @@ class DateTimeUtilsTest {
         Instant instant = Instant.now();
 
         // when
-        LocalDateTime result = DateTimeUtils.toSeoulDateTime(instant);
+        LocalDateTime result = TimeUtils.toSeoulDateTime(instant);
 
         // then
         assertThat(result).isNotNull();
@@ -35,7 +35,7 @@ class DateTimeUtilsTest {
         LocalDateTime localDateTime = LocalDateTime.of(2024, 1, 1, 12, 0, 0);
 
         // when
-        Instant result = DateTimeUtils.toInstant(localDateTime);
+        Instant result = TimeUtils.toInstant(localDateTime);
 
         // then
         assertThat(result).isNotNull();
@@ -48,10 +48,10 @@ class DateTimeUtilsTest {
     void toSeoulTime_ConvertsInstantToLocalTime() {
         // given
         LocalDateTime testDateTime = LocalDateTime.of(2024, 1, 1, 15, 30, 45);
-        Instant instant = DateTimeUtils.toInstant(testDateTime);
+        Instant instant = TimeUtils.toInstant(testDateTime);
 
         // when
-        LocalTime result = DateTimeUtils.toSeoulTime(instant);
+        LocalTime result = TimeUtils.toSeoulTime(instant);
 
         // then
         assertThat(result).isEqualTo(LocalTime.of(15, 30, 45));
@@ -61,7 +61,7 @@ class DateTimeUtilsTest {
     @DisplayName("현재 서울 시간을 LocalDateTime으로 반환한다")
     void nowSeoulDateTime_ReturnsCurrentSeoulTime() {
         // when
-        LocalDateTime result = DateTimeUtils.nowSeoulDateTime();
+        LocalDateTime result = TimeUtils.nowSeoulDateTime();
 
         // then
         assertThat(result).isNotNull();
@@ -78,7 +78,7 @@ class DateTimeUtilsTest {
         Instant later = now.plusSeconds(7200);   // 2시간 후
 
         // when
-        Instant result = DateTimeUtils.findEarliestAfterNow(later, earlier);
+        Instant result = TimeUtils.findEarliestAfterNow(later, earlier);
 
         // then
         assertThat(result).isEqualTo(earlier);
@@ -93,7 +93,7 @@ class DateTimeUtilsTest {
         Instant past = now.minusSeconds(3600);
 
         // when
-        Instant result = DateTimeUtils.findEarliestAfterNow(past, future);
+        Instant result = TimeUtils.findEarliestAfterNow(past, future);
 
         // then
         assertThat(result).isEqualTo(future);
@@ -108,7 +108,7 @@ class DateTimeUtilsTest {
         Instant past2 = now.minusSeconds(1800);
 
         // when
-        Instant result = DateTimeUtils.findEarliestAfterNow(past1, past2);
+        Instant result = TimeUtils.findEarliestAfterNow(past1, past2);
 
         // then
         assertThat(result).isNull();
@@ -118,7 +118,7 @@ class DateTimeUtilsTest {
     @DisplayName("둘 다 null이면 null을 반환한다")
     void findEarliestAfterNow_BothNull_ReturnsNull() {
         // when
-        Instant result = DateTimeUtils.findEarliestAfterNow(null, null);
+        Instant result = TimeUtils.findEarliestAfterNow(null, null);
 
         // then
         assertThat(result).isNull();
@@ -131,8 +131,8 @@ class DateTimeUtilsTest {
         Instant future = Instant.now().plusSeconds(3600);
 
         // when
-        Instant result1 = DateTimeUtils.findEarliestAfterNow(null, future);
-        Instant result2 = DateTimeUtils.findEarliestAfterNow(future, null);
+        Instant result1 = TimeUtils.findEarliestAfterNow(null, future);
+        Instant result2 = TimeUtils.findEarliestAfterNow(future, null);
 
         // then
         assertThat(result1).isEqualTo(future);
@@ -146,7 +146,7 @@ class DateTimeUtilsTest {
         Instant future = Instant.now().plusSeconds(3600);
 
         // when
-        Instant result = DateTimeUtils.findEarliestAfterNow(future, future);
+        Instant result = TimeUtils.findEarliestAfterNow(future, future);
 
         // then
         assertThat(result).isEqualTo(future);

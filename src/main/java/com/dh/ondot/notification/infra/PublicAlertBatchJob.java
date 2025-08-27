@@ -1,6 +1,6 @@
 package com.dh.ondot.notification.infra;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.notification.domain.service.AlertService;
 import com.dh.ondot.notification.domain.dto.EmergencyAlertDto;
 import com.dh.ondot.notification.domain.dto.SubwayAlertDto;
@@ -26,7 +26,7 @@ public class PublicAlertBatchJob {
 
     @Scheduled(cron = EVERY_20_MINUTES)
     public void refreshPublicAlerts() {
-        LocalDate today = DateTimeUtils.nowSeoulDate();
+        LocalDate today = TimeUtils.nowSeoulDate();
         try {
             List<SubwayAlertDto> subwayAlertDtoList = subwayAlertService.fetchAlertsByDate(today);
             alertService.saveSubwayAlerts(today, subwayAlertDtoList);

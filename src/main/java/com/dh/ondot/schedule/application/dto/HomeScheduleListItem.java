@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.application.dto;
 
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.api.response.AlarmDto;
 import com.dh.ondot.schedule.domain.Schedule;
 
@@ -31,7 +31,7 @@ public record HomeScheduleListItem(
                 schedule.getTitle(),
                 schedule.getIsRepeat(),
                 schedule.getRepeatDays() == null ? List.of() : List.copyOf(schedule.getRepeatDays()),
-                DateTimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
+                TimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
                 AlarmDto.of(schedule.getPreparationAlarm()),
                 AlarmDto.of(schedule.getDepartureAlarm()),
                 schedule.hasAnyActiveAlarm()

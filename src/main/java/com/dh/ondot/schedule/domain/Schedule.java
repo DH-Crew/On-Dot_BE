@@ -2,7 +2,7 @@ package com.dh.ondot.schedule.domain;
 
 import com.dh.ondot.core.annotation.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
-import com.dh.ondot.core.util.DateTimeUtils;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.converter.RepeatDaysConverter;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
 import com.dh.ondot.schedule.domain.vo.Snooze;
@@ -79,7 +79,7 @@ public class Schedule extends BaseTimeEntity {
                 .title(title)
                 .isRepeat(isRepeat)
                 .repeatDays(isRepeat ? repeatDays : null)
-                .appointmentAt(DateTimeUtils.toInstant(appointmentAt))
+                .appointmentAt(TimeUtils.toInstant(appointmentAt))
                 .isMedicationRequired(isMedicationRequired)
                 .preparationNote(preparationNote)
                 .build();
@@ -100,7 +100,7 @@ public class Schedule extends BaseTimeEntity {
                                 appointmentAt, estimatedTime
                         )
                 )
-                .appointmentAt(DateTimeUtils.toInstant(appointmentAt))
+                .appointmentAt(TimeUtils.toInstant(appointmentAt))
                 .build();
     }
 
@@ -115,18 +115,18 @@ public class Schedule extends BaseTimeEntity {
         this.title = title;
         this.isRepeat = isRepeat;
         this.repeatDays = isRepeat ? repeatDays : null;
-        this.appointmentAt = DateTimeUtils.toInstant(appointmentAt);
+        this.appointmentAt = TimeUtils.toInstant(appointmentAt);
     }
 
     public boolean isAppointmentTimeChanged(LocalDateTime newAppointmentAt) {
-        return !this.appointmentAt.equals(DateTimeUtils.toInstant(newAppointmentAt));
+        return !this.appointmentAt.equals(TimeUtils.toInstant(newAppointmentAt));
     }
 
     public void setupQuickSchedule(Long memberId, LocalDateTime appointmentAt) {
         this.memberId = memberId;
         this.title = "새로운 일정";
         this.isRepeat = false;
-        this.appointmentAt = DateTimeUtils.toInstant(appointmentAt);
+        this.appointmentAt = TimeUtils.toInstant(appointmentAt);
     }
 
     public void switchAlarm(boolean enabled) {
@@ -148,7 +148,7 @@ public class Schedule extends BaseTimeEntity {
         if (!isRepeat) {
             Instant prepAlarmAt = preparationAlarm.isEnabled() ? preparationAlarm.getTriggeredAt() : null;
             Instant deptAlarmAt = departureAlarm.isEnabled() ? departureAlarm.getTriggeredAt() : null;
-            return DateTimeUtils.findEarliestAfterNow(prepAlarmAt, deptAlarmAt);
+            return TimeUtils.findEarliestAfterNow(prepAlarmAt, deptAlarmAt);
         }
 
         // 반복 일정 처리
@@ -160,7 +160,7 @@ public class Schedule extends BaseTimeEntity {
             ? calculateNextRepeatTime(departureAlarm.getTriggeredAt()) 
             : null;
             
-        return DateTimeUtils.findEarliestAfterNow(nextPrepAlarmAt, nextDeptAlarmAt);
+        return TimeUtils.findEarliestAfterNow(nextPrepAlarmAt, nextDeptAlarmAt);
     }
 
     /**
@@ -169,14 +169,14 @@ public class Schedule extends BaseTimeEntity {
      */
     private Instant calculateNextRepeatTime(Instant baseAlarmTime) {
         Instant now = Instant.now();
-        LocalTime alarmTime = DateTimeUtils.toSeoulTime(baseAlarmTime);
-        LocalDate today = DateTimeUtils.nowSeoulDate();
+        LocalTime alarmTime = TimeUtils.toSeoulTime(baseAlarmTime);
+        LocalDate today = TimeUtils.nowSeoulDate();
         
         for (int daysAhead = 0; daysAhead < 7; daysAhead++) {
             LocalDate candidateDate = today.plusDays(daysAhead);
             
             if (isScheduledForDayOfWeek(candidateDate)) {
-                Instant candidateTime = DateTimeUtils.toInstant(candidateDate.atTime(alarmTime));
+                Instant candidateTime = TimeUtils.toInstant(candidateDate.atTime(alarmTime));
                 
                 if (candidateTime.isAfter(now)) {
                     return candidateTime;
