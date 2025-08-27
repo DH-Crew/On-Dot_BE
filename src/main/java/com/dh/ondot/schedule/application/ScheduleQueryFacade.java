@@ -1,6 +1,5 @@
 package com.dh.ondot.schedule.application;
 
-import com.dh.ondot.core.util.DateTimeUtils;
 import com.dh.ondot.member.domain.service.MemberService;
 import com.dh.ondot.notification.domain.service.EmergencyAlertService;
 import com.dh.ondot.schedule.api.response.*;
@@ -8,6 +7,7 @@ import com.dh.ondot.schedule.application.dto.HomeScheduleListItem;
 import com.dh.ondot.schedule.application.mapper.HomeScheduleListItemMapper;
 import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.domain.service.ScheduleQueryService;
+import com.dh.ondot.schedule.domain.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -22,6 +22,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ScheduleQueryFacade {
     private final MemberService memberService;
+    private final ScheduleService scheduleService;
     private final ScheduleQueryService scheduleQueryService;
     private final EmergencyAlertService emergencyAlertService;
     private final HomeScheduleListItemMapper homeScheduleListItemMapper;
@@ -39,21 +40,10 @@ public class ScheduleQueryFacade {
         memberService.getMemberIfExists(memberId);
         
         Slice<Schedule> scheduleSlice = scheduleQueryService.getActiveSchedules(memberId, page);
-        List<HomeScheduleListItem> scheduleItems = homeScheduleListItemMapper.toListOrderedByNextAlarmAt(scheduleSlice.getContent());
-        LocalDateTime earliestActiveAlarmTime = findEarliestActiveAlarmTime(scheduleItems);
+        List<HomeScheduleListItem> scheduleItems = homeScheduleListItemMapper.toListOrderedByAppointmentAt(scheduleSlice.getContent());
+        Instant earliestActiveAlarmAt = scheduleService.getEarliestActiveAlarmAt(scheduleSlice.getContent());
 
-        return HomeScheduleListResponse.of(earliestActiveAlarmTime, scheduleItems, scheduleSlice.hasNext());
-    }
-
-    private LocalDateTime findEarliestActiveAlarmTime(List<HomeScheduleListItem> scheduleItems) {
-        LocalDateTime now = DateTimeUtils.nowSeoulDateTime();
-        
-        return scheduleItems.stream()
-                .filter(HomeScheduleListItem::hasActiveAlarm)  // 활성 알람이 있는 일정만 필터링
-                .map(HomeScheduleListItem::nextAlarmAt)
-                .filter(alarmTime -> alarmTime.isAfter(now))  // 현재 시간 이후의 알람만 고려
-                .findFirst()  // 가장 빠른 시간 선택
-                .orElse(null);
+        return HomeScheduleListResponse.of(earliestActiveAlarmAt, scheduleItems, scheduleSlice.hasNext());
     }
 
     public String getIssues(Long scheduleId) {
