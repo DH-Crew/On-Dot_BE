@@ -9,6 +9,9 @@ public class TimeUtils {
     private static final ZoneId DEFAULT_ZONE = ZoneId.of("Asia/Seoul");
 
     public static LocalDateTime toSeoulDateTime(Instant instant) {
+        if (instant == null) {
+            return null;
+        }
         return instant.atZone(DEFAULT_ZONE).toLocalDateTime();
     }
 
@@ -29,6 +32,9 @@ public class TimeUtils {
     }
 
     public static LocalTime toSeoulTime(Instant instant) {
+        if (instant == null) {
+            return null;
+        }
         return instant.atZone(DEFAULT_ZONE).toLocalTime();
     }
 

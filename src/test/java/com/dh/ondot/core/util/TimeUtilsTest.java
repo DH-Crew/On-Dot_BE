@@ -29,6 +29,16 @@ class TimeUtilsTest {
     }
 
     @Test
+    @DisplayName("null Instant를 전달하면 null을 반환한다")
+    void toSeoulDateTime_NullInstant_ReturnsNull() {
+        // when
+        LocalDateTime result = TimeUtils.toSeoulDateTime(null);
+
+        // then
+        assertThat(result).isNull();
+    }
+
+    @Test
     @DisplayName("LocalDateTime을 서울 시간 기준 Instant로 변환한다")
     void toInstant_ConvertsLocalDateTimeToInstant() {
         // given
@@ -55,6 +65,16 @@ class TimeUtilsTest {
 
         // then
         assertThat(result).isEqualTo(LocalTime.of(15, 30, 45));
+    }
+
+    @Test
+    @DisplayName("null Instant를 전달하면 null LocalTime을 반환한다")
+    void toSeoulTime_NullInstant_ReturnsNull() {
+        // when
+        LocalTime result = TimeUtils.toSeoulTime(null);
+
+        // then
+        assertThat(result).isNull();
     }
 
     @Test
