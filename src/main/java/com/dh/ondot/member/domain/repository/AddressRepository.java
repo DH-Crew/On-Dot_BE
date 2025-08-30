@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<Address, Long> {
     Optional<Address> findByMemberIdAndType(Long memberId, AddressType type);
+    void deleteByMemberId(Long memberId);
 }
