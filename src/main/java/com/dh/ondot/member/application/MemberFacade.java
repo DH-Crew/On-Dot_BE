@@ -96,4 +96,8 @@ public class MemberFacade {
 
         return address;
     }
+
+    public Member updatePreparationTime(Long memberId, Integer preparationTime) {
+        return memberService.updatePreparationTime(memberId, preparationTime);
+    }
 }

@@ -32,6 +32,7 @@ public class OutboxMessage extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MessageStatus status;
 
+    @Builder.Default
     @Column(nullable = false)
     private int tryCount = 0;
 

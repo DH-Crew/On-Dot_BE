@@ -3,9 +3,11 @@ package com.dh.ondot.member.api;
 import com.dh.ondot.member.api.request.OnboardingRequest;
 import com.dh.ondot.member.api.request.UpdateHomeAddressRequest;
 import com.dh.ondot.member.api.request.UpdateMapProviderRequest;
+import com.dh.ondot.member.api.request.UpdatePreparationTimeRequest;
 import com.dh.ondot.member.api.request.WithdrawalRequest;
 import com.dh.ondot.member.api.response.HomeAddressResponse;
 import com.dh.ondot.member.api.response.OnboardingResponse;
+import com.dh.ondot.member.api.response.PreparationTimeResponse;
 import com.dh.ondot.member.api.response.UpdateHomeAddressResponse;
 import com.dh.ondot.member.api.response.MapProviderResponse;
 import com.dh.ondot.member.api.swagger.MemberSwagger;
@@ -84,5 +86,24 @@ public class MemberController implements MemberSwagger {
         );
 
         return UpdateHomeAddressResponse.from(address);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/preparation-time")
+    public PreparationTimeResponse getPreparationTime(
+            @RequestAttribute("memberId") Long memberId
+    ) {
+        Member member = memberFacade.getMember(memberId);
+        return PreparationTimeResponse.from(member);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/preparation-time")
+    public PreparationTimeResponse updatePreparationTime(
+            @RequestAttribute("memberId") Long memberId,
+            @Valid @RequestBody UpdatePreparationTimeRequest request
+    ) {
+        Member member = memberFacade.updatePreparationTime(memberId, request.preparationTime());
+        return PreparationTimeResponse.from(member);
     }
 }
