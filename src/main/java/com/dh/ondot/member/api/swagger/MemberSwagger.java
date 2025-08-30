@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
                 <b>🗺 MapProvider ENUM</b> : <code>NAVER</code>, <code>KAKAO</code><br><br>
                 <b>📢 주요 ErrorCode</b><br>
                 • <code>NOT_FOUND_MEMBER</code> : 회원 미존재<br>
-                • <code>NOT_FOUND_ADDRESS</code> : HOME 주소 미존재<br>
+                • <code>NOT_FOUND_HOME_ADDRESS</code> : HOME 주소 미존재<br>
                 • <code>FIELD_ERROR</code> / <code>URL_PARAMETER_ERROR</code> : 입력 검증 오류<br>
                 • <code>UNSUPPORTED_MAP_PROVIDER</code> : 지원하지 않는 MapProvider 값<br>
                 """
@@ -109,10 +109,10 @@ public interface MemberSwagger {
                                     examples = {
                                             @ExampleObject(
                                                     name = "addressNotFound",
-                                                    summary = "NOT_FOUND_ADDRESS",
+                                                    summary = "NOT_FOUND_HOME_ADDRESS",
                                                     value = """
                                                             {
-                                                              "errorCode": "NOT_FOUND_ADDRESS",
+                                                              "errorCode": "NOT_FOUND_HOME_ADDRESS",
                                                               "message": "회원이 저장한 주소를 찾을 수 없습니다. MemberId : 42"
                                                             }"""
                                             ),
@@ -363,12 +363,12 @@ public interface MemberSwagger {
                                                     }"""
                                     ))),
                     @ApiResponse(responseCode = "404",
-                            description = "NOT_FOUND_ADDRESS | NOT_FOUND_MEMBER",
+                            description = "NOT_FOUND_HOME_ADDRESS | NOT_FOUND_MEMBER",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                                     examples = @ExampleObject(
                                             value = """
                                                     {
-                                                      "errorCode": "NOT_FOUND_ADDRESS",
+                                                      "errorCode": "NOT_FOUND_HOME_ADDRESS",
                                                       "message": "회원이 저장한 주소를 찾을 수 없습니다. MemberId : 42"
                                                     }"""
                                     )))

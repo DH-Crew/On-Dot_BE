@@ -1,7 +1,7 @@
 package com.dh.ondot.member.domain.service;
 
 import com.dh.ondot.member.application.command.CreateAddressCommand;
-import com.dh.ondot.member.core.exception.NotFoundAddressException;
+import com.dh.ondot.member.core.exception.NotFoundHomeAddressException;
 import com.dh.ondot.member.domain.Address;
 import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.enums.AddressType;
@@ -29,7 +29,7 @@ public class AddressService {
 
     public Address getHomeAddress(Long memberId) {
         return addressRepository.findByMemberIdAndType(memberId, AddressType.HOME)
-                .orElseThrow(() -> new NotFoundAddressException(memberId));
+                .orElseThrow(() -> new NotFoundHomeAddressException(memberId));
     }
 
     @Transactional

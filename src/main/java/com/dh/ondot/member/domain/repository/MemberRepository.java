@@ -9,6 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    @Query("SELECT m FROM Member m WHERE m.oauthInfo.oauthProvider = :provider AND m.oauthInfo.oauthProviderId = :providerId")
-    Optional<Member> findByOauthInfo(@Param("provider") OauthProvider provider, @Param("providerId") String providerId);
+    @Query("SELECT m FROM Member m WHERE m.oauthInfo.oauthProviderId = :providerId AND m.oauthInfo.oauthProvider = :provider")
+    Optional<Member> findByOauthInfo(@Param("providerId") String providerId, @Param("provider") OauthProvider provider);
 }

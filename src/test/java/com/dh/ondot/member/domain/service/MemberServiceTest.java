@@ -141,7 +141,7 @@ class MemberServiceTest {
         OauthProvider provider = OauthProvider.KAKAO;
         Member newMember = Member.registerWithOauth("new@example.com", provider, "kakao789");
         
-        given(memberRepository.findByOauthInfo(provider, "kakao789")).willReturn(Optional.empty());
+        given(memberRepository.findByOauthInfo("kakao789", provider)).willReturn(Optional.empty());
         given(memberRepository.save(any(Member.class))).willReturn(newMember);
 
         // when
@@ -150,7 +150,7 @@ class MemberServiceTest {
         // then
         assertThat(result).isNotNull();
         assertThat(result.getEmail()).isEqualTo("new@example.com");
-        verify(memberRepository).findByOauthInfo(provider, "kakao789");
+        verify(memberRepository).findByOauthInfo("kakao789", provider);
         verify(memberRepository).save(any(Member.class));
     }
 
@@ -162,14 +162,14 @@ class MemberServiceTest {
         OauthProvider provider = OauthProvider.KAKAO;
         Member existingMember = MemberFixture.onboardedMember();
         
-        given(memberRepository.findByOauthInfo(provider, "kakao456")).willReturn(Optional.of(existingMember));
+        given(memberRepository.findByOauthInfo("kakao456", provider)).willReturn(Optional.of(existingMember));
 
         // when
         Member result = memberService.findOrRegisterOauthMember(userInfo, provider);
 
         // then
         assertThat(result).isEqualTo(existingMember);
-        verify(memberRepository).findByOauthInfo(provider, "kakao456");
+        verify(memberRepository).findByOauthInfo("kakao456", provider);
     }
 
     @Test

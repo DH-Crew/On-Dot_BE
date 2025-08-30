@@ -32,7 +32,7 @@ public class MemberService {
 
     @Transactional
     public Member findOrRegisterOauthMember(UserInfo userInfo, OauthProvider oauthProvider) {
-        return memberRepository.findByOauthInfo(oauthProvider, userInfo.oauthProviderId())
+        return memberRepository.findByOauthInfo(userInfo.oauthProviderId(), oauthProvider)
                 .orElseGet(() -> registerMemberWithOauth(userInfo, oauthProvider));
     }
 

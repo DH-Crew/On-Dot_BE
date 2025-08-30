@@ -18,7 +18,13 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "members")
+@Table(
+        name = "members",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_member_oauth",
+                columnNames = {"oauth_provider_id", "oauth_provider"}
+        )
+)
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

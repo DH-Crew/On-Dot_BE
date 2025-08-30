@@ -1,7 +1,7 @@
 package com.dh.ondot.member.domain.service;
 
 import com.dh.ondot.member.application.command.CreateAddressCommand;
-import com.dh.ondot.member.core.exception.NotFoundAddressException;
+import com.dh.ondot.member.core.exception.NotFoundHomeAddressException;
 import com.dh.ondot.member.domain.Address;
 import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.enums.AddressType;
@@ -83,7 +83,7 @@ class AddressServiceTest {
 
         // when & then
         assertThatThrownBy(() -> addressService.getHomeAddress(memberId))
-                .isInstanceOf(NotFoundAddressException.class);
+                .isInstanceOf(NotFoundHomeAddressException.class);
         
         verify(addressRepository).findByMemberIdAndType(memberId, AddressType.HOME);
     }
