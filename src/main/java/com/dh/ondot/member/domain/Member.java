@@ -93,6 +93,10 @@ public class Member extends BaseTimeEntity {
         this.mapProvider = MapProvider.from(mapProvider);
     }
 
+    public void updatePreparationTime(Integer preparationTime) {
+        this.preparationTime = preparationTime;
+    }
+
     public boolean isNewMember() {
         return preparationTime == null;
     }
