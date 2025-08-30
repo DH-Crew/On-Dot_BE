@@ -9,6 +9,7 @@ import com.dh.ondot.member.core.exception.OauthUserFetchFailedException;
 import com.dh.ondot.member.domain.enums.OauthProvider;
 import com.dh.ondot.member.domain.dto.UserInfo;
 import com.dh.ondot.member.infra.dto.ApplePublicKeyResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -91,7 +92,7 @@ public class AppleJwtUtil {
             // id_token 헤더 파싱 (kid, alg)
             String[] tokenParts = idToken.split("\\.");
             String headerJson = new String(Base64.getUrlDecoder().decode(tokenParts[0]));
-            Map<String, String> headerMap = objectMapper.readValue(headerJson, Map.class);
+            Map<String, String> headerMap = objectMapper.readValue(headerJson, new TypeReference<Map<String, String>>() {});
 
             // kid, alg에 맞는 PublicKey 찾기
             ApplePublicKeyResponse.Key matchedKey = appleKeys
