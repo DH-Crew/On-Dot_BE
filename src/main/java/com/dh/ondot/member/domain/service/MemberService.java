@@ -17,4 +17,11 @@ public class MemberService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundMemberException(memberId));
     }
+
+    @Transactional
+    public Member updatePreparationTime(Long memberId, Integer preparationTime) {
+        Member member = getMemberIfExists(memberId);
+        member.updatePreparationTime(preparationTime);
+        return member;
+    }
 }
