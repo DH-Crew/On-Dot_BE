@@ -5,7 +5,7 @@ import com.dh.ondot.member.application.dto.Token;
 import com.dh.ondot.member.domain.*;
 import com.dh.ondot.member.domain.dto.UserInfo;
 import com.dh.ondot.member.domain.enums.OauthProvider;
-import com.dh.ondot.member.domain.repository.MemberRepository;
+import com.dh.ondot.member.domain.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,15 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthFacade {
     private final TokenFacade tokenFacade;
     private final OauthApiFactory oauthApiFactory;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Transactional
     public LoginResponse loginWithOAuth(OauthProvider oauthProvider, String accessToken) {
         OauthApi oauthApi = oauthApiFactory.getOauthApi(oauthProvider);
         UserInfo userInfo = oauthApi.fetchUser(accessToken);
 
-        Member member = memberRepository.findByEmail(userInfo.email())
-                .orElseGet(() -> registerMemberWithOauth(userInfo, oauthProvider));
+        Member member = memberService.findOrRegisterOauthMember(userInfo, oauthProvider);
 
         boolean isNewMember = member.isNewMember();
         Token token = tokenFacade.issue(member.getId());
@@ -34,14 +33,5 @@ public class AuthFacade {
         } else {
             return LoginResponse.of(token.accessToken(), token.refreshToken(), false);
         }
-    }
-
-    private Member registerMemberWithOauth(UserInfo userInfo, OauthProvider oauthProvider) {
-        Member newMember = Member.registerWithOauth(
-                userInfo.email(),
-                oauthProvider,
-                userInfo.oauthProviderId()
-        );
-        return memberRepository.save(newMember);
     }
 }

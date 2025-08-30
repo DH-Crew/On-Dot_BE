@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
                 <b>🗺 MapProvider ENUM</b> : <code>NAVER</code>, <code>KAKAO</code><br><br>
                 <b>📢 주요 ErrorCode</b><br>
                 • <code>NOT_FOUND_MEMBER</code> : 회원 미존재<br>
-                • <code>NOT_FOUND_ADDRESS</code> : HOME 주소 미존재<br>
+                • <code>NOT_FOUND_HOME_ADDRESS</code> : HOME 주소 미존재<br>
                 • <code>FIELD_ERROR</code> / <code>URL_PARAMETER_ERROR</code> : 입력 검증 오류<br>
                 • <code>UNSUPPORTED_MAP_PROVIDER</code> : 지원하지 않는 MapProvider 값<br>
                 """
@@ -36,12 +36,13 @@ import org.springframework.web.bind.annotation.*;
 public interface MemberSwagger {
 
     /*──────────────────────────────────────────────────────
-     * 회원 탈퇴
+     * 회원 완전 삭제
      *──────────────────────────────────────────────────────*/
     @Operation(
-            summary = "회원 탈퇴",
+            summary = "회원 완전 삭제",
             description = """
-                    회원 탈퇴 요청을 처리합니다. 탈퇴 사유 ID는 필수이며, 기타 사유는 300자 이내로 입력할 수 있습니다.
+                    회원과 관련된 모든 데이터를 완전히 삭제합니다. 이 작업은 되돌릴 수 없습니다.
+                    삭제되는 데이터: 회원 정보, 주소, 선택사항, 일정, 알람
                     
                     사유 목록(withdrawalReasonId):
                     - ID 1: 지각 방지에 효과를 못 느꼈어요.
@@ -65,7 +66,7 @@ public interface MemberSwagger {
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "204", description = "탈퇴 완료"),
+                    @ApiResponse(responseCode = "204", description = "삭제 완료"),
                     @ApiResponse(responseCode = "404",
                             description = "NOT_FOUND_MEMBER",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class),
@@ -78,8 +79,8 @@ public interface MemberSwagger {
                                     )))
             }
     )
-    @PostMapping("/deactivate")
-    void deactivateMember(
+    @DeleteMapping
+    void deleteMember(
             @RequestAttribute("memberId") Long memberId,
             WithdrawalRequest request
     );
@@ -108,10 +109,10 @@ public interface MemberSwagger {
                                     examples = {
                                             @ExampleObject(
                                                     name = "addressNotFound",
-                                                    summary = "NOT_FOUND_ADDRESS",
+                                                    summary = "NOT_FOUND_HOME_ADDRESS",
                                                     value = """
                                                             {
-                                                              "errorCode": "NOT_FOUND_ADDRESS",
+                                                              "errorCode": "NOT_FOUND_HOME_ADDRESS",
                                                               "message": "회원이 저장한 주소를 찾을 수 없습니다. MemberId : 42"
                                                             }"""
                                             ),
@@ -264,6 +265,18 @@ public interface MemberSwagger {
                                                       "errorCode": "NOT_FOUND_QUESTION",
                                                       "message": "질문을 찾을 수 없습니다. QuestionId : 99"
                                                     }"""
+                                    ))),
+                    @ApiResponse(responseCode = "409",
+                            description = "이미 온보딩 완료",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "alreadyOnboarded",
+                                            summary = "ALREADY_ONBOARDED_MEMBER",
+                                            value = """
+                                                    {
+                                                      "errorCode": "ALREADY_ONBOARDED_MEMBER",
+                                                      "message": "이미 온보딩을 완료한 회원입니다. MemberId : 42"
+                                                    }"""
                                     )))
             }
     )
@@ -350,12 +363,12 @@ public interface MemberSwagger {
                                                     }"""
                                     ))),
                     @ApiResponse(responseCode = "404",
-                            description = "NOT_FOUND_ADDRESS | NOT_FOUND_MEMBER",
+                            description = "NOT_FOUND_HOME_ADDRESS | NOT_FOUND_MEMBER",
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                                     examples = @ExampleObject(
                                             value = """
                                                     {
-                                                      "errorCode": "NOT_FOUND_ADDRESS",
+                                                      "errorCode": "NOT_FOUND_HOME_ADDRESS",
                                                       "message": "회원이 저장한 주소를 찾을 수 없습니다. MemberId : 42"
                                                     }"""
                                     )))

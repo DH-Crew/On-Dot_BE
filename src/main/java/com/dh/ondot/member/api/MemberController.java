@@ -26,12 +26,12 @@ public class MemberController implements MemberSwagger {
     private final MemberFacade memberFacade;
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PostMapping("/deactivate")
-    public void deactivateMember(
+    @DeleteMapping
+    public void deleteMember(
             @RequestAttribute("memberId") Long memberId,
             @Valid @RequestBody WithdrawalRequest request
     ) {
-        memberFacade.deactivateMember(memberId, request.withdrawalReasonId(), request.customReason());
+        memberFacade.deleteMember(memberId, request.withdrawalReasonId(), request.customReason());
     }
 
     @ResponseStatus(HttpStatus.OK)
