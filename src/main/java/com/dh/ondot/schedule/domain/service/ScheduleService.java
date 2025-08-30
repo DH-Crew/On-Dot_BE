@@ -75,4 +75,9 @@ public class ScheduleService {
     public void deleteSchedule(Schedule schedule) {
         scheduleRepository.delete(schedule);
     }
+
+    @Transactional
+    public void deleteAllByMemberId(Long memberId) {
+        scheduleRepository.deleteByMemberId(memberId);
+    }
 }
