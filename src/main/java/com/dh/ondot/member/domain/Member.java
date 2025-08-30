@@ -2,7 +2,6 @@ package com.dh.ondot.member.domain;
 
 import com.dh.ondot.core.annotation.AggregateRoot;
 import com.dh.ondot.core.domain.BaseTimeEntity;
-import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.member.domain.enums.MapProvider;
 import com.dh.ondot.member.domain.enums.OauthProvider;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
@@ -29,7 +28,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "nickname", length = 50)
     private String nickname;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Embedded
@@ -99,11 +98,5 @@ public class Member extends BaseTimeEntity {
 
     public boolean isNewMember() {
         return preparationTime == null;
-    }
-
-    public void deactivate() {
-        this.email = "deactivated-" + this.id + "@ondot.com";
-        this.oauthInfo = OauthInfo.of(this.getOauthInfo().getOauthProvider(), "0");
-        this.deletedAt = TimeUtils.nowSeoulInstant();
     }
 }
