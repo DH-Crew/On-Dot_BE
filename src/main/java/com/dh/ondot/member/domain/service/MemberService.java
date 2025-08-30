@@ -1,5 +1,7 @@
 package com.dh.ondot.member.domain.service;
 
+import com.dh.ondot.member.application.command.OnboardingCommand;
+import com.dh.ondot.member.core.exception.AlreadyOnboardedException;
 import com.dh.ondot.member.core.exception.NotFoundMemberException;
 import com.dh.ondot.member.domain.Member;
 import com.dh.ondot.member.domain.dto.UserInfo;
@@ -20,10 +22,11 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundMemberException(memberId));
     }
 
-    @Transactional
-    public Member updatePreparationTime(Long memberId, Integer preparationTime) {
+    public Member getAndValidateAlreadyOnboarded(Long memberId) {
         Member member = getMemberIfExists(memberId);
-        member.updatePreparationTime(preparationTime);
+        if (!member.isNewMember()) {
+            throw new AlreadyOnboardedException(member.getId());
+        }
         return member;
     }
 
@@ -40,5 +43,27 @@ public class MemberService {
                 userInfo.oauthProviderId()
         );
         return memberRepository.save(newMember);
+    }
+
+    @Transactional
+    public Member updatePreparationTime(Long memberId, Integer preparationTime) {
+        Member member = getMemberIfExists(memberId);
+        member.updatePreparationTime(preparationTime);
+        return member;
+    }
+
+    @Transactional
+    public Member updateOnboardingInfo(Member member, OnboardingCommand command) {
+        member.updateOnboarding(
+                command.preparationTime(), command.alarmMode(),
+                command.isSnoozeEnabled(), command.snoozeInterval(), command.snoozeCount(),
+                command.soundCategory(), command.ringTone(), command.volume()
+        );
+        return member;
+    }
+
+    @Transactional
+    public void deleteMember(Long memberId) {
+        memberRepository.deleteById(memberId);
     }
 }
