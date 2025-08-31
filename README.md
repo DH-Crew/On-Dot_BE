@@ -2,7 +2,6 @@
 
 ![온닷소개](https://github.com/user-attachments/assets/0d0e5a05-dd3e-4551-9556-118a57be0f36)
 
-
 <br>
 
 # 👨‍👧‍👦 팀 소개
@@ -21,11 +20,6 @@
 # ✏️ 서비스 개요 및 기능
 <img width="970" alt="image" src="https://github.com/user-attachments/assets/4543730f-36b4-4df4-bce8-250f9d15f12d" />
 <img width="970" alt="image" src="https://github.com/user-attachments/assets/99d50687-acaa-44a3-b327-fc862c4fa952" />
-
-# 📋 API 명세서
-
-[온닷 Swagger 주소](https://on-dot.site/swagger-ui/index.html#/)
-
 
 <br>
 
