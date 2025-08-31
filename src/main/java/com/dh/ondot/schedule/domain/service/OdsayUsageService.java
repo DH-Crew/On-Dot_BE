@@ -5,6 +5,7 @@ import com.dh.ondot.schedule.core.exception.MaxOdsayUsageLimitExceededException;
 import com.dh.ondot.schedule.domain.OdsayUsage;
 import com.dh.ondot.schedule.domain.repository.OdsayUsageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +23,14 @@ public class OdsayUsageService {
         int updatedRows = odsayUsageRepository.incrementUsageCount(today);
 
         if (updatedRows == 0) {
-            odsayUsageRepository.findByUsageDate(today)
-                    .ifPresentOrElse(
-                            usage -> { // 사용량 초과
-                                throw new MaxOdsayUsageLimitExceededException(today);
-                            },
-                            () -> { // 오늘 첫 사용
-                                odsayUsageRepository.save(OdsayUsage.newForToday(today));
-                            }
-                    );
+            try {
+                odsayUsageRepository.save(OdsayUsage.newForToday(today));
+            } catch (DataIntegrityViolationException e) {
+                int retired = odsayUsageRepository.incrementUsageCount(today);
+                if (retired == 0) {
+                    throw new MaxOdsayUsageLimitExceededException(today);
+                }
+            }
         }
     }
 

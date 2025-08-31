@@ -40,7 +40,7 @@ public class RouteService {
         try {
             return odayPathApi.searchPublicTransportRoute(startX, startY, endX, endY);
         } catch (OdsayTooCloseException e) {
-            int walkTime = calculateWalkTime(startY, startX, endY, endX);
+            int walkTime = calculateWalkTime(startX, startY, endX, endY);
             return OdsayRouteApiResponse.walkOnly(walkTime);
         }
     }
