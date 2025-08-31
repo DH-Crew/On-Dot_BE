@@ -48,3 +48,7 @@ src/main/resources/application.yaml
 ### 개발 DB용 docker-compose 제외 ###
 /docker-compose.yaml
 /prometheus.yml
+
+### claude ###
+/CLAUDE.md
+/claudedocs/
