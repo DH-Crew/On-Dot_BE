@@ -12,58 +12,131 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RouteService {
+    
+    private static final double TRANSFER_PENALTY_MINUTES = 6.5;
+    private static final double LONG_WALK_PENALTY_MINUTES = 4.0;
+    private static final int LONG_WALK_DISTANCE_THRESHOLD = 800;
+    private static final int BUFFER_TIME_MINUTES = 10;
+    private static final int TOP_ROUTES_LIMIT = 3;
+    private static final double WALKING_SPEED_MPS = 1.25;
+    private static final int SUBWAY_TRAFFIC_TYPE = 1;
+    private static final int BUS_TRAFFIC_TYPE = 2;
+    private static final int WALKING_TRAFFIC_TYPE = 3;
+    
     private final OdsayPathApi odayPathApi;
+    private final OdsayUsageService odsayUsageService;
 
-    public int calculateRouteTime(
-            Double startX, Double startY,
-            Double endX,   Double endY
-    ) {
-        OdsayRouteApiResponse res;
+    public int calculateRouteTime(Double startX, Double startY, Double endX, Double endY) {
+        checkApiUsageLimit();
+        OdsayRouteApiResponse response = getRouteTimeFromApi(startX, startY, endX, endY);
+        return calculateFinalTravelTime(response);
+    }
+
+    private void checkApiUsageLimit() {
+        odsayUsageService.checkAndIncrementUsage();
+    }
+
+    private OdsayRouteApiResponse getRouteTimeFromApi(Double startX, Double startY, Double endX, Double endY) {
         try {
-            res = odayPathApi.searchPublicTransportRoute(startX, startY, endX, endY);
+            return odayPathApi.searchPublicTransportRoute(startX, startY, endX, endY);
         } catch (OdsayTooCloseException e) {
             int walkTime = calculateWalkTime(startY, startX, endY, endX);
-            res = OdsayRouteApiResponse.walkOnly(walkTime);
+            return OdsayRouteApiResponse.walkOnly(walkTime);
         }
+    }
 
-        // Adjust total time for each path
-        List<Double> adjustedTimes = res.result()
+    private int calculateWalkTime(double startX, double startY, double endX, double endY) {
+        double distanceInMeters = GeoUtils.calculateDistance(startX, startY, endX, endY);
+        return convertDistanceToWalkingTime(distanceInMeters);
+    }
+
+    private int calculateFinalTravelTime(OdsayRouteApiResponse response) {
+        List<Double> adjustedTimes = calculateAdjustedTimesForAllPaths(response);
+        double averageTime = calculateAverageOfTopRoutes(adjustedTimes);
+        return addBufferTimeAndRound(averageTime);
+    }
+
+    /**
+     * 모든 경로에 대해 보정된 시간 계산
+     */
+    private List<Double> calculateAdjustedTimesForAllPaths(OdsayRouteApiResponse response) {
+        return response.result()
                 .path().stream()
-                .map(path -> {
-                    double adjusted = path.info().totalTime(); // base time
-
-                    // Transfer adjustment
-                    long publicLegs = path.subPath().stream()
-                            .filter(sp -> sp.trafficType() == 1 || sp.trafficType() == 2)
-                            .count();
-                    long transferCnt = Math.max(0, publicLegs - 1);
-                    adjusted += transferCnt * 6.5;
-
-                    // Long walking adjustment
-                    long longWalks = path.subPath().stream()
-                            .filter(sp -> sp.trafficType() == 3 && sp.distance() > 800)
-                            .count();
-                    adjusted += longWalks * 4.0;
-
-                    return adjusted;
-                })
+                .map(this::calculateAdjustedTimeForSinglePath)
                 .sorted()
-                .limit(3)
+                .limit(TOP_ROUTES_LIMIT)
                 .toList();
+    }
 
-        // Calculate average of top 3 paths
-        double avg = adjustedTimes.stream()
+    /**
+     * 단일 경로에 대한 시간 보정 계산
+     */
+    private double calculateAdjustedTimeForSinglePath(OdsayRouteApiResponse.Path path) {
+        double baseTime = path.info().totalTime();
+        double transferPenalty = calculateTransferPenalty(path);
+        double longWalkPenalty = calculateLongWalkPenalty(path);
+        
+        return baseTime + transferPenalty + longWalkPenalty;
+    }
+
+    /**
+     * 환승 시간 페널티 계산 (환승 1회당 6.5분 추가)
+     */
+    private double calculateTransferPenalty(OdsayRouteApiResponse.Path path) {
+        long publicTransportLegs = countPublicTransportLegs(path);
+        long transferCount = Math.max(0, publicTransportLegs - 1);
+        return transferCount * TRANSFER_PENALTY_MINUTES;
+    }
+
+    /**
+     * 긴 도보 구간 페널티 계산 (800m 초과 도보당 4분 추가)
+     */
+    private double calculateLongWalkPenalty(OdsayRouteApiResponse.Path path) {
+        long longWalkCount = countLongWalkSegments(path);
+        return longWalkCount * LONG_WALK_PENALTY_MINUTES;
+    }
+
+    /**
+     * 대중교통 구간 개수 계산 (지하철, 버스)
+     */
+    private long countPublicTransportLegs(OdsayRouteApiResponse.Path path) {
+        return path.subPath().stream()
+                .filter(sp -> sp.trafficType() == SUBWAY_TRAFFIC_TYPE || sp.trafficType() == BUS_TRAFFIC_TYPE)
+                .count();
+    }
+
+    /**
+     * 긴 도보 구간 개수 계산 (800m 초과)
+     */
+    private long countLongWalkSegments(OdsayRouteApiResponse.Path path) {
+        return path.subPath().stream()
+                .filter(sp -> sp.trafficType() == WALKING_TRAFFIC_TYPE && sp.distance() > LONG_WALK_DISTANCE_THRESHOLD)
+                .count();
+    }
+
+    /**
+     * 상위 경로들의 평균 시간 계산
+     */
+    private double calculateAverageOfTopRoutes(List<Double> adjustedTimes) {
+        return adjustedTimes.stream()
                 .mapToDouble(Double::doubleValue)
                 .average()
                 .orElse(0);
-
-        // Add buffer(10) and round
-        return (int) Math.round(avg + 10);
     }
 
-    public int calculateWalkTime(double startX, double startY, double endX, double endY) {
-        double distance = GeoUtils.calculateDistance(startX, startY, endX, endY); // meters
-        double walkingSpeedMps = 1.25;
-        return (int) Math.round(distance / walkingSpeedMps / 60);
+    /**
+     * 여유시간 추가 후 반올림
+     */
+    private int addBufferTimeAndRound(double averageTime) {
+        return (int) Math.round(averageTime + BUFFER_TIME_MINUTES);
+    }
+
+    /**
+     * 거리를 도보 시간으로 변환
+     */
+    private int convertDistanceToWalkingTime(double distanceInMeters) {
+        double timeInSeconds = distanceInMeters / WALKING_SPEED_MPS;
+        double timeInMinutes = timeInSeconds / 60;
+        return (int) Math.round(timeInMinutes);
     }
 }
