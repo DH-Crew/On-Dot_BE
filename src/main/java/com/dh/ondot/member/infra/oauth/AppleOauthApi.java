@@ -62,6 +62,7 @@ public class AppleOauthApi implements OauthApi {
             ResponseEntity<AppleSocialTokenInfoResponseDto> response = restClient.post()
                     .uri(appleProperties.audience() + "/auth/token")
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("User-Agent", "Ondot-Server/1.0")
                     .body(body)
                     .retrieve()
                     .toEntity(AppleSocialTokenInfoResponseDto.class);
