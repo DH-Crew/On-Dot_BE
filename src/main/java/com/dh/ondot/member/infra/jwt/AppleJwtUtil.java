@@ -52,6 +52,7 @@ public class AppleJwtUtil {
                 .header()
                     .add("alg", "ES256")
                     .add("kid", appleProperties.keyId())
+                    .add("typ", "JWT")
                     .and()
                 .issuer(appleProperties.teamId())
                 .issuedAt(Date.from(TimeUtils.nowSeoulInstant()))
