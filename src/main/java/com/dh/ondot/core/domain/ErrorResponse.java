@@ -36,6 +36,10 @@ public record ErrorResponse(
         this(e.getErrorCode(), e.getMessage(), null, null);
     }
 
+    public <T extends ForbiddenException> ErrorResponse(T e) {
+        this(e.getErrorCode(), e.getMessage(), null, null);
+    }
+
     public <T extends NotFoundException> ErrorResponse(T e){
         this(e.getErrorCode(), e.getMessage(), null, null);
     }

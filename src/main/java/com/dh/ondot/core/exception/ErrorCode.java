@@ -72,6 +72,7 @@ public enum ErrorCode {
     ODSAY_NO_STOP(BAD_REQUEST, "출발지 또는 도착지 정류장을 찾을 수 없습니다: %s"),
     ODSAY_SERVICE_AREA(BAD_REQUEST, "서비스 지역이 아닙니다: %s"),
     ODSAY_TOO_CLOSE(BAD_REQUEST, "출발지와 도착지가 너무 가깝습니다: %s"),
+    ODSAY_USAGE_LIMIT_EXCEEDED(FORBIDDEN, "오늘 Odsay API 사용 한도를 초과했습니다. Date : %s"),
     ODSAY_NO_RESULT(NOT_FOUND, "검색 결과가 없습니다: %s"),
     ODSAY_SERVER_ERROR(BAD_GATEWAY, "ODSay 서버 내부 오류가 발생했습니다: %s"),
     ODSAY_UNHANDLED_ERROR(INTERNAL_SERVER_ERROR, "ODSay API 처리 중 알 수 없는 오류가 발생했습니다: %s"),
