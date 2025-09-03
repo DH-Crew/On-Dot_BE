@@ -18,7 +18,7 @@ public class AlarmFacade {
     private final RouteService routeService;
     private final ScheduleService scheduleService;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Schedule generateAlarmSettingByRoute(
             Long memberId, LocalDateTime appointmentAt,
             Double startX, Double startY, Double endX, Double endY
