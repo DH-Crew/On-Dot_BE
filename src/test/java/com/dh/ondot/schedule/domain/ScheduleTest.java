@@ -47,7 +47,7 @@ class ScheduleTest {
     @DisplayName("일회성 스케줄의 가장 빠른 알람 시간을 계산한다")
     void calculateEarliestAlarmAt_OneTimeSchedule_ReturnsEarliestTime() {
         // given
-        LocalDateTime futureTime = LocalDateTime.now().plusHours(2);
+        LocalDateTime futureTime = LocalDateTime.of(2025, 12, 15, 18, 0);
         Schedule schedule = ScheduleFixture.builder()
                 .appointmentAt(futureTime)
                 .onlyPreparationAlarmEnabled()
@@ -121,8 +121,8 @@ class ScheduleTest {
     @DisplayName("약속 시간이 변경되었는지 확인한다")
     void isAppointmentTimeChanged_DifferentTime_ReturnsTrue() {
         // given
-        LocalDateTime originalTime = LocalDateTime.now().plusDays(1);
-        LocalDateTime newTime = LocalDateTime.now().plusDays(2);
+        LocalDateTime originalTime = LocalDateTime.of(2025, 12, 16, 10, 0);
+        LocalDateTime newTime = LocalDateTime.of(2025, 12, 17, 10, 0);
         
         Schedule schedule = ScheduleFixture.builder()
                 .appointmentAt(originalTime)
@@ -139,7 +139,7 @@ class ScheduleTest {
     @DisplayName("약속 시간이 같으면 false를 반환한다")
     void isAppointmentTimeChanged_SameTime_ReturnsFalse() {
         // given
-        LocalDateTime appointmentTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime appointmentTime = LocalDateTime.of(2025, 12, 16, 10, 0);
         
         Schedule schedule = ScheduleFixture.builder()
                 .appointmentAt(appointmentTime)
@@ -160,7 +160,7 @@ class ScheduleTest {
         String newTitle = "변경된 제목";
         boolean newIsRepeat = true;
         SortedSet<Integer> newRepeatDays = ScheduleFixture.weekends();
-        LocalDateTime newAppointmentAt = LocalDateTime.now().plusDays(3);
+        LocalDateTime newAppointmentAt = LocalDateTime.of(2025, 12, 18, 10, 0);
 
         // when
         schedule.updateCore(newTitle, newIsRepeat, newRepeatDays, newAppointmentAt);
@@ -177,7 +177,7 @@ class ScheduleTest {
         // given
         Schedule schedule = ScheduleFixture.repeatSchedule(ScheduleFixture.weekdays());
         String newTitle = "일회성 스케줄";
-        LocalDateTime newAppointmentAt = LocalDateTime.now().plusDays(1);
+        LocalDateTime newAppointmentAt = LocalDateTime.of(2025, 12, 16, 10, 0);
 
         // when
         schedule.updateCore(newTitle, false, null, newAppointmentAt);
@@ -193,7 +193,7 @@ class ScheduleTest {
         // given
         Schedule schedule = ScheduleFixture.defaultSchedule();
         Long memberId = 999L;
-        LocalDateTime appointmentAt = LocalDateTime.now().plusHours(3);
+        LocalDateTime appointmentAt = LocalDateTime.of(2025, 12, 15, 19, 0);
 
         // when
         schedule.setupQuickSchedule(memberId, appointmentAt);
