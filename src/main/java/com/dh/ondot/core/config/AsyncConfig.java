@@ -1,8 +1,8 @@
 package com.dh.ondot.core.config;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -10,30 +10,53 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Arrays;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.dh.ondot.core.config.AsyncConstants.EVENT_ASYNC_TASK_EXECUTOR;
+import static com.dh.ondot.core.config.AsyncConstants.DISCORD_ASYNC_TASK_EXECUTOR;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class AsyncConfig implements AsyncConfigurer {
-    @Value("${async.event.core-pool-size}")
-    private int corePoolSize;
-    @Value("${async.event.max-pool-size}")
-    private int maxPoolSize;
-    @Value("${async.event.queue-capacity}")
-    private int queueCapacity;
+    
+    private final AsyncProperties asyncProperties;
 
     @Bean(name = EVENT_ASYNC_TASK_EXECUTOR)
     public Executor eventAsyncExecutor() {
-        ThreadPoolTaskExecutor ex = new ThreadPoolTaskExecutor();
-        ex.setCorePoolSize(corePoolSize);
-        ex.setMaxPoolSize(maxPoolSize);
-        ex.setQueueCapacity(queueCapacity);
-        ex.setThreadNamePrefix("event-");
-        ex.setWaitForTasksToCompleteOnShutdown(true);
-        ex.setAwaitTerminationSeconds(10);
-        ex.initialize();
-        return ex;
+        AsyncProperties.EventConfig config = asyncProperties.getEvent();
+        return createThreadPoolTaskExecutor(
+            config.getCorePoolSize(),
+            config.getMaxPoolSize(),
+            config.getQueueCapacity(),
+            "event-"
+        );
+    }
+
+    @Bean(name = DISCORD_ASYNC_TASK_EXECUTOR)
+    public Executor discordAsyncExecutor() {
+        AsyncProperties.DiscordConfig config = asyncProperties.getDiscord();
+        return createThreadPoolTaskExecutor(
+            config.getCorePoolSize(),
+            config.getMaxPoolSize(),
+            config.getQueueCapacity(),
+            "discord-"
+        );
+    }
+
+    private ThreadPoolTaskExecutor createThreadPoolTaskExecutor(
+            int corePoolSize, int maxPoolSize, int queueCapacity, 
+            String threadNamePrefix) {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(corePoolSize);
+        executor.setMaxPoolSize(maxPoolSize);
+        executor.setQueueCapacity(queueCapacity);
+        executor.setThreadNamePrefix(threadNamePrefix);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(10);
+        executor.initialize();
+        return executor;
     }
 
     @Override
