@@ -13,6 +13,7 @@ spring:
     password: ${DB_PASSWORD}
     hikari:
       auto-commit: false
+      read-only: false
       connection-test-query: SELECT 1
       minimum-idle: 2
       maximum-pool-size: 4
