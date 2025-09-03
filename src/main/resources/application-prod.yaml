@@ -83,6 +83,9 @@ external-api:
   safety-data:
     base-url: https://www.safetydata.go.kr//V2/api/DSSP-IF-00247
     service-key: ${SAFETY_DATA_SERVICE_KEY}
+  discord:
+    webhook:
+      url: https://discord.com/api/webhooks/${DISCORD_WEBHOOK_ID}/${DISCORD_WEBHOOK_TOKEN}
 
 management:
   endpoints:
