@@ -44,9 +44,9 @@ jobs:
           mkdir -p src/main/resources/auth
           echo "${{ secrets.APPLE_PRIVATE_KEY_FILE }}" > src/main/resources/auth/ApplePrivateKey.p8
 
-      # 4) Gradle 빌드 (테스트 제외)
+      # 4) Gradle 빌드
       - name: Build with Gradle
-        run: ./gradlew build -x test -DPROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }} -Pspring.profiles.active=prod
+        run: ./gradlew build -DPROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }} -Pspring.profiles.active=prod
 
       # ✨ 5) QEMU & Buildx 세팅 (멀티 아키텍처 빌드용)
       - name: Set up QEMU
