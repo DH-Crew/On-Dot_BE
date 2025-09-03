@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class OutboxRetryScheduler {
     private final OutboxBatchDispatcher dispatcher;
 
-    @Scheduled(fixedDelay = 60_000)
+//    @Scheduled(fixedDelay = 60_000)
     public void processPendingOutboxMessages() {
         dispatcher.dispatchRetryBatch();
         dispatcher.dispatchPendingBatch();
