@@ -42,9 +42,13 @@ spring:
 
 async:
   event:
-    core-pool-size: 4
-    max-pool-size: 8
-    queue-capacity: 500
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+  discord:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
 
 oauth2:
   client:
