@@ -37,7 +37,7 @@ class ScheduleServiceTest {
     void setupSchedule_FirstTime_CreatesWithDefaultSettings() {
         // given
         Member member = MemberFixture.defaultMember();
-        LocalDateTime appointmentAt = LocalDateTime.now().plusDays(1);
+        LocalDateTime appointmentAt = LocalDateTime.of(2025, 12, 16, 10, 0);
         int estimatedTimeMin = 30;
 
         given(scheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc(member.getId()))
@@ -58,7 +58,7 @@ class ScheduleServiceTest {
     void setupSchedule_WithExistingSchedule_CopiesFromLatestSetting() {
         // given
         Member member = MemberFixture.defaultMember();
-        LocalDateTime appointmentAt = LocalDateTime.now().plusDays(1);
+        LocalDateTime appointmentAt = LocalDateTime.of(2025, 12, 16, 14, 0);
         int estimatedTimeMin = 30;
         Schedule latestSchedule = ScheduleFixture.defaultSchedule();
 
@@ -96,7 +96,7 @@ class ScheduleServiceTest {
     @DisplayName("단일 스케줄의 활성 알람 시간을 반환한다")
     void getEarliestActiveAlarmAt_SingleSchedule_ReturnsAlarmTime() {
         // given
-        LocalDateTime futureTime = LocalDateTime.now().plusHours(2);
+        LocalDateTime futureTime = LocalDateTime.of(2025, 12, 15, 18, 0);
         Schedule schedule = ScheduleFixture.builder()
                 .onlyPreparationAlarmEnabled()
                 .appointmentAt(futureTime)
@@ -115,8 +115,8 @@ class ScheduleServiceTest {
     @DisplayName("여러 스케줄 중 가장 빠른 활성 알람 시간을 반환한다")
     void getEarliestActiveAlarmAt_MultipleSchedules_ReturnsEarliest() {
         // given
-        LocalDateTime earlierTime = LocalDateTime.now().plusHours(1);
-        LocalDateTime laterTime = LocalDateTime.now().plusHours(3);
+        LocalDateTime earlierTime = LocalDateTime.of(2025, 12, 15, 17, 0);
+        LocalDateTime laterTime = LocalDateTime.of(2025, 12, 15, 19, 0);
         
         Schedule earlierSchedule = ScheduleFixture.builder()
                 .onlyPreparationAlarmEnabled()
@@ -155,13 +155,14 @@ class ScheduleServiceTest {
     void getEarliestActiveAlarmAt_WithRepeatSchedules_ReturnsEarliest() {
         // given
         Schedule oneTimeSchedule = ScheduleFixture.builder()
-                .appointmentAt(LocalDateTime.now().plusDays(2))
+                .appointmentAt(LocalDateTime.of(2025, 9, 4, 8, 0)) // 더 이른 시간
                 .onlyPreparationAlarmEnabled()
                 .build();
                 
         Schedule repeatSchedule = ScheduleFixture.builder()
                 .isRepeat(true)
-                .repeatDays(ScheduleFixture.weekdays())
+                .repeatDays(ScheduleFixture.weekdays()) // 평일 반복
+                .appointmentAt(LocalDateTime.of(2025, 9, 15, 10, 0)) // 기준 시간
                 .onlyDepartureAlarmEnabled()
                 .build();
         
@@ -171,8 +172,9 @@ class ScheduleServiceTest {
         Instant result = scheduleService.getEarliestActiveAlarmAt(schedules);
 
         // then
-        Instant expected = oneTimeSchedule.getPreparationAlarm().getTriggeredAt(); // 60m
-        assertThat(result).isEqualTo(expected);
+        // 일회성 스케줄의 알람이 반복 스케줄보다 빨라야 함
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(oneTimeSchedule.getPreparationAlarm().getTriggeredAt());
     }
 
     @Test

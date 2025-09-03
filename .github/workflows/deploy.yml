@@ -44,9 +44,9 @@ jobs:
           mkdir -p src/main/resources/auth
           echo "${{ secrets.APPLE_PRIVATE_KEY_FILE }}" > src/main/resources/auth/ApplePrivateKey.p8
 
-      # 4) Gradle 빌드 (테스트 제외)
+      # 4) Gradle 빌드
       - name: Build with Gradle
-        run: ./gradlew build -x test -DPROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }} -Pspring.profiles.active=prod
+        run: ./gradlew build -DPROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }} -Pspring.profiles.active=prod
 
       # ✨ 5) QEMU & Buildx 세팅 (멀티 아키텍처 빌드용)
       - name: Set up QEMU
@@ -108,6 +108,8 @@ jobs:
               -e SAFETY_DATA_SERVICE_KEY=${{ secrets.SAFETY_DATA_SERVICE_KEY }} \
               -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
               -e PROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }} \
+              -e DISCORD_WEBHOOK_ID=${{ secrets.DISCORD_WEBHOOK_ID }} \
+              -e DISCORD_WEBHOOK_TOKEN=${{ secrets.DISCORD_WEBHOOK_TOKEN }} \
               --name ${{ secrets.DOCKER_REPOSITORY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
             

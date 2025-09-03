@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -40,14 +41,12 @@ class OdsayUsageServiceTest {
             timeUtils.when(TimeUtils::nowSeoulDate).thenReturn(today);
             
             given(repository.incrementUsageCount(today)).willReturn(0);
-            given(repository.findByUsageDate(today)).willReturn(Optional.empty());
 
             // when
             odsayUsageService.checkAndIncrementUsage();
 
             // then
             verify(repository).incrementUsageCount(today);
-            verify(repository).findByUsageDate(today);
             verify(repository).save(any(OdsayUsage.class));
         }
     }
@@ -78,24 +77,23 @@ class OdsayUsageServiceTest {
     void checkAndIncrementUsage_UsageLimitExceeded_ThrowsException() {
         // given
         LocalDate today = LocalDate.of(2025, 8, 31);
-        OdsayUsage limitExceededUsage = OdsayUsage.builder()
-                .usageDate(today)
-                .count(1000)
-                .build();
         
         try (MockedStatic<TimeUtils> timeUtils = mockStatic(TimeUtils.class)) {
             timeUtils.when(TimeUtils::nowSeoulDate).thenReturn(today);
+
+            given(repository.incrementUsageCount(today))
+                    .willReturn(0)  // First call
+                    .willReturn(0); // Second call (retry after exception)
             
-            given(repository.incrementUsageCount(today)).willReturn(0);
-            given(repository.findByUsageDate(today)).willReturn(Optional.of(limitExceededUsage));
+            doThrow(DataIntegrityViolationException.class)
+                    .when(repository).save(any(OdsayUsage.class));
 
             // when & then
             assertThatThrownBy(() -> odsayUsageService.checkAndIncrementUsage())
                     .isInstanceOf(MaxOdsayUsageLimitExceededException.class);
             
-            verify(repository).incrementUsageCount(today);
-            verify(repository).findByUsageDate(today);
-            verify(repository, never()).save(any());
+            verify(repository, times(2)).incrementUsageCount(today);
+            verify(repository).save(any(OdsayUsage.class));
         }
     }
 

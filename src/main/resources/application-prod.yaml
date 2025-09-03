@@ -42,9 +42,13 @@ spring:
 
 async:
   event:
-    core-pool-size: 4
-    max-pool-size: 8
-    queue-capacity: 500
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+  discord:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
 
 oauth2:
   client:
@@ -79,6 +83,9 @@ external-api:
   safety-data:
     base-url: https://www.safetydata.go.kr//V2/api/DSSP-IF-00247
     service-key: ${SAFETY_DATA_SERVICE_KEY}
+  discord:
+    webhook:
+      url: https://discord.com/api/webhooks/${DISCORD_WEBHOOK_ID}/${DISCORD_WEBHOOK_TOKEN}
 
 management:
   endpoints:

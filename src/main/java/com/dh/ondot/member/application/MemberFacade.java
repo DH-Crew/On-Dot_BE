@@ -5,9 +5,12 @@ import com.dh.ondot.member.api.response.OnboardingResponse;
 import com.dh.ondot.member.application.command.*;
 import com.dh.ondot.member.application.dto.Token;
 import com.dh.ondot.member.domain.*;
+import com.dh.ondot.member.domain.enums.OauthProvider;
+import com.dh.ondot.member.domain.event.UserRegistrationEvent;
 import com.dh.ondot.member.domain.service.*;
 import com.dh.ondot.schedule.domain.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,7 @@ public class MemberFacade {
     private final ChoiceService choiceService;
     private final ScheduleService scheduleService;
     private final WithdrawalService withdrawalService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Member getMember(Long memberId) {
         return memberService.getMemberIfExists(memberId);
@@ -44,7 +48,23 @@ public class MemberFacade {
         choiceService.createChoices(member, choicesCommand);
 
         Token token = tokenFacade.issue(member.getId());
+
+        publishUserRegistrationEvent(member, member.getOauthInfo().getOauthProvider());
+
         return OnboardingResponse.from(token.accessToken(), token.refreshToken(), member);
+    }
+
+    private void publishUserRegistrationEvent(Member member, OauthProvider oauthProvider) {
+        Long totalMemberCount = memberService.getTotalMemberCount();
+
+        UserRegistrationEvent event = new UserRegistrationEvent(
+                member.getId(),
+                member.getEmail(),
+                oauthProvider,
+                totalMemberCount
+        );
+
+        eventPublisher.publishEvent(event);
     }
 
     @Transactional

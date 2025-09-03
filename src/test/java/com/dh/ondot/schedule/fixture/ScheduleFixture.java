@@ -30,7 +30,7 @@ public class ScheduleFixture {
         private String title = "테스트 일정";
         private Boolean isRepeat = false;
         private SortedSet<Integer> repeatDays = null;
-        private LocalDateTime appointmentAt = LocalDateTime.now().plusHours(2);
+        private LocalDateTime appointmentAt = LocalDateTime.of(2025, 12, 15, 16, 0);
         private Boolean isMedicationRequired = false;
         private String preparationNote = "준비 메모";
         private Place departurePlace = PlaceFixture.defaultDeparturePlace();
@@ -65,14 +65,14 @@ public class ScheduleFixture {
         }
 
         public ScheduleBuilder onlyPreparationAlarmEnabled() {
-            this.preparationAlarm = AlarmFixture.enabledAlarm();
+            this.preparationAlarm = AlarmFixture.enabledAlarm(this.appointmentAt.minusHours(1));
             this.departureAlarm = AlarmFixture.disabledAlarm();
             return this;
         }
 
         public ScheduleBuilder onlyDepartureAlarmEnabled() {
             this.preparationAlarm = AlarmFixture.disabledAlarm();
-            this.departureAlarm = AlarmFixture.enabledAlarm();
+            this.departureAlarm = AlarmFixture.enabledAlarm(this.appointmentAt.minusMinutes(30));
             return this;
         }
 

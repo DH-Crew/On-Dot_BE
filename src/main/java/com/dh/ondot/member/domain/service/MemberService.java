@@ -30,6 +30,10 @@ public class MemberService {
         return member;
     }
 
+    public Long getTotalMemberCount() {
+        return memberRepository.count();
+    }
+
     @Transactional
     public Member findOrRegisterOauthMember(UserInfo userInfo, OauthProvider oauthProvider) {
         return memberRepository.findByOauthInfo(userInfo.oauthProviderId(), oauthProvider)

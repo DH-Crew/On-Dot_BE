@@ -11,15 +11,15 @@ import java.time.LocalDateTime;
 public class AlarmFixture {
 
     public static Alarm defaultPreparationAlarm() {
-        return enabledAlarm(LocalDateTime.now().plusHours(1));
+        return enabledAlarm(LocalDateTime.of(2025, 12, 15, 15, 0)); // 1시간 전
     }
 
     public static Alarm defaultDepartureAlarm() {
-        return enabledAlarm(LocalDateTime.now().plusMinutes(90));
+        return enabledAlarm(LocalDateTime.of(2025, 12, 15, 15, 30)); // 30분 전
     }
 
     public static Alarm enabledAlarm() {
-        return enabledAlarm(LocalDateTime.now().plusHours(1));
+        return enabledAlarm(LocalDateTime.of(2025, 12, 15, 15, 0));
     }
 
     public static Alarm enabledAlarm(LocalDateTime triggeredAt) {
@@ -33,7 +33,7 @@ public class AlarmFixture {
     }
 
     public static Alarm disabledAlarm() {
-        return disabledAlarm(LocalDateTime.now().plusHours(1));
+        return disabledAlarm(LocalDateTime.of(2025, 12, 15, 15, 0));
     }
 
     public static Alarm disabledAlarm(LocalDateTime triggeredAt) {
