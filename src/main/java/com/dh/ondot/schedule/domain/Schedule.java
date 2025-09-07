@@ -163,6 +163,13 @@ public class Schedule extends BaseTimeEntity {
         return TimeUtils.findEarliestAfterNow(nextPrepAlarmAt, nextDeptAlarmAt);
     }
 
+    public Instant getNextRepeatAlarmTime(Instant baseAlarmTime) {
+        if (!isRepeat) {
+            return baseAlarmTime;
+        }
+        return calculateNextRepeatTime(baseAlarmTime);
+    }
+
     /**
      * 반복 설정에 따라 다음 알람 시간을 계산한다.
      * 현재 시간 이후 7일 이내에서 해당 요일에 맞는 가장 빠른 시간을 찾는다.

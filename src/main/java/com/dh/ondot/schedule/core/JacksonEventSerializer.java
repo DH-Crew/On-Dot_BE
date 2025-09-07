@@ -1,6 +1,5 @@
-package com.dh.ondot.schedule.infra.serialization;
+package com.dh.ondot.schedule.core;
 
-import com.dh.ondot.schedule.application.port.EventSerializer;
 import com.dh.ondot.schedule.core.exception.SerializationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

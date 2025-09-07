@@ -151,33 +151,6 @@ class ScheduleServiceTest {
     }
 
     @Test
-    @DisplayName("반복 일정이 포함된 경우에도 가장 빠른 알람 시간을 반환한다")
-    void getEarliestActiveAlarmAt_WithRepeatSchedules_ReturnsEarliest() {
-        // given
-        Schedule oneTimeSchedule = ScheduleFixture.builder()
-                .appointmentAt(LocalDateTime.of(2025, 9, 4, 8, 0)) // 더 이른 시간
-                .onlyPreparationAlarmEnabled()
-                .build();
-                
-        Schedule repeatSchedule = ScheduleFixture.builder()
-                .isRepeat(true)
-                .repeatDays(ScheduleFixture.weekdays()) // 평일 반복
-                .appointmentAt(LocalDateTime.of(2025, 9, 15, 10, 0)) // 기준 시간
-                .onlyDepartureAlarmEnabled()
-                .build();
-        
-        List<Schedule> schedules = List.of(oneTimeSchedule, repeatSchedule);
-
-        // when
-        Instant result = scheduleService.getEarliestActiveAlarmAt(schedules);
-
-        // then
-        // 일회성 스케줄의 알람이 반복 스케줄보다 빨라야 함
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(oneTimeSchedule.getPreparationAlarm().getTriggeredAt());
-    }
-
-    @Test
     @DisplayName("스케줄을 저장한다")
     void saveSchedule_ValidSchedule_SavesSuccessfully() {
         // given

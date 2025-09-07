@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.infra.event;
 
-import com.dh.ondot.schedule.application.port.EventSerializer;
+import com.dh.ondot.schedule.core.EventSerializer;
 import com.dh.ondot.schedule.domain.event.QuickScheduleRequestedEvent;
 import com.dh.ondot.schedule.infra.outbox.OutboxMessage;
 import com.dh.ondot.schedule.infra.outbox.OutboxMessageRepository;
