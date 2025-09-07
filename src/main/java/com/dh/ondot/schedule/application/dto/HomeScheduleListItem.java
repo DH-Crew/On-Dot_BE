@@ -32,8 +32,8 @@ public record HomeScheduleListItem(
                 schedule.getIsRepeat(),
                 schedule.getRepeatDays() == null ? List.of() : List.copyOf(schedule.getRepeatDays()),
                 TimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
-                AlarmDto.of(schedule.getPreparationAlarm()),
-                AlarmDto.of(schedule.getDepartureAlarm()),
+                AlarmDto.of(schedule.getPreparationAlarm(), schedule),
+                AlarmDto.of(schedule.getDepartureAlarm(), schedule),
                 schedule.hasAnyActiveAlarm()
         );
     }
