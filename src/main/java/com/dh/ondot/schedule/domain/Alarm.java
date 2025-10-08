@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.domain;
 
-import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.core.BaseTimeEntity;
 import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.enums.AlarmMode;
 import com.dh.ondot.schedule.domain.vo.Snooze;

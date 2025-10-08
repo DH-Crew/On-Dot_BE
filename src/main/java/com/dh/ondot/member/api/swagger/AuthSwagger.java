@@ -1,6 +1,6 @@
 package com.dh.ondot.member.api.swagger;
 
-import com.dh.ondot.core.domain.ErrorResponse;
+import com.dh.ondot.core.ErrorResponse;
 import com.dh.ondot.member.api.response.AccessToken;
 import com.dh.ondot.member.api.response.LoginResponse;
 import com.dh.ondot.member.application.dto.Token;

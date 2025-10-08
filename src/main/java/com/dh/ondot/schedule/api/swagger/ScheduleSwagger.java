@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.api.swagger;
 
-import com.dh.ondot.core.domain.ErrorResponse;
+import com.dh.ondot.core.ErrorResponse;
 import com.dh.ondot.schedule.api.request.*;
 import com.dh.ondot.schedule.api.response.*;
 import io.swagger.v3.oas.annotations.Operation;

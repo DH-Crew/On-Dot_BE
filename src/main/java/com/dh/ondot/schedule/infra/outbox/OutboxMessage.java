@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.infra.outbox;
 
-import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.core.BaseTimeEntity;
 import com.dh.ondot.core.util.TimeUtils;
 import jakarta.persistence.*;
 import lombok.*;

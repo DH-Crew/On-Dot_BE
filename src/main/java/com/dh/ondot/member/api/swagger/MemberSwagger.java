@@ -6,7 +6,7 @@ import com.dh.ondot.member.api.request.UpdateMapProviderRequest;
 import com.dh.ondot.member.api.request.UpdatePreparationTimeRequest;
 import com.dh.ondot.member.api.request.WithdrawalRequest;
 import com.dh.ondot.member.api.response.*;
-import com.dh.ondot.core.domain.ErrorResponse;
+import com.dh.ondot.core.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

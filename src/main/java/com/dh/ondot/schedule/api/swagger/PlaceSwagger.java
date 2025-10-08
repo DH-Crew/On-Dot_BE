@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.api.swagger;
 
-import com.dh.ondot.core.domain.ErrorResponse;
+import com.dh.ondot.core.ErrorResponse;
 import com.dh.ondot.schedule.api.request.PlaceHistorySaveRequest;
 import com.dh.ondot.schedule.api.response.PlaceHistoryResponse;
 import com.dh.ondot.schedule.api.response.PlaceSearchResponse;

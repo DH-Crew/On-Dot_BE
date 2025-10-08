@@ -1,4 +1,4 @@
-package com.dh.ondot.core.domain;
+package com.dh.ondot.core;
 
 import com.dh.ondot.core.exception.*;
 import com.fasterxml.jackson.annotation.JsonInclude;

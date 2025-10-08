@@ -1,4 +1,4 @@
-package com.dh.ondot.core.domain;
+package com.dh.ondot.core;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

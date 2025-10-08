@@ -1,6 +1,6 @@
 package com.dh.ondot.member.domain;
 
-import com.dh.ondot.core.domain.BaseTimeEntity;
+import com.dh.ondot.core.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
