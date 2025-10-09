@@ -40,7 +40,7 @@ public class OdsayPathApi {
                         .queryParam("SY", startY)
                         .queryParam("EX", endX)
                         .queryParam("EY", endY)
-                        .build())
+                        .build(false))// 인코딩 비활성화
                 .retrieve()
                 .body(String.class);
 
