@@ -10,6 +10,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.net.URI;
+
 @Component
 public class OdsayPathApi {
     private final RestClient restClient;
@@ -22,27 +24,11 @@ public class OdsayPathApi {
     ) {
         this.odsayApiConfig = odsayApiConfig;
         this.objectMapper = objectMapper;
-
-        // curl과 동일한 User-Agent 설정
-        this.restClient = RestClient.builder()
-                .defaultHeader("User-Agent", "curl/7.68.0")
-                .defaultHeader("Accept", "*/*")
-                .requestInterceptor((request, body, execution) -> {
-                    System.out.println("=== Actual HTTP Request ===");
-                    System.out.println("Method: " + request.getMethod());
-                    System.out.println("URI: " + request.getURI());
-                    System.out.println("Headers: " + request.getHeaders());
-                    return execution.execute(request, body);
-                })
-                .build();
-
-        System.out.println("=== OdsayApiConfig initialized ===");
-        System.out.println("baseUrl: " + odsayApiConfig.baseUrl());
-        System.out.println("apiKey: " + odsayApiConfig.apiKey());
+        this.restClient = RestClient.create();
     }
 
     @Retryable(
-            retryFor = { OdsayServerErrorException.class },
+            retryFor = {OdsayServerErrorException.class},
             maxAttempts = 2,
             backoff = @Backoff(delay = 500)
     )
@@ -54,22 +40,18 @@ public class OdsayPathApi {
                 startX, startY, endX, endY
         );
 
-        System.out.println("=== ODSay API Request ===");
-        System.out.println("URL: " + url);
-
-        String rawBody = restClient.get()
-                .uri(url)
-                .retrieve()
-                .body(String.class);
-
-        System.out.println("=== ODSay API Response ===");
-        System.out.println("Success!");
-
-        if (rawBody == null || rawBody.isBlank()) {
-            throw new OdsayUnhandledException("ODSay API 응답이 null 또는 비어 있습니다.");
-        }
-
         try {
+            URI uri = URI.create(url);
+
+            String rawBody = restClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .body(String.class);
+
+            if (rawBody == null || rawBody.isBlank()) {
+                throw new OdsayUnhandledException("ODSay API 응답이 null 또는 비어 있습니다.");
+            }
+
             if (rawBody.contains("\"error\"")) {
                 OdsayErrorResponse errRes = objectMapper.readValue(rawBody, OdsayErrorResponse.class);
                 OdsayErrorResponse.Error err = errRes.error().get(0);
