@@ -23,6 +23,12 @@ public class OdsayPathApi {
         this.odsayApiConfig = odsayApiConfig;
         this.objectMapper = objectMapper;
         this.restClient = RestClient.create();
+
+        // 초기화 시 설정값 확인
+        System.out.println("=== OdsayApiConfig initialized ===");
+        System.out.println("baseUrl: " + odsayApiConfig.baseUrl());
+        System.out.println("apiKey: " + odsayApiConfig.apiKey());
+        System.out.println("apiKey length: " + odsayApiConfig.apiKey().length());
     }
 
     @Retryable(
@@ -38,10 +44,17 @@ public class OdsayPathApi {
                 startX, startY, endX, endY
         );
 
+        System.out.println("=== ODSay API Request ===");
+        System.out.println("Full URL: " + url);
+        System.out.println("URL length: " + url.length());
+
         String rawBody = restClient.get()
                 .uri(url)
                 .retrieve()
                 .body(String.class);
+
+        System.out.println("=== ODSay API Response ===");
+        System.out.println("Response: " + rawBody);
 
         if (rawBody == null || rawBody.isBlank()) {
             throw new OdsayUnhandledException("ODSay API 응답이 null 또는 비어 있습니다.");
