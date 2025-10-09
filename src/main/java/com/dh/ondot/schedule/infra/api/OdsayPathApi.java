@@ -5,12 +5,10 @@ import com.dh.ondot.schedule.infra.dto.OdsayErrorResponse;
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse;
 import com.dh.ondot.schedule.infra.exception.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 public class OdsayPathApi {
@@ -19,47 +17,31 @@ public class OdsayPathApi {
     private final ObjectMapper objectMapper;
 
     public OdsayPathApi(
-            @Qualifier("odsayRestClient") RestClient restClient,
             OdsayApiConfig odsayApiConfig,
             ObjectMapper objectMapper
     ) {
-        this.restClient = restClient;
         this.odsayApiConfig = odsayApiConfig;
         this.objectMapper = objectMapper;
+        this.restClient = RestClient.create();
     }
 
     @Retryable(
-            retryFor = { OdsayServerErrorException.class },
+            retryFor = {OdsayServerErrorException.class},
             maxAttempts = 2,
             backoff = @Backoff(delay = 500)
     )
     public OdsayRouteApiResponse searchPublicTransportRoute(Double startX, Double startY, Double endX, Double endY) {
-        String testUri = UriComponentsBuilder.newInstance()
-                .scheme("https")
-                .host("api.odsay.com")
-                .path("/v1/api/searchPubTransPathT")
-                .queryParam("apiKey", odsayApiConfig.apiKey())
-                .queryParam("SX", startX)
-                .queryParam("SY", startY)
-                .queryParam("EX", endX)
-                .queryParam("EY", endY)
-                .build(false)
-                .toUriString();
-
-        System.out.println("=== Built URI: " + testUri);
+        String url = String.format(
+                "%s?apiKey=%s&SX=%s&SY=%s&EX=%s&EY=%s",
+                odsayApiConfig.baseUrl(),
+                odsayApiConfig.apiKey(),
+                startX, startY, endX, endY
+        );
 
         String rawBody = restClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("apiKey", odsayApiConfig.apiKey())
-                        .queryParam("SX", startX)
-                        .queryParam("SY", startY)
-                        .queryParam("EX", endX)
-                        .queryParam("EY", endY)
-                        .build(false))
+                .uri(url)
                 .retrieve()
                 .body(String.class);
-
-        System.out.println("=== Response: " + rawBody);
 
         if (rawBody == null || rawBody.isBlank()) {
             throw new OdsayUnhandledException("ODSay API 응답이 null 또는 비어 있습니다.");
@@ -69,7 +51,7 @@ public class OdsayPathApi {
             if (rawBody.contains("\"error\"")) {
                 OdsayErrorResponse errRes = objectMapper.readValue(rawBody, OdsayErrorResponse.class);
                 OdsayErrorResponse.Error err = errRes.error().get(0);
-                throwOdsayExceptionByCode(err.code(), err.message()); // exception
+                throwOdsayExceptionByCode(err.code(), err.message());
             }
 
             OdsayRouteApiResponse routeRes = objectMapper.readValue(rawBody, OdsayRouteApiResponse.class);
