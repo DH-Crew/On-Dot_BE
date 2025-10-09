@@ -10,6 +10,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 public class OdsayPathApi {
@@ -33,6 +34,20 @@ public class OdsayPathApi {
             backoff = @Backoff(delay = 500)
     )
     public OdsayRouteApiResponse searchPublicTransportRoute(Double startX, Double startY, Double endX, Double endY) {
+        String testUri = UriComponentsBuilder.newInstance()
+                .scheme("https")
+                .host("api.odsay.com")
+                .path("/v1/api/searchPubTransPathT")
+                .queryParam("apiKey", odsayApiConfig.apiKey())
+                .queryParam("SX", startX)
+                .queryParam("SY", startY)
+                .queryParam("EX", endX)
+                .queryParam("EY", endY)
+                .build(false)
+                .toUriString();
+
+        System.out.println("=== Built URI: " + testUri);
+
         String rawBody = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("apiKey", odsayApiConfig.apiKey())
@@ -40,9 +55,11 @@ public class OdsayPathApi {
                         .queryParam("SY", startY)
                         .queryParam("EX", endX)
                         .queryParam("EY", endY)
-                        .build(false))// 인코딩 비활성화
+                        .build(false))
                 .retrieve()
                 .body(String.class);
+
+        System.out.println("=== Response: " + rawBody);
 
         if (rawBody == null || rawBody.isBlank()) {
             throw new OdsayUnhandledException("ODSay API 응답이 null 또는 비어 있습니다.");
