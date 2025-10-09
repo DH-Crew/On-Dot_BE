@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.infra.config;
+package com.dh.ondot.core.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

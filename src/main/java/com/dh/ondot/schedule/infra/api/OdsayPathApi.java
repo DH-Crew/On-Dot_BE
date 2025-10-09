@@ -1,6 +1,6 @@
 package com.dh.ondot.schedule.infra.api;
 
-import com.dh.ondot.schedule.infra.config.OdsayApiConfig;
+import com.dh.ondot.core.config.OdsayApiConfig;
 import com.dh.ondot.schedule.infra.dto.OdsayErrorResponse;
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse;
 import com.dh.ondot.schedule.infra.exception.*;

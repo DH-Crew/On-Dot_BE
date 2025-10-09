@@ -1,4 +1,4 @@
-package com.dh.ondot.schedule.infra.config;
+package com.dh.ondot.core.config;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
