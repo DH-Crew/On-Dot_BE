@@ -1,4 +1,4 @@
-package com.dh.ondot.core.annotation;
+package com.dh.ondot.core;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

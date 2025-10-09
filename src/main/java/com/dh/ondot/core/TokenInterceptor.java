@@ -1,4 +1,4 @@
-package com.dh.ondot.core.interceptor;
+package com.dh.ondot.core;
 
 import com.dh.ondot.member.application.TokenFacade;
 import com.dh.ondot.member.core.exception.InvalidTokenHeaderException;

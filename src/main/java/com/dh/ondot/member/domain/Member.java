@@ -1,6 +1,6 @@
 package com.dh.ondot.member.domain;
 
-import com.dh.ondot.core.annotation.AggregateRoot;
+import com.dh.ondot.core.AggregateRoot;
 import com.dh.ondot.core.BaseTimeEntity;
 import com.dh.ondot.member.domain.enums.MapProvider;
 import com.dh.ondot.member.domain.enums.OauthProvider;

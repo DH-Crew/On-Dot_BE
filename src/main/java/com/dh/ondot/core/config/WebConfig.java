@@ -1,6 +1,6 @@
 package com.dh.ondot.core.config;
 
-import com.dh.ondot.core.interceptor.TokenInterceptor;
+import com.dh.ondot.core.TokenInterceptor;
 import com.dh.ondot.member.core.OauthProviderConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
