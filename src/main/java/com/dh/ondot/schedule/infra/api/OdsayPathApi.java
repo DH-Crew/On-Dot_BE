@@ -27,6 +27,13 @@ public class OdsayPathApi {
         this.restClient = RestClient.builder()
                 .defaultHeader("User-Agent", "curl/7.68.0")
                 .defaultHeader("Accept", "*/*")
+                .requestInterceptor((request, body, execution) -> {
+                    System.out.println("=== Actual HTTP Request ===");
+                    System.out.println("Method: " + request.getMethod());
+                    System.out.println("URI: " + request.getURI());
+                    System.out.println("Headers: " + request.getHeaders());
+                    return execution.execute(request, body);
+                })
                 .build();
 
         System.out.println("=== OdsayApiConfig initialized ===");
