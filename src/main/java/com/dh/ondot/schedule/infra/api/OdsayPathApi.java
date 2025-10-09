@@ -22,17 +22,20 @@ public class OdsayPathApi {
     ) {
         this.odsayApiConfig = odsayApiConfig;
         this.objectMapper = objectMapper;
-        this.restClient = RestClient.create();
 
-        // 초기화 시 설정값 확인
+        // curl과 동일한 User-Agent 설정
+        this.restClient = RestClient.builder()
+                .defaultHeader("User-Agent", "curl/7.68.0")
+                .defaultHeader("Accept", "*/*")
+                .build();
+
         System.out.println("=== OdsayApiConfig initialized ===");
         System.out.println("baseUrl: " + odsayApiConfig.baseUrl());
         System.out.println("apiKey: " + odsayApiConfig.apiKey());
-        System.out.println("apiKey length: " + odsayApiConfig.apiKey().length());
     }
 
     @Retryable(
-            retryFor = {OdsayServerErrorException.class},
+            retryFor = { OdsayServerErrorException.class },
             maxAttempts = 2,
             backoff = @Backoff(delay = 500)
     )
@@ -45,8 +48,7 @@ public class OdsayPathApi {
         );
 
         System.out.println("=== ODSay API Request ===");
-        System.out.println("Full URL: " + url);
-        System.out.println("URL length: " + url.length());
+        System.out.println("URL: " + url);
 
         String rawBody = restClient.get()
                 .uri(url)
@@ -54,7 +56,7 @@ public class OdsayPathApi {
                 .body(String.class);
 
         System.out.println("=== ODSay API Response ===");
-        System.out.println("Response: " + rawBody);
+        System.out.println("Success!");
 
         if (rawBody == null || rawBody.isBlank()) {
             throw new OdsayUnhandledException("ODSay API 응답이 null 또는 비어 있습니다.");
