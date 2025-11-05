@@ -47,6 +47,7 @@ public interface AuthSwagger {
                                     examples = @ExampleObject(
                                             value = """
                         {
+                          "memberId": 99,
                           "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                           "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                           "isNewMember": false

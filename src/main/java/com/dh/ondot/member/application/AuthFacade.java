@@ -29,9 +29,9 @@ public class AuthFacade {
         boolean isNewMember = member.isNewMember();
         Token token = tokenFacade.issue(member.getId());
         if (isNewMember) {
-            return LoginResponse.of(token.accessToken(), "", true);
+            return LoginResponse.of(member.getId(),token.accessToken(), "", true);
         } else {
-            return LoginResponse.of(token.accessToken(), token.refreshToken(), false);
+            return LoginResponse.of(member.getId(), token.accessToken(), token.refreshToken(), false);
         }
     }
 }
