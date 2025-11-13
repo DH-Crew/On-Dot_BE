@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 import java.util.List;
 
 public record OnboardingRequest(
-        @NotNull @Min(1) @Max(240) int preparationTime,
+        @NotNull @Min(1) @Max(600) int preparationTime,
 
         @NotBlank String roadAddress,
 
