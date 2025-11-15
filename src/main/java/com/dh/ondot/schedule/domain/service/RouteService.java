@@ -16,7 +16,8 @@ public class RouteService {
     private static final double TRANSFER_PENALTY_MINUTES = 6.5;
     private static final double LONG_WALK_PENALTY_MINUTES = 4.0;
     private static final int LONG_WALK_DISTANCE_THRESHOLD = 800;
-    private static final int BUFFER_TIME_MINUTES = 15;
+    private static final int BUFFER_TIME_MINUTES = 5;
+    private static final double BUFFER_TIME_RATIO = 1.07;
     private static final int TOP_ROUTES_LIMIT = 3;
     private static final double WALKING_SPEED_MPS = 1.25;
     private static final int SUBWAY_TRAFFIC_TYPE = 1;
@@ -128,7 +129,7 @@ public class RouteService {
      * 여유시간 추가 후 반올림
      */
     private int addBufferTimeAndRound(double averageTime) {
-        return (int) Math.round(averageTime + BUFFER_TIME_MINUTES);
+        return (int) Math.round((averageTime + BUFFER_TIME_MINUTES) * BUFFER_TIME_RATIO);
     }
 
     /**
