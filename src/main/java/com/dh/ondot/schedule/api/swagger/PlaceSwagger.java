@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.api.swagger;
 
 import com.dh.ondot.core.ErrorResponse;
+import com.dh.ondot.schedule.api.request.PlaceHistoryDeleteRequest;
 import com.dh.ondot.schedule.api.request.PlaceHistorySaveRequest;
 import com.dh.ondot.schedule.api.response.PlaceHistoryResponse;
 import com.dh.ondot.schedule.api.response.PlaceSearchResponse;
@@ -216,5 +217,75 @@ public interface PlaceSwagger {
     @GetMapping("/history")
     List<PlaceHistoryResponse> history(
             @Parameter(hidden = true) @RequestAttribute("memberId") Long memberId
+    );
+
+    /* 4) 최근 검색 기록 삭제 */
+    @Operation(
+            summary = "최근 검색 기록 삭제",
+            description = """
+            회원별 검색 기록 중 <b>특정 항목을 삭제</b>합니다.
+            <ul>
+              <li>searchedAt 값은 ISO‑8601 형식의 타임스탬프여야 합니다 (예: <code>2025-04-15T09:20:31Z</code>).</li>
+              <li>해당 시각의 기록이 존재하지 않아도 성공(204) 응답을 반환합니다.</li>
+            </ul>
+            """,
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = PlaceHistoryDeleteRequest.class),
+                            examples = @ExampleObject(
+                                    name = "DeleteHistoryRequest",
+                                    value = """
+                        {
+                          "searchedAt": "2025-04-15T09:20:31Z"
+                        }"""
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "삭제 성공 (본문 없음)"),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "필드 검증 실패",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class),
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "Blank searchedAt",
+                                                    summary = "검색 시각이 빈 문자열",
+                                                    value = """
+                    {
+                      "errorCode": "FIELD_ERROR",
+                      "message": "입력이 잘못되었습니다.",
+                      "violationErrors": [
+                        {
+                          "path": "searchedAt",
+                          "reason": "검색 시각은 필수입니다."
+                        }
+                      ]
+                    }
+                    """
+                                            ),
+                                            @ExampleObject(
+                                                    name = "Invalid timestamp format",
+                                                    summary = "타임스탬프 형식 오류",
+                                                    value = """
+                    {
+                      "errorCode": "INVALID_INPUT_VALUE",
+                      "message": "잘못된 타임스탬프 형식입니다."
+                    }
+                    """
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
+    @DeleteMapping("/history")
+    void deleteHistory(
+            @Parameter(hidden = true) @RequestAttribute("memberId") Long memberId,
+            @Valid @RequestBody PlaceHistoryDeleteRequest request
     );
 }
