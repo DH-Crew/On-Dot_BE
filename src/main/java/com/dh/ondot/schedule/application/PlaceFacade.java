@@ -6,9 +6,8 @@ import com.dh.ondot.schedule.domain.service.PlaceHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +30,7 @@ public class PlaceFacade {
         return placeHistoryService.recent(memberId);
     }
 
-    public void deleteHistory(Long memberId, String searchedAtStr) {
-        java.time.Instant searchedAt = java.time.Instant.parse(searchedAtStr);
+    public void deleteHistory(Long memberId, LocalDateTime searchedAt) {
         placeHistoryService.delete(memberId, searchedAt);
     }
 
@@ -48,14 +46,32 @@ public class PlaceFacade {
             List<PlaceSearchResult> second
     ) {
         List<PlaceSearchResult> merged = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+
         Iterator<PlaceSearchResult> firstIterator = first.iterator();
         Iterator<PlaceSearchResult> secondIterator = second.iterator();
 
         while (firstIterator.hasNext() || secondIterator.hasNext()) {
-            if (firstIterator.hasNext()) merged.add(firstIterator.next());
-            if (secondIterator.hasNext()) merged.add(secondIterator.next());
+            if (firstIterator.hasNext()) {
+                PlaceSearchResult result = firstIterator.next();
+                if (seen.add(createKey(result))) {
+                    merged.add(result);
+                }
+            }
+            if (secondIterator.hasNext()) {
+                PlaceSearchResult result = secondIterator.next();
+                if (seen.add(createKey(result))) {
+                    merged.add(result);
+                }
+            }
         }
 
         return merged;
+    }
+
+    private String createKey(PlaceSearchResult result) {
+        String title = result.title() != null ? result.title() : "";
+        String roadAddress = result.roadAddress() != null ? result.roadAddress() : "";
+        return title + "|" + roadAddress;
     }
 }
