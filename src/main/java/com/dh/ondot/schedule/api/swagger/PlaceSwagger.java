@@ -183,7 +183,7 @@ public interface PlaceSwagger {
             summary = "최근 검색 기록 조회",
             description = """
             회원별로 저장된 <b>최근 10건</b>의 장소 기록을 최신순으로 반환합니다.
-            <br><br><b>searchedAt</b>은 ISO‑8601(예: <code>2025‑04‑15T10:30:45</code>) 문자열입니다.
+            <br><br><b>searchedAt</b>은 서울 시간대 기준 LocalDateTime 형식이며, 나노초 정밀도를 포함합니다 (예: <code>2025‑04‑15T18:20:31.123456789</code>).
             """,
             responses = {
                     @ApiResponse(
@@ -200,13 +200,13 @@ public interface PlaceSwagger {
                                 "title": "가천대학교 글로벌캠퍼스글로벌센터",
                                 "longitude": 127.12728,
                                 "latitude": 37.4519485,
-                                "searchedAt": "2025-04-15T09:20:31"
+                                "searchedAt": "2025-04-15T18:20:31.123456789"
                               },
                               {
                                 "title": "흥덕1로 79번길 37",
                                 "longitude": 126.9763,
                                 "latitude": 37.4847,
-                                "searchedAt": "2025-04-14T18:03:10"
+                                "searchedAt": "2025-04-14T09:03:10.987654321"
                               }
                             ]"""
                                     )
@@ -225,7 +225,8 @@ public interface PlaceSwagger {
             description = """
             회원별 검색 기록 중 <b>특정 항목을 삭제</b>합니다.
             <ul>
-              <li>searchedAt 값은 ISO‑8601 형식의 타임스탬프여야 합니다 (예: <code>2025-04-15T09:20:31Z</code>).</li>
+              <li>searchedAt 값은 조회 API에서 받은 값을 그대로 사용하세요 (예: <code>2025-04-15T18:20:31.123456789</code>).</li>
+              <li>서울 시간대 기준 LocalDateTime 형식이며, 나노초 정밀도를 포함합니다.</li>
               <li>해당 시각의 기록이 존재하지 않아도 성공(204) 응답을 반환합니다.</li>
             </ul>
             """,
@@ -238,7 +239,7 @@ public interface PlaceSwagger {
                                     name = "DeleteHistoryRequest",
                                     value = """
                         {
-                          "searchedAt": "2025-04-15T09:20:31Z"
+                          "searchedAt": "2025-04-15T18:20:31.123456789"
                         }"""
                             )
                     )

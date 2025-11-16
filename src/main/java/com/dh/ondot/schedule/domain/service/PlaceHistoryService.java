@@ -1,10 +1,13 @@
 package com.dh.ondot.schedule.domain.service;
 
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.PlaceHistory;
 import com.dh.ondot.schedule.infra.redis.PlaceHistoryRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,7 +31,8 @@ public class PlaceHistoryService {
         return repository.findRecent(memberId);
     }
 
-    public void delete(Long memberId, java.time.Instant searchedAt) {
-        repository.removeByTimestamp(memberId, searchedAt);
+    public void delete(Long memberId, LocalDateTime searchedAt) {
+        Instant instant = TimeUtils.toInstant(searchedAt);
+        repository.removeByTimestamp(memberId, instant);
     }
 }
