@@ -8,6 +8,7 @@ import java.util.List;
 
 public record PlaceHistoryResponse(
         String title,
+        String roadAddress,
         Double longitude,
         Double latitude,
         LocalDateTime searchedAt
@@ -15,6 +16,7 @@ public record PlaceHistoryResponse(
     public static PlaceHistoryResponse from(PlaceHistory history) {
         return new PlaceHistoryResponse(
                 history.title(),
+                history.roadAddress(),
                 history.longitude(),
                 history.latitude(),
                 TimeUtils.toSeoulDateTime(history.searchedAt())

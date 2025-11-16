@@ -24,7 +24,7 @@ public class PlaceHistoryService {
                 ? roadAddress
                 : title;
 
-        repository.push(PlaceHistory.of(memberId, finalTitle, lon, lat));
+        repository.push(PlaceHistory.of(memberId, finalTitle, roadAddress, lon, lat));
     }
 
     public List<PlaceHistory> recent(Long memberId) {

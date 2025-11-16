@@ -198,12 +198,14 @@ public interface PlaceSwagger {
                             [
                               {
                                 "title": "가천대학교 글로벌캠퍼스글로벌센터",
+                                "roadAddress": "경기도 성남시 수정구 성남대로 1342",
                                 "longitude": 127.12728,
                                 "latitude": 37.4519485,
                                 "searchedAt": "2025-04-15T18:20:31.123456789"
                               },
                               {
                                 "title": "흥덕1로 79번길 37",
+                                "roadAddress": "서울특별시 용산구 흥덕1로 79번길 37",
                                 "longitude": 126.9763,
                                 "latitude": 37.4847,
                                 "searchedAt": "2025-04-14T09:03:10.987654321"
