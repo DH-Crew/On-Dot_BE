@@ -38,9 +38,10 @@ public class MemberController implements MemberSwagger {
     @PostMapping("/onboarding")
     public OnboardingResponse onboarding(
             @RequestAttribute("memberId") Long memberId,
+            @RequestHeader(value = "X-Mobile-Type", required = false) String mobileType,
             @Valid @RequestBody OnboardingRequest request
     ) {
-        return memberFacade.onboarding(memberId, request);
+        return memberFacade.onboarding(memberId, mobileType, request);
     }
 
     @ResponseStatus(HttpStatus.OK)

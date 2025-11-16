@@ -36,32 +36,33 @@ public class MemberFacade {
     }
 
     @Transactional
-    public OnboardingResponse onboarding(Long memberId, OnboardingRequest request) {
+    public OnboardingResponse onboarding(Long memberId, String mobileType, OnboardingRequest request) {
         Member member = memberService.getAndValidateAlreadyOnboarded(memberId);
-        
+
         OnboardingCommand onboardingCommand = OnboardingCommand.from(request);
         CreateAddressCommand addressCommand = CreateAddressCommand.from(request);
         CreateChoicesCommand choicesCommand = CreateChoicesCommand.from(request);
-        
+
         memberService.updateOnboardingInfo(member, onboardingCommand);
         addressService.createHomeAddress(member, addressCommand);
         choiceService.createChoices(member, choicesCommand);
 
         Token token = tokenFacade.issue(member.getId());
 
-        publishUserRegistrationEvent(member, member.getOauthInfo().getOauthProvider());
+        publishUserRegistrationEvent(member, member.getOauthInfo().getOauthProvider(), mobileType);
 
         return OnboardingResponse.from(token.accessToken(), token.refreshToken(), member);
     }
 
-    private void publishUserRegistrationEvent(Member member, OauthProvider oauthProvider) {
+    private void publishUserRegistrationEvent(Member member, OauthProvider oauthProvider, String mobileType) {
         Long totalMemberCount = memberService.getTotalMemberCount();
 
         UserRegistrationEvent event = new UserRegistrationEvent(
                 member.getId(),
                 member.getEmail(),
                 oauthProvider,
-                totalMemberCount
+                totalMemberCount,
+                mobileType
         );
 
         eventPublisher.publishEvent(event);

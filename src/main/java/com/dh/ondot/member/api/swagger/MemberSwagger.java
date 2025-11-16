@@ -282,6 +282,7 @@ public interface MemberSwagger {
     )
     @PostMapping("/onboarding")
     OnboardingResponse onboarding(@RequestAttribute("memberId") Long memberId,
+                                  String mobileType,
                                   @RequestBody OnboardingRequest request);
 
     /*──────────────────────────────────────────────────────

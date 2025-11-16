@@ -5,18 +5,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DiscordMessageTemplate {
-    public String createUserRegistrationMessage(String memberEmail, OauthProvider oauthProvider, Long totalMemberCount) {
+    public String createUserRegistrationMessage(String memberEmail, OauthProvider oauthProvider, Long totalMemberCount, String mobileType) {
         return String.format(
                 """
                     🎉 **온닷 %,d번째 신규 사용자 가입 완료!** 🎉
-            
+
                     👤 **사용자 계정**: %s
                     🔐 **가입 방식**: %s
+                    📱 **디바이스 타입**: %s
                     👥 **총 사용자 수**: %,d명
                 """,
                 totalMemberCount,
                 sanitizeEmail(memberEmail),
                 getOauthProviderDisplayName(oauthProvider),
+                getMobileTypeDisplayName(mobileType),
                 totalMemberCount
         );
     }
@@ -36,5 +38,12 @@ public class DiscordMessageTemplate {
             case APPLE -> "Apple";
             default -> provider.name();
         };
+    }
+
+    private String getMobileTypeDisplayName(String mobileType) {
+        if (mobileType == null || mobileType.isBlank()) {
+            return "값 없음";
+        }
+        return mobileType.toUpperCase();
     }
 }

@@ -6,6 +6,7 @@ public record UserRegistrationEvent(
         Long memberId,
         String email,
         OauthProvider oauthProvider,
-        Long totalMemberCount
+        Long totalMemberCount,
+        String mobileType
 ) {
 }
