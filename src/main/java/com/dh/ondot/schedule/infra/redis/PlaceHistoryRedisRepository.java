@@ -26,6 +26,11 @@ public class PlaceHistoryRedisRepository {
 
     public void push(PlaceHistory history) {
         String key = key(history.memberId());
+
+        // 중복 체크
+        Set<String> existing = redisTemplate.opsForZSet().range(key, 0, -1);
+        String duplicateJson = findDuplicate(existing, history);
+
         String value = converter.toJson(history);
         double score = history.searchedAt().getEpochSecond();
 
@@ -35,9 +40,14 @@ public class PlaceHistoryRedisRepository {
             public Void execute(RedisOperations operations) throws DataAccessException {
                 operations.multi();
 
-                operations.opsForZSet().add(key, value, score);
-                operations.opsForZSet().removeRange(key, 0, -MAX_HISTORY -1);// 11개일 경우 1개 제거
+                if (duplicateJson != null) {
+                    operations.opsForZSet().remove(key, duplicateJson);
+                }
 
+                operations.opsForZSet().add(key, value, score);
+
+                // 10개만 남기도록
+                operations.opsForZSet().removeRange(key, 0, -MAX_HISTORY - 1);
                 operations.exec();
                 return null;
             }
@@ -69,6 +79,26 @@ public class PlaceHistoryRedisRepository {
         double score = searchedAt.getEpochSecond();
         return safeLong(redisTemplate.opsForZSet()
                 .removeRangeByScore(key, score, score));
+    }
+
+    private String findDuplicate(Set<String> existingJsons, PlaceHistory newHistory) {
+        if (existingJsons == null || existingJsons.isEmpty()) {
+            return null;
+        }
+
+        for (String json : existingJsons) {
+            PlaceHistory existing = converter.fromJson(json);
+            if (isDuplicate(existing, newHistory)) {
+                return json;
+            }
+        }
+        return null;
+    }
+
+    private boolean isDuplicate(PlaceHistory a, PlaceHistory b) {
+        return a.title().equals(b.title())
+                && a.longitude().equals(b.longitude())
+                && a.latitude().equals(b.latitude());
     }
 
     private String key(Long memberId) {
