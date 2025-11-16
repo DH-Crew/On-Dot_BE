@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.api;
 
+import com.dh.ondot.schedule.api.request.PlaceHistoryDeleteRequest;
 import com.dh.ondot.schedule.api.request.PlaceHistorySaveRequest;
 import com.dh.ondot.schedule.api.response.PlaceHistoryResponse;
 import com.dh.ondot.schedule.api.response.PlaceSearchResponse;
@@ -49,5 +50,14 @@ public class PlaceController implements PlaceSwagger {
             @RequestAttribute("memberId") Long memberId
     ) {
         return PlaceHistoryResponse.fromList(placeFacade.getHistory(memberId));
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/history")
+    public void deleteHistory(
+            @RequestAttribute("memberId") Long memberId,
+            @Valid @RequestBody PlaceHistoryDeleteRequest request
+    ) {
+        placeFacade.deleteHistory(memberId, request.searchedAt());
     }
 }

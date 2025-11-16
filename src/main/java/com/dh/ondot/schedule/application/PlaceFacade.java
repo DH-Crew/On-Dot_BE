@@ -31,6 +31,11 @@ public class PlaceFacade {
         return placeHistoryService.recent(memberId);
     }
 
+    public void deleteHistory(Long memberId, String searchedAtStr) {
+        java.time.Instant searchedAt = java.time.Instant.parse(searchedAtStr);
+        placeHistoryService.delete(memberId, searchedAt);
+    }
+
     public List<PlaceSearchResult> searchPlaces(String query) {
         List<PlaceSearchResult> placeResults = searchPlaceApi.search(query);
         List<PlaceSearchResult> roadAddressResults = searchRoadAddressApi.search(query);

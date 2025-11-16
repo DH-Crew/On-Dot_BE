@@ -27,4 +27,8 @@ public class PlaceHistoryService {
     public List<PlaceHistory> recent(Long memberId) {
         return repository.findRecent(memberId);
     }
+
+    public void delete(Long memberId, java.time.Instant searchedAt) {
+        repository.removeByTimestamp(memberId, searchedAt);
+    }
 }

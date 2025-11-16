@@ -64,6 +64,13 @@ public class PlaceHistoryRedisRepository {
                 .removeRangeByScore(key, 0, cutoff));
     }
 
+    public long removeByTimestamp(Long memberId, Instant searchedAt) {
+        String key = key(memberId);
+        double score = searchedAt.getEpochSecond();
+        return safeLong(redisTemplate.opsForZSet()
+                .removeRangeByScore(key, score, score));
+    }
+
     private String key(Long memberId) {
         return KEY_PREFIX + memberId;
     }
