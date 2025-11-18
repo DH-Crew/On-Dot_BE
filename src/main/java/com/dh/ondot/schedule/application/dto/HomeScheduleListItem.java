@@ -19,7 +19,8 @@ public record HomeScheduleListItem(
         LocalDateTime appointmentAt,
         AlarmDto preparationAlarm,
         AlarmDto departureAlarm,
-        boolean hasActiveAlarm
+        boolean hasActiveAlarm,
+        String preparationNote
 ) {
     public static HomeScheduleListItem from(Schedule schedule) {
         return new HomeScheduleListItem(
@@ -34,7 +35,8 @@ public record HomeScheduleListItem(
                 TimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
                 AlarmDto.of(schedule.getPreparationAlarm(), schedule),
                 AlarmDto.of(schedule.getDepartureAlarm(), schedule),
-                schedule.hasAnyActiveAlarm()
+                schedule.hasAnyActiveAlarm(),
+                schedule.getPreparationNote()
         );
     }
 }

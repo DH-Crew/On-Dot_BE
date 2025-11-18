@@ -508,7 +508,9 @@ public interface ScheduleSwagger {
                         "soundCategory": "BRIGHT_ENERGY",
                         "ringTone": "FRACTURED_LOVE",
                         "volume": 0.2
-                      }
+                      },
+                      "isMedicationRequired": false,
+                      "preparationNote": "노트북 챙기기"
                     }""")
                             )
                     ),
@@ -730,7 +732,8 @@ public interface ScheduleSwagger {
                             "ringTone": "FRACTURED_LOVE",
                             "volume": 0.2
                           },
-                          "hasActiveAlarm": true
+                          "hasActiveAlarm": true,
+                          "preparationNote": "우산 챙기기"
                         }
                       ]
                     }
@@ -814,7 +817,9 @@ public interface ScheduleSwagger {
                         "soundCategory": "BRIGHT_ENERGY",
                         "ringTone": "FRACTURED_LOVE",
                         "volume": 0.2
-                      }
+                      },
+                      "isMedicationRequired": false,
+                      "preparationNote": "노트북, 충전기 챙기기"
                     }"""
                             )
                     )
