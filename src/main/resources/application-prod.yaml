@@ -1,7 +1,7 @@
 server:
   port: 8080
   servlet:
-    contextPath: /api/v1
+    contextPath:
 
 spring:
   jackson:
@@ -12,7 +12,7 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
-      auto-commit: false
+      read-only: false
       connection-test-query: SELECT 1
       minimum-idle: 2
       maximum-pool-size: 4
@@ -21,7 +21,7 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
-      timeout: 10
+      timeout: 1s
       password: ${REDIS_PASSWORD}
 
   jpa:
@@ -35,14 +35,32 @@ spring:
       max-file-size: 10MB
       max-request-size: 20MB
 
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      model: gpt-4o
+
+async:
+  event:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+  discord:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 100
+
 oauth2:
   client:
     registration:
       kakao:
         client_id: ${KAKAO_CLIENT_ID} # REST API
-        redirect_uri: ${KAKAO_REDIRECT_URI}
-        client_secret: ${KAKAO_CLIENT_SECRET} # Client Secret
-        scope: account_email
+      apple:
+        client-id: ${APPLE_CLIENT_ID}
+        team-id: ${APPLE_TEAM_ID}
+        key-id: ${APPLE_KEY_ID}
+        audience: https://appleid.apple.com
+        grant-type: authorization_code
 
 jwt:
   secret: ${JWT_SECRET}
@@ -54,13 +72,20 @@ naver:
     client-id: ${NAVER_CLIENT_ID}
     client-secret: ${NAVER_CLIENT_SECRET}
 
-kakao:
-  client:
-    authorization-key: ${KAKAO_AUTHORIZATION_KEY}
-
 odsay:
-  client:
-    api-key: ${ODSAY_CLIENT_API_KEY}
+  base-url: https://api.odsay.com/v1/api/searchPubTransPathT
+  api-key: ${ODSAY_CLIENT_API_KEY}
+
+external-api:
+  seoul-transportation:
+    base-url: https://apis.data.go.kr/B553766/ntce/getNtceList
+    service-key: ${SEOUL_TRANSPORTATION_SERVICE_KEY}
+  safety-data:
+    base-url: https://www.safetydata.go.kr//V2/api/DSSP-IF-00247
+    service-key: ${SAFETY_DATA_SERVICE_KEY}
+  discord:
+    webhook:
+      url: https://discord.com/api/webhooks/${DISCORD_WEBHOOK_ID}/${DISCORD_WEBHOOK_TOKEN}
 
 management:
   endpoints:

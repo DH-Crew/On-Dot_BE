@@ -1,6 +1,6 @@
 package com.dh.ondot.core.exception;
 
-import com.dh.ondot.core.domain.ErrorResponse;
+import com.dh.ondot.core.ErrorResponse;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -35,6 +36,13 @@ public class GlobalExceptionHandler {
         log.warn(e.getMessage());
 
         return new ErrorResponse(ErrorCode.URL_PARAMETER_ERROR, e.getConstraintViolations());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingParam(MissingServletRequestParameterException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(ErrorCode.URL_PARAMETER_ERROR);
     }
 
     @ExceptionHandler
@@ -72,6 +80,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleUnauthorizedException(UnauthorizedException e) {
+        log.warn(e.getMessage());
+
+        return new ErrorResponse(e);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleForbiddenException(ForbiddenException e) {
         log.warn(e.getMessage());
 
         return new ErrorResponse(e);
@@ -118,6 +134,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public ErrorResponse handleTooManyRequestsException(TooManyRequestsException e) {
+        log.warn(e.getMessage());
+
+        return new ErrorResponse(e);
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerErrorException(InternalServerException e) {
         log.error(e.getMessage(), e);
@@ -134,9 +158,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public ErrorResponse handleBadGatewayException(BadGatewayException e) {
+        log.error(e.getMessage());
+
+        return new ErrorResponse(e);
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorResponse handleServiceUnavailableException(ServiceUnavailableException e) {
-        log.warn(e.getMessage());
+        log.error(e.getMessage());
 
         return new ErrorResponse(e);
     }
