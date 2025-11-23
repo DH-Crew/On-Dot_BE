@@ -1,5 +1,7 @@
 # 📅 나만의 스케줄 어시스턴트, 온닷 [On-Dot]
 
+### [온닷 다운로드 받기(Android, IOS)](https://linktr.ee/ondot.official)
+
 ![온닷소개](https://github.com/user-attachments/assets/0d0e5a05-dd3e-4551-9556-118a57be0f36)
 
 <br>
@@ -12,7 +14,7 @@
 | --- | --- | --- |
 | 기획 | 오남택 | 📈 PM |
 | 디자인 | 박세린 | 🎨 Design |
-| 개발 | 손현수 | 📱 iOS |
+| 개발 | 손현수 | 📱 Android, IOS |
 | 개발 | 문희상 | 💻 Backend |
 
 <br>
@@ -24,5 +26,4 @@
 <br>
 
 # 🗺️ 시스템 아키텍쳐
-
-<img width="1399" height="1075" alt="image" src="https://github.com/user-attachments/assets/1942ced1-15f3-47e3-bfa0-a574671ad051" />
+<img width="1382" height="1073" alt="image" src="https://github.com/user-attachments/assets/5225d746-09d2-4cd9-9456-91fd7ce85eac" />
