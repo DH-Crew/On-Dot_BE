@@ -1,9 +1,11 @@
 package com.dh.ondot.schedule.api.swagger;
 
 import com.dh.ondot.schedule.api.request.EstimateTimeRequest;
+import com.dh.ondot.schedule.api.request.RecordAlarmTriggerRequest;
 import com.dh.ondot.schedule.api.request.SetAlarmRequest;
 import com.dh.ondot.schedule.api.response.SettingAlarmResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -33,7 +37,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
           CHASING_LIGHTS, ASHES_OF_US, HEATING_SUN, NO_COPYRIGHT_MUSIC,<br>
           MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY,<br>
           ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER
-        </i>
+        </i><br>
+        • <code>AlarmTriggerAction</code>: STOP, SNOOZE, VIEW_ROUTE, START_PREPARE
         """
 )
 @RequestMapping("/alarms")
@@ -119,10 +124,66 @@ public interface AlarmSwagger {
                     @ApiResponse(responseCode = "404", description = "스케줄 없음")
             }
     )
-    @PostMapping("/latest")
+    @PostMapping("/setting")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200")
     SettingAlarmResponse setAlarm(
             @RequestAttribute("memberId") Long memberId,
-            SetAlarmRequest request
+            @RequestBody SetAlarmRequest request
+    );
+
+    /*──────────────────────────────────────────────────────
+     * 2. 알람 트리거 기록 저장
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+            summary = "알람 트리거 기록 저장",
+            description = """
+            알람이 실제로 울렸을 때의 기록을 저장합니다.<br>
+            사용자가 알람에 대해 취한 액션(끔/다시알림/무응답)과 응답 시간 등의 지표를 수집합니다.<br/>
+
+            <b>⚠️ Error Codes</b><br/>
+            • 요청 JSON 문법 오류: <code>INVALID_JSON</code><br/>
+            • 입력 필드 검증 실패: <code>FIELD_ERROR</code><br/>
+            • 알람을 찾을 수 없음: <code>NOT_FOUND_ALARM</code><br/>
+            • 잘못된 알람 트리거 액션: <code>INVALID_ALARM_TRIGGER_ACTION</code><br/>
+            • 그 외 서버 오류: <code>SERVER_ERROR</code>
+            """,
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required    = true,
+                    description = "알람 트리거 정보 (scheduleId, alarmId, action 포함)",
+                    content     = @Content(
+                            mediaType = APPLICATION_JSON_VALUE,
+                            schema    = @Schema(implementation = RecordAlarmTriggerRequest.class),
+                            examples  = @ExampleObject(
+                                    name  = "예시-요청",
+                                    value = """
+                        {
+                          "scheduleId": 789,
+                          "alarmId": 456,
+                          "action": "STOP"
+                        }"""
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description  = "기록 저장 성공 (응답 본문 없음)"
+                    ),
+                    @ApiResponse(responseCode = "404", description = "알람을 찾을 수 없음"),
+                    @ApiResponse(responseCode = "400", description = "잘못된 알람 트리거 액션")
+            }
+    )
+    @PostMapping("/triggers")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201")
+    void recordAlarmTrigger(
+            @RequestAttribute("memberId") Long memberId,
+            @Parameter(
+                    name = "X-Mobile-Type",
+                    description = "모바일 디바이스 타입 (예: iOS, Android)",
+                    required = false,
+                    example = "iOS"
+            )
+            @RequestHeader(value = "X-Mobile-Type", required = false) String mobileType,
+            @RequestBody RecordAlarmTriggerRequest request
     );
 }

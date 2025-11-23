@@ -1,10 +1,13 @@
 package com.dh.ondot.schedule.api;
 
+import com.dh.ondot.schedule.api.request.RecordAlarmTriggerRequest;
 import com.dh.ondot.schedule.api.request.SetAlarmRequest;
 import com.dh.ondot.schedule.api.response.SettingAlarmResponse;
 import com.dh.ondot.schedule.api.swagger.AlarmSwagger;
 import com.dh.ondot.schedule.application.AlarmFacade;
 import com.dh.ondot.schedule.domain.Schedule;
+import com.dh.ondot.schedule.domain.service.AlarmService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/alarms")
 public class AlarmController implements AlarmSwagger {
     private final AlarmFacade alarmFacade;
+    private final AlarmService alarmService;
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/setting")
     public SettingAlarmResponse setAlarm(
             @RequestAttribute("memberId") Long memberId,
-            @RequestBody SetAlarmRequest request
+            @Valid @RequestBody SetAlarmRequest request
     ) {
         Schedule schedule = alarmFacade.generateAlarmSettingByRoute(
                 memberId, request.appointmentAt(),
@@ -30,6 +34,22 @@ public class AlarmController implements AlarmSwagger {
         return SettingAlarmResponse.from(
                 schedule.getPreparationAlarm(),
                 schedule.getDepartureAlarm()
+        );
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/triggers")
+    public void recordAlarmTrigger(
+            @RequestAttribute("memberId") Long memberId,
+            @RequestHeader(value = "X-Mobile-Type", required = false) String mobileType,
+            @Valid @RequestBody RecordAlarmTriggerRequest request
+    ) {
+        alarmService.recordTrigger(
+                memberId,
+                request.scheduleId(),
+                request.alarmId(),
+                request.action(),
+                mobileType
         );
     }
 }
