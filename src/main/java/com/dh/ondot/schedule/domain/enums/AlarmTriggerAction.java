@@ -18,6 +18,10 @@ public enum AlarmTriggerAction {
     private final String description;
 
     public static AlarmTriggerAction from(String value) {
+        if (value == null || value.isBlank()) {
+            throw new InvalidAlarmTriggerActionException("null or empty");
+        }
+
         return Arrays.stream(values())
                 .filter(action -> action.getValue().equalsIgnoreCase(value))
                 .findFirst()

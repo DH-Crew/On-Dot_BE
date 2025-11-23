@@ -17,6 +17,7 @@ public class AlarmService {
 
     @Transactional
     public void recordTrigger(
+            Long memberId,
             Long alarmId,
             Long scheduleId,
             String action,
@@ -26,6 +27,7 @@ public class AlarmService {
                 .orElseThrow(() -> new NotFoundAlarmException(alarmId));
 
         AlarmTriggerHistory history = AlarmTriggerHistory.record(
+                memberId,
                 alarmId,
                 scheduleId,
                 alarm.getTriggeredAt(),

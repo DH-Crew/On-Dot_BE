@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.domain;
 
 import com.dh.ondot.core.BaseTimeEntity;
+import com.dh.ondot.core.util.TimeUtils;
 import com.dh.ondot.schedule.domain.enums.AlarmTriggerAction;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,17 +43,18 @@ public class AlarmTriggerHistory extends BaseTimeEntity {
     private String deviceType;
 
     public static AlarmTriggerHistory record(
+            Long memberId,
             Long alarmId,
             Long scheduleId,
-            Instant triggeredAt,
             Instant respondedAt,
             String action,
             String deviceType
     ) {
         return AlarmTriggerHistory.builder()
+                .memberId(memberId)
                 .alarmId(alarmId)
                 .scheduleId(scheduleId)
-                .triggeredAt(triggeredAt)
+                .triggeredAt(TimeUtils.nowSeoulInstant())
                 .respondedAt(respondedAt)
                 .action(AlarmTriggerAction.from(action))
                 .deviceType(deviceType)
