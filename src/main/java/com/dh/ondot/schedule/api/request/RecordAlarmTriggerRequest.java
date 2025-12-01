@@ -11,7 +11,7 @@ public record RecordAlarmTriggerRequest(
         Long alarmId,
 
         @NotNull(message = "action은 필수입니다.")
-        @Pattern(regexp = "STOP|SNOOZE|VIEW_ROUTE|START_PREPARE", message = "action은 STOP, SNOOZE, VIEW_ROUTE, START_PREPARE 중 하나여야 합니다.")
+        @Pattern(regexp = "SCHEDULED|STOP|SNOOZE|VIEW_ROUTE|START_PREPARE", message = "action은 SCHEDULED, STOP, SNOOZE, VIEW_ROUTE, START_PREPARE 중 하나여야 합니다.")
         String action
 ) {
 }

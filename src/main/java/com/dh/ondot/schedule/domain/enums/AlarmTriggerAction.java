@@ -9,6 +9,7 @@ import java.util.Arrays;
 @Getter
 @RequiredArgsConstructor
 public enum AlarmTriggerAction {
+    SCHEDULED("scheduled", "스케줄링 등록"),
     STOP("stop", "알람 끔"),
     SNOOZE("snooze", "다시 알림"),
     VIEW_ROUTE("view_route", "경로안내 보기"),
