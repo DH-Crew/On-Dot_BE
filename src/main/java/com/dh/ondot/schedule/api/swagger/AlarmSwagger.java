@@ -38,7 +38,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
           MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY,<br>
           ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER
         </i><br>
-        • <code>AlarmTriggerAction</code>: STOP, SNOOZE, VIEW_ROUTE, START_PREPARE
+        • <code>AlarmTriggerAction</code>: SCHEDULED, STOP, SNOOZE, VIEW_ROUTE, START_PREPARE
         """
 )
 @RequestMapping("/alarms")
@@ -139,7 +139,14 @@ public interface AlarmSwagger {
             description = """
             알람이 실제로 울렸을 때의 기록을 저장합니다.<br>
             사용자가 알람에 대해 취한 액션(끔/다시알림/무응답)과 응답 시간 등의 지표를 수집합니다.<br/>
-
+            <br/>
+            <b>📝 action 필드 가능한 값</b><br/>
+            • <code>SCHEDULED</code>: 스케줄링 등록<br/>
+            • <code>STOP</code>: 알람 끔<br/>
+            • <code>SNOOZE</code>: 다시 알림<br/>
+            • <code>VIEW_ROUTE</code>: 경로안내 보기<br/>
+            • <code>START_PREPARE</code>: 준비 시작하기<br/>
+            <br/>
             <b>⚠️ Error Codes</b><br/>
             • 요청 JSON 문법 오류: <code>INVALID_JSON</code><br/>
             • 입력 필드 검증 실패: <code>FIELD_ERROR</code><br/>
