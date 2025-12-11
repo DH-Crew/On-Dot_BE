@@ -46,8 +46,8 @@ public class AlarmController implements AlarmSwagger {
     ) {
         alarmService.recordTrigger(
                 memberId,
-                request.scheduleId(),
                 request.alarmId(),
+                request.scheduleId(),
                 request.action(),
                 mobileType
         );
