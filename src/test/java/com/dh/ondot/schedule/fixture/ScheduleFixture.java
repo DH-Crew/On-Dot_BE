@@ -30,7 +30,7 @@ public class ScheduleFixture {
         private String title = "테스트 일정";
         private Boolean isRepeat = false;
         private SortedSet<Integer> repeatDays = null;
-        private LocalDateTime appointmentAt = LocalDateTime.of(2025, 12, 15, 16, 0);
+        private LocalDateTime appointmentAt = LocalDateTime.now().plusDays(7).withHour(16).withMinute(0).withSecond(0).withNano(0);
         private Boolean isMedicationRequired = false;
         private String preparationNote = "준비 메모";
         private Place departurePlace = PlaceFixture.defaultDeparturePlace();
