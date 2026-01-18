@@ -40,7 +40,7 @@ public class ScheduleQueryFacade {
         memberService.getMemberIfExists(memberId);
         
         Slice<Schedule> scheduleSlice = scheduleQueryService.getActiveSchedules(memberId, page);
-        List<HomeScheduleListItem> scheduleItems = homeScheduleListItemMapper.toListOrderedByAppointmentAt(scheduleSlice.getContent());
+        List<HomeScheduleListItem> scheduleItems = homeScheduleListItemMapper.toListOrderedByAlarmPriority(scheduleSlice.getContent());
         Instant earliestActiveAlarmAt = scheduleService.getEarliestActiveAlarmAt(scheduleSlice.getContent());
 
         return HomeScheduleListResponse.of(earliestActiveAlarmAt, scheduleItems, scheduleSlice.hasNext());
