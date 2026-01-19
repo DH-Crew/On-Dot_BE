@@ -96,7 +96,7 @@ class ScheduleServiceTest {
     @DisplayName("단일 스케줄의 활성 알람 시간을 반환한다")
     void getEarliestActiveAlarmAt_SingleSchedule_ReturnsAlarmTime() {
         // given
-        LocalDateTime futureTime = LocalDateTime.of(2025, 12, 15, 18, 0);
+        LocalDateTime futureTime = LocalDateTime.now().plusDays(7).withHour(18).withMinute(0);
         Schedule schedule = ScheduleFixture.builder()
                 .onlyPreparationAlarmEnabled()
                 .appointmentAt(futureTime)
@@ -115,9 +115,9 @@ class ScheduleServiceTest {
     @DisplayName("여러 스케줄 중 가장 빠른 활성 알람 시간을 반환한다")
     void getEarliestActiveAlarmAt_MultipleSchedules_ReturnsEarliest() {
         // given
-        LocalDateTime earlierTime = LocalDateTime.of(2025, 12, 15, 17, 0);
-        LocalDateTime laterTime = LocalDateTime.of(2025, 12, 15, 19, 0);
-        
+        LocalDateTime earlierTime = LocalDateTime.now().plusDays(5).withHour(17).withMinute(0);
+        LocalDateTime laterTime = LocalDateTime.now().plusDays(7).withHour(19).withMinute(0);
+
         Schedule earlierSchedule = ScheduleFixture.builder()
                 .onlyPreparationAlarmEnabled()
                 .appointmentAt(earlierTime)
@@ -126,7 +126,7 @@ class ScheduleServiceTest {
                 .onlyDepartureAlarmEnabled()
                 .appointmentAt(laterTime)
                 .build();
-        
+
         List<Schedule> schedules = List.of(laterSchedule, earlierSchedule);
 
         // when

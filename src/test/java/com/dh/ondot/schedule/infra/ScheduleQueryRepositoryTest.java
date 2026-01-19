@@ -1,0 +1,303 @@
+package com.dh.ondot.schedule.infra;
+
+import com.dh.ondot.core.config.QueryDslConfig;
+import com.dh.ondot.schedule.domain.Alarm;
+import com.dh.ondot.schedule.domain.Place;
+import com.dh.ondot.schedule.domain.Schedule;
+import com.dh.ondot.schedule.domain.repository.ScheduleRepository;
+import com.dh.ondot.schedule.fixture.AlarmFixture;
+import com.dh.ondot.schedule.fixture.PlaceFixture;
+import com.dh.ondot.schedule.fixture.ScheduleFixture;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+@Transactional
+@ActiveProfiles("test")
+@DisplayName("ScheduleQueryRepository 필터링 로직 테스트")
+class ScheduleQueryRepositoryTest {
+
+    @Autowired
+    private ScheduleQueryRepository scheduleQueryRepository;
+
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
+    private Long memberId;
+    private Instant now;
+
+    @BeforeEach
+    void setUp() {
+        memberId = 1L;
+        now = Instant.now();
+    }
+
+    @Test
+    @DisplayName("현재 시간 이전의 비반복 스케줄은 응답에서 제외된다")
+    void findActiveSchedulesByMember_PastNonRepeatSchedule_ExcludedFromResult() {
+        // given
+        LocalDateTime pastTime = LocalDateTime.now().minusDays(3); // 3일 전
+        LocalDateTime futureTime = LocalDateTime.now().plusDays(3); // 3일 후
+
+        // 과거 비반복 스케줄 - 제외되어야 함
+        Schedule pastNonRepeatSchedule = createSchedule(
+                "과거 비반복 스케줄",
+                false,
+                null,
+                pastTime
+        );
+
+        // 미래 비반복 스케줄 - 포함되어야 함
+        Schedule futureNonRepeatSchedule = createSchedule(
+                "미래 비반복 스케줄",
+                false,
+                null,
+                futureTime
+        );
+
+        scheduleRepository.save(pastNonRepeatSchedule);
+        scheduleRepository.save(futureNonRepeatSchedule);
+
+        // when
+        Slice<Schedule> result = scheduleQueryRepository.findActiveSchedulesByMember(
+                memberId,
+                now,
+                PageRequest.of(0, 10)
+        );
+
+        // then
+        /**
+         * 필터링 조건: s.isRepeat.isTrue().or(s.appointmentAt.goe(now))
+         * - 반복 스케줄: 항상 포함
+         * - 비반복 스케줄: appointmentAt >= now인 경우만 포함
+         */
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("미래 비반복 스케줄");
+    }
+
+    @Test
+    @DisplayName("현재 시간 이전의 반복 스케줄은 응답에 포함된다")
+    void findActiveSchedulesByMember_PastRepeatSchedule_IncludedInResult() {
+        // given
+        LocalDateTime pastTime = LocalDateTime.now().minusDays(3); // 3일 전
+        int today = (LocalDateTime.now().getDayOfWeek().getValue() % 7) + 1;
+        int tomorrow = (today % 7) + 1;
+
+        SortedSet<Integer> repeatDays = new TreeSet<>();
+        repeatDays.add(tomorrow); // 내일 반복
+
+        // 과거 반복 스케줄 - 포함되어야 함 (반복 일정은 항상 포함)
+        Schedule pastRepeatSchedule = createSchedule(
+                "과거 반복 스케줄",
+                true,
+                repeatDays,
+                pastTime
+        );
+
+        scheduleRepository.save(pastRepeatSchedule);
+
+        // when
+        Slice<Schedule> result = scheduleQueryRepository.findActiveSchedulesByMember(
+                memberId,
+                now,
+                PageRequest.of(0, 10)
+        );
+
+        // then
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("과거 반복 스케줄");
+        assertThat(result.getContent().get(0).getIsRepeat()).isTrue();
+    }
+
+    @Test
+    @DisplayName("복합 시나리오: 과거/미래 비반복 스케줄과 반복 스케줄 필터링")
+    void findActiveSchedulesByMember_ComplexScenario_FiltersCorrectly() {
+        // given
+        LocalDateTime pastTime = LocalDateTime.now().minusDays(5);
+        LocalDateTime futureTime = LocalDateTime.now().plusDays(5);
+
+        int today = (LocalDateTime.now().getDayOfWeek().getValue() % 7) + 1;
+        int tomorrow = (today % 7) + 1;
+
+        SortedSet<Integer> repeatDays = new TreeSet<>();
+        repeatDays.add(tomorrow);
+
+        // 1. 과거 비반복 스케줄 - 제외
+        Schedule pastNonRepeat = createSchedule(
+                "과거 비반복",
+                false,
+                null,
+                pastTime
+        );
+
+        // 2. 미래 비반복 스케줄 - 포함
+        Schedule futureNonRepeat = createSchedule(
+                "미래 비반복",
+                false,
+                null,
+                futureTime
+        );
+
+        // 3. 과거 반복 스케줄 - 포함
+        Schedule pastRepeat = createSchedule(
+                "과거 반복",
+                true,
+                repeatDays,
+                pastTime
+        );
+
+        // 4. 미래 반복 스케줄 - 포함
+        Schedule futureRepeat = createSchedule(
+                "미래 반복",
+                true,
+                repeatDays,
+                futureTime
+        );
+
+        scheduleRepository.save(pastNonRepeat);
+        scheduleRepository.save(futureNonRepeat);
+        scheduleRepository.save(pastRepeat);
+        scheduleRepository.save(futureRepeat);
+
+        // when
+        Slice<Schedule> result = scheduleQueryRepository.findActiveSchedulesByMember(
+                memberId,
+                now,
+                PageRequest.of(0, 10)
+        );
+
+        // then
+        /**
+         * 예상 결과:
+         * 1. 미래 비반복 (futureTime >= now, isRepeat=false) ✓
+         * 2. 과거 반복 (isRepeat=true) ✓
+         * 3. 미래 반복 (isRepeat=true) ✓
+         * 제외: 과거 비반복 (pastTime < now, isRepeat=false) ✗
+         */
+        assertThat(result.getContent()).hasSize(3);
+
+        assertThat(result.getContent())
+                .extracting(Schedule::getTitle)
+                .containsExactlyInAnyOrder("미래 비반복", "과거 반복", "미래 반복")
+                .doesNotContain("과거 비반복");
+    }
+
+    @Test
+    @DisplayName("현재 시간과 정확히 같은 시간의 비반복 스케줄은 포함된다")
+    void findActiveSchedulesByMember_ExactlyNowNonRepeat_Included() {
+        // given
+        LocalDateTime exactlyNow = LocalDateTime.now();
+
+        Schedule exactTimeSchedule = createSchedule(
+                "현재 시간 스케줄",
+                false,
+                null,
+                exactlyNow
+        );
+
+        scheduleRepository.save(exactTimeSchedule);
+
+        // when
+        Slice<Schedule> result = scheduleQueryRepository.findActiveSchedulesByMember(
+                memberId,
+                now,
+                PageRequest.of(0, 10)
+        );
+
+        // then
+        // appointmentAt >= now 조건이므로 같은 시간도 포함
+        assertThat(result.getContent()).hasSizeGreaterThanOrEqualTo(1);
+        assertThat(result.getContent())
+                .extracting(Schedule::getTitle)
+                .contains("현재 시간 스케줄");
+    }
+
+    @Test
+    @DisplayName("다른 회원의 스케줄은 조회되지 않는다")
+    void findActiveSchedulesByMember_DifferentMember_NotIncluded() {
+        // given
+        LocalDateTime futureTime = LocalDateTime.now().plusDays(3);
+        Long otherMemberId = 999L;
+
+        Schedule mySchedule = createScheduleForMember(
+                memberId,
+                "내 스케줄",
+                false,
+                null,
+                futureTime
+        );
+
+        Schedule otherSchedule = createScheduleForMember(
+                otherMemberId,
+                "다른 회원 스케줄",
+                false,
+                null,
+                futureTime
+        );
+
+        scheduleRepository.save(mySchedule);
+        scheduleRepository.save(otherSchedule);
+
+        // when
+        Slice<Schedule> result = scheduleQueryRepository.findActiveSchedulesByMember(
+                memberId,
+                now,
+                PageRequest.of(0, 10)
+        );
+
+        // then
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("내 스케줄");
+    }
+
+    // Helper methods
+    private Schedule createSchedule(
+            String title,
+            Boolean isRepeat,
+            SortedSet<Integer> repeatDays,
+            LocalDateTime appointmentAt
+    ) {
+        return createScheduleForMember(memberId, title, isRepeat, repeatDays, appointmentAt);
+    }
+
+    private Schedule createScheduleForMember(
+            Long memberId,
+            String title,
+            Boolean isRepeat,
+            SortedSet<Integer> repeatDays,
+            LocalDateTime appointmentAt
+    ) {
+        Place departurePlace = PlaceFixture.defaultDeparturePlace();
+        Place arrivalPlace = PlaceFixture.defaultArrivalPlace();
+        Alarm preparationAlarm = AlarmFixture.enabledAlarm(appointmentAt.minusHours(1));
+        Alarm departureAlarm = AlarmFixture.enabledAlarm(appointmentAt.minusMinutes(30));
+
+        return Schedule.createSchedule(
+                memberId,
+                departurePlace,
+                arrivalPlace,
+                preparationAlarm,
+                departureAlarm,
+                title,
+                isRepeat,
+                repeatDays,
+                appointmentAt,
+                false,
+                "테스트 메모"
+        );
+    }
+}

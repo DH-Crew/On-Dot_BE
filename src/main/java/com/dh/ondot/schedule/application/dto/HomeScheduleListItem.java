@@ -20,7 +20,8 @@ public record HomeScheduleListItem(
         AlarmDto preparationAlarm,
         AlarmDto departureAlarm,
         boolean hasActiveAlarm,
-        String preparationNote
+        String preparationNote,
+        Instant nextAlarmAt
 ) {
     public static HomeScheduleListItem from(Schedule schedule) {
         return new HomeScheduleListItem(
@@ -36,7 +37,8 @@ public record HomeScheduleListItem(
                 AlarmDto.of(schedule.getPreparationAlarm(), schedule),
                 AlarmDto.of(schedule.getDepartureAlarm(), schedule),
                 schedule.hasAnyActiveAlarm(),
-                schedule.getPreparationNote()
+                schedule.getPreparationNote(),
+                schedule.calculateNextAlarmAt()
         );
     }
 }
