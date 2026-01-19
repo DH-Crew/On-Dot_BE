@@ -339,4 +339,256 @@ class HomeScheduleListItemMapperTest {
         // then
         assertThat(result).isEmpty();
     }
+
+    // ========================================
+    // earliestAlarmId 도출 로직 검증 테스트
+    // ========================================
+
+    /**
+     * ScheduleQueryFacade.findEarliestActiveAlarmScheduleId와 동일한 로직
+     * 정렬된 목록에서 첫 번째 활성화된 알람이 있는 스케줄의 ID를 반환
+     */
+    private Long findEarliestActiveAlarmScheduleId(List<HomeScheduleListItem> sortedItems) {
+        return sortedItems.stream()
+                .filter(HomeScheduleListItem::hasActiveAlarm)
+                .findFirst()
+                .map(HomeScheduleListItem::scheduleId)
+                .orElse(null);
+    }
+
+    @Test
+    @DisplayName("earliestAlarmId: 여러 활성화된 스케줄 중 가장 빠른 알람의 스케줄 ID를 반환한다")
+    void findEarliestAlarmId_MultipleActiveSchedules_ReturnsEarliestScheduleId() {
+        // given
+        LocalDateTime time1 = LocalDateTime.now().plusDays(7).withHour(10).withMinute(0);
+        LocalDateTime time2 = LocalDateTime.now().plusDays(3).withHour(9).withMinute(0);  // 가장 빠름
+        LocalDateTime time3 = LocalDateTime.now().plusDays(5).withHour(8).withMinute(0);
+
+        Schedule schedule1 = ScheduleFixture.builder()
+                .appointmentAt(time1)
+                .onlyPreparationAlarmEnabled()
+                .build();
+
+        Schedule schedule2 = ScheduleFixture.builder()
+                .appointmentAt(time2)
+                .onlyPreparationAlarmEnabled()
+                .build();
+
+        Schedule schedule3 = ScheduleFixture.builder()
+                .appointmentAt(time3)
+                .onlyPreparationAlarmEnabled()
+                .build();
+
+        List<Schedule> schedules = List.of(schedule1, schedule2, schedule3);
+
+        // when
+        List<HomeScheduleListItem> sortedItems = mapper.toListOrderedByAlarmPriority(schedules);
+        Long earliestAlarmId = findEarliestActiveAlarmScheduleId(sortedItems);
+
+        // then
+        /**
+         * 예상 결과:
+         * - 정렬 순서: schedule2(3일 후) → schedule3(5일 후) → schedule1(7일 후)
+         * - earliestAlarmId = schedule2의 ID
+         */
+        assertThat(earliestAlarmId).isEqualTo(schedule2.getId());
+        assertThat(sortedItems.get(0).scheduleId()).isEqualTo(schedule2.getId());
+    }
+
+    @Test
+    @DisplayName("earliestAlarmId: 활성화/비활성화 혼합 시 활성화된 것 중 가장 빠른 스케줄 ID를 반환한다")
+    void findEarliestAlarmId_MixedActiveAndDisabled_ReturnsEarliestActiveScheduleId() {
+        // given
+        LocalDateTime time1 = LocalDateTime.now().plusDays(2).withHour(9).withMinute(0);   // 비활성화 - 가장 빠름
+        LocalDateTime time2 = LocalDateTime.now().plusDays(5).withHour(10).withMinute(0);  // 활성화 - 두번째 빠름
+        LocalDateTime time3 = LocalDateTime.now().plusDays(7).withHour(11).withMinute(0);  // 활성화 - 세번째 빠름
+
+        Schedule disabledSchedule = ScheduleFixture.builder()
+                .appointmentAt(time1)
+                .disabledAlarms()
+                .build();
+
+        Schedule enabledSchedule1 = ScheduleFixture.builder()
+                .appointmentAt(time2)
+                .onlyPreparationAlarmEnabled()
+                .build();
+
+        Schedule enabledSchedule2 = ScheduleFixture.builder()
+                .appointmentAt(time3)
+                .onlyPreparationAlarmEnabled()
+                .build();
+
+        List<Schedule> schedules = List.of(disabledSchedule, enabledSchedule2, enabledSchedule1);
+
+        // when
+        List<HomeScheduleListItem> sortedItems = mapper.toListOrderedByAlarmPriority(schedules);
+        Long earliestAlarmId = findEarliestActiveAlarmScheduleId(sortedItems);
+
+        // then
+        /**
+         * 예상 결과:
+         * - 정렬 순서: enabledSchedule1(5일후) → enabledSchedule2(7일후) → disabledSchedule(2일후)
+         * - 비활성화된 스케줄은 무시하고, 활성화된 것 중 가장 빠른 스케줄 ID 반환
+         * - earliestAlarmId = enabledSchedule1의 ID
+         */
+        assertThat(earliestAlarmId).isEqualTo(enabledSchedule1.getId());
+        assertThat(sortedItems.get(0).scheduleId()).isEqualTo(enabledSchedule1.getId());
+        assertThat(sortedItems.get(0).hasActiveAlarm()).isTrue();
+    }
+
+    @Test
+    @DisplayName("earliestAlarmId: 빈 리스트인 경우 null을 반환한다")
+    void findEarliestAlarmId_EmptyList_ReturnsNull() {
+        // given
+        List<Schedule> schedules = List.of();
+
+        // when
+        List<HomeScheduleListItem> sortedItems = mapper.toListOrderedByAlarmPriority(schedules);
+        Long earliestAlarmId = findEarliestActiveAlarmScheduleId(sortedItems);
+
+        // then
+        assertThat(earliestAlarmId).isNull();
+        assertThat(sortedItems).isEmpty();
+    }
+
+    @Test
+    @DisplayName("earliestAlarmId: 모든 스케줄이 비활성화된 경우 null을 반환한다")
+    void findEarliestAlarmId_AllDisabled_ReturnsNull() {
+        // given
+        LocalDateTime time1 = LocalDateTime.now().plusDays(2).withHour(9).withMinute(0);
+        LocalDateTime time2 = LocalDateTime.now().plusDays(5).withHour(10).withMinute(0);
+        LocalDateTime time3 = LocalDateTime.now().plusDays(7).withHour(11).withMinute(0);
+
+        Schedule disabled1 = ScheduleFixture.builder()
+                .appointmentAt(time1)
+                .disabledAlarms()
+                .build();
+
+        Schedule disabled2 = ScheduleFixture.builder()
+                .appointmentAt(time2)
+                .disabledAlarms()
+                .build();
+
+        Schedule disabled3 = ScheduleFixture.builder()
+                .appointmentAt(time3)
+                .disabledAlarms()
+                .build();
+
+        List<Schedule> schedules = List.of(disabled1, disabled2, disabled3);
+
+        // when
+        List<HomeScheduleListItem> sortedItems = mapper.toListOrderedByAlarmPriority(schedules);
+        Long earliestAlarmId = findEarliestActiveAlarmScheduleId(sortedItems);
+
+        // then
+        /**
+         * 예상 결과:
+         * - 활성화된 알람이 없으므로 null 반환
+         * - 모든 스케줄이 hasActiveAlarm = false
+         */
+        assertThat(earliestAlarmId).isNull();
+        assertThat(sortedItems).hasSize(3);
+        assertThat(sortedItems).allMatch(item -> !item.hasActiveAlarm());
+    }
+
+    @Test
+    @DisplayName("earliestAlarmId: 단일 활성화 스케줄인 경우 해당 스케줄 ID를 반환한다")
+    void findEarliestAlarmId_SingleActiveSchedule_ReturnsScheduleId() {
+        // given
+        LocalDateTime futureTime = LocalDateTime.now().plusDays(5).withHour(10).withMinute(0);
+
+        Schedule schedule = ScheduleFixture.builder()
+                .appointmentAt(futureTime)
+                .onlyPreparationAlarmEnabled()
+                .build();
+
+        List<Schedule> schedules = List.of(schedule);
+
+        // when
+        List<HomeScheduleListItem> sortedItems = mapper.toListOrderedByAlarmPriority(schedules);
+        Long earliestAlarmId = findEarliestActiveAlarmScheduleId(sortedItems);
+
+        // then
+        assertThat(earliestAlarmId).isEqualTo(schedule.getId());
+        assertThat(sortedItems).hasSize(1);
+        assertThat(sortedItems.get(0).hasActiveAlarm()).isTrue();
+    }
+
+    @Test
+    @DisplayName("earliestAlarmId: 단일 비활성화 스케줄인 경우 null을 반환한다")
+    void findEarliestAlarmId_SingleDisabledSchedule_ReturnsNull() {
+        // given
+        LocalDateTime futureTime = LocalDateTime.now().plusDays(5).withHour(10).withMinute(0);
+
+        Schedule schedule = ScheduleFixture.builder()
+                .appointmentAt(futureTime)
+                .disabledAlarms()
+                .build();
+
+        List<Schedule> schedules = List.of(schedule);
+
+        // when
+        List<HomeScheduleListItem> sortedItems = mapper.toListOrderedByAlarmPriority(schedules);
+        Long earliestAlarmId = findEarliestActiveAlarmScheduleId(sortedItems);
+
+        // then
+        assertThat(earliestAlarmId).isNull();
+        assertThat(sortedItems).hasSize(1);
+        assertThat(sortedItems.get(0).hasActiveAlarm()).isFalse();
+    }
+
+    @Test
+    @DisplayName("earliestAlarmId: 복합 시나리오 - ON/OFF 혼합, 반복/비반복 혼합")
+    void findEarliestAlarmId_ComplexScenario() {
+        // given
+        LocalDateTime now = LocalDateTime.now();
+        int today = (now.getDayOfWeek().getValue() % 7) + 1;
+        int tomorrow = (today % 7) + 1;
+
+        SortedSet<Integer> tomorrowDays = new TreeSet<>();
+        tomorrowDays.add(tomorrow);
+
+        // 1. 알람 ON + 반복 + 내일 08:00 (가장 빠른 활성화 알람)
+        Schedule onRepeatTomorrow = Schedule.createSchedule(
+                1L,
+                PlaceFixture.defaultDeparturePlace(),
+                PlaceFixture.defaultArrivalPlace(),
+                AlarmFixture.enabledAlarm(now.withHour(7).withMinute(0)),
+                AlarmFixture.enabledAlarm(now.withHour(7).withMinute(30)),
+                "ON-반복-내일",
+                true,
+                tomorrowDays,
+                now.withHour(8).withMinute(0),
+                false,
+                "메모"
+        );
+
+        // 2. 알람 OFF + 비반복 + 2일 후 (시간상 가장 빠르지만 비활성화)
+        Schedule offOneTime = ScheduleFixture.builder()
+                .appointmentAt(now.plusDays(2).withHour(6).withMinute(0))
+                .disabledAlarms()
+                .build();
+
+        // 3. 알람 ON + 비반복 + 5일 후
+        Schedule onOneTime = ScheduleFixture.builder()
+                .appointmentAt(now.plusDays(5).withHour(14).withMinute(0))
+                .onlyPreparationAlarmEnabled()
+                .build();
+
+        List<Schedule> schedules = List.of(offOneTime, onOneTime, onRepeatTomorrow);
+
+        // when
+        List<HomeScheduleListItem> sortedItems = mapper.toListOrderedByAlarmPriority(schedules);
+        Long earliestAlarmId = findEarliestActiveAlarmScheduleId(sortedItems);
+
+        // then
+        /**
+         * 예상 결과:
+         * - 정렬 순서: onRepeatTomorrow → onOneTime → offOneTime
+         * - earliestAlarmId = onRepeatTomorrow의 ID (반복 스케줄의 다음 알람이 가장 빠름)
+         */
+        assertThat(earliestAlarmId).isEqualTo(onRepeatTomorrow.getId());
+        assertThat(sortedItems.get(0).scheduleTitle()).isEqualTo("ON-반복-내일");
+        assertThat(sortedItems.get(0).hasActiveAlarm()).isTrue();
+    }
 }
