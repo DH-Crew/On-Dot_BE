@@ -47,7 +47,7 @@ class ScheduleTest {
     @DisplayName("일회성 스케줄의 가장 빠른 알람 시간을 계산한다")
     void calculateEarliestAlarmAt_OneTimeSchedule_ReturnsEarliestTime() {
         // given
-        LocalDateTime futureTime = LocalDateTime.of(2025, 12, 15, 18, 0);
+        LocalDateTime futureTime = LocalDateTime.now().plusDays(7).withHour(18).withMinute(0);
         Schedule schedule = ScheduleFixture.builder()
                 .appointmentAt(futureTime)
                 .onlyPreparationAlarmEnabled()
