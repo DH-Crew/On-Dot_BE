@@ -7,16 +7,20 @@ import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.domain.repository.ScheduleRepository;
 import com.dh.ondot.schedule.fixture.AlarmFixture;
 import com.dh.ondot.schedule.fixture.PlaceFixture;
-import com.dh.ondot.schedule.fixture.ScheduleFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,11 +29,27 @@ import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Transactional
-@ActiveProfiles("test")
+@DataJpaTest
+@Testcontainers
+@Import({QueryDslConfig.class, ScheduleQueryRepository.class})
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DisplayName("ScheduleQueryRepository 필터링 로직 테스트")
 class ScheduleQueryRepositoryTest {
+
+    @Container
+    static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
+            .withDatabaseName("testdb")
+            .withUsername("test")
+            .withPassword("test");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mysql::getJdbcUrl);
+        registry.add("spring.datasource.username", mysql::getUsername);
+        registry.add("spring.datasource.password", mysql::getPassword);
+        registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+    }
 
     @Autowired
     private ScheduleQueryRepository scheduleQueryRepository;

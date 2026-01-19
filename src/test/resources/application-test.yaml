@@ -14,10 +14,92 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 1s
+      password: ""
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    ttl:
+      app-push: 10000
+      member-status: 20000
+
   kafka:
     producer:
-      bootstrap-servers: ${spring.embedded.kafka.brokers}
+      bootstrap-servers: localhost:9092
     consumer:
-      bootstrap-servers: ${spring.embedded.kafka.brokers}
+      bootstrap-servers: localhost:9092
       group-id: test-group
       auto-offset-reset: earliest
+
+  ai:
+    openai:
+      api-key: test-api-key
+      model: gpt-4o
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+async:
+  event:
+    core-pool-size: 1
+    max-pool-size: 2
+    queue-capacity: 10
+  discord:
+    core-pool-size: 1
+    max-pool-size: 2
+    queue-capacity: 10
+
+oauth2:
+  client:
+    registration:
+      kakao:
+        client_id: test-kakao-client-id
+        client_secret: test-kakao-secret
+        scope: account_email
+      apple:
+        client-id: test-apple-client-id
+        team-id: test-team-id
+        key-id: test-key-id
+        audience: https://appleid.apple.com
+        grant-type: authorization_code
+        private-key: test-private-key
+
+jwt:
+  secret: 7e0b9479f72ce9dd31b6c8c661bb047b2dcfc324d81b78de870959a38826f712
+  access-token-expire-time-in-hours: 24
+  refresh-token-expire-time-in-hours: 168
+
+naver:
+  client:
+    client-id: test-naver-client-id
+    client-secret: test-naver-secret
+
+odsay:
+  base-url: https://api.odsay.com/v1/api/searchPubTransPathT
+  api-key: test-odsay-api-key
+
+external-api:
+  seoul-transportation:
+    base-url: https://apis.data.go.kr/B553766/ntce/getNtceList
+    service-key: test-service-key
+  safety-data:
+    base-url: https://www.safetydata.go.kr//V2/api/DSSP-IF-00247
+    service-key: test-service-key
+  discord:
+    webhook:
+      url: https://discord.com/api/webhooks/test
+
+logging:
+  level:
+    root: warn
+    com.dh.ondot: info
