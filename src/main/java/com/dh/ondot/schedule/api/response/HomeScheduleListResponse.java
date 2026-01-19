@@ -8,13 +8,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record HomeScheduleListResponse(
+        Long earliestAlarmId,
         LocalDateTime earliestAlarmAt,
         List<HomeScheduleListItem> scheduleList,
         boolean hasNext
 ) {
-    public static HomeScheduleListResponse of(Instant earliest, List<HomeScheduleListItem> list, boolean hasNext) {
+    public static HomeScheduleListResponse of(
+            Long earliestAlarmId,
+            Instant earliestAlarmAt,
+            List<HomeScheduleListItem> list,
+            boolean hasNext
+    ) {
         return new HomeScheduleListResponse(
-                TimeUtils.toSeoulDateTime(earliest),
+                earliestAlarmId,
+                TimeUtils.toSeoulDateTime(earliestAlarmAt),
                 list,
                 hasNext
         );

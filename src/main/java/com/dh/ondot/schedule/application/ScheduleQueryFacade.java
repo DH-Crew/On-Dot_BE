@@ -38,12 +38,21 @@ public class ScheduleQueryFacade {
 
     public HomeScheduleListResponse findAllActiveSchedules(Long memberId, Pageable page) {
         memberService.getMemberIfExists(memberId);
-        
+
         Slice<Schedule> scheduleSlice = scheduleQueryService.getActiveSchedules(memberId, page);
         List<HomeScheduleListItem> scheduleItems = homeScheduleListItemMapper.toListOrderedByAlarmPriority(scheduleSlice.getContent());
         Instant earliestActiveAlarmAt = scheduleService.getEarliestActiveAlarmAt(scheduleSlice.getContent());
+        Long earliestAlarmId = findEarliestActiveAlarmScheduleId(scheduleItems);
 
-        return HomeScheduleListResponse.of(earliestActiveAlarmAt, scheduleItems, scheduleSlice.hasNext());
+        return HomeScheduleListResponse.of(earliestAlarmId, earliestActiveAlarmAt, scheduleItems, scheduleSlice.hasNext());
+    }
+
+    private Long findEarliestActiveAlarmScheduleId(List<HomeScheduleListItem> sortedItems) {
+        return sortedItems.stream()
+                .filter(HomeScheduleListItem::hasActiveAlarm)
+                .findFirst()
+                .map(HomeScheduleListItem::scheduleId)
+                .orElse(null);
     }
 
     public String getIssues(Long scheduleId) {
