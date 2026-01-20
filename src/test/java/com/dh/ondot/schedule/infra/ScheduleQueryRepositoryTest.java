@@ -20,6 +20,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Instant;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Testcontainers
+@ActiveProfiles("test")
 @Import({QueryDslConfig.class, ScheduleQueryRepository.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DisplayName("ScheduleQueryRepository 필터링 로직 테스트")
@@ -44,11 +46,76 @@ class ScheduleQueryRepositoryTest {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
+        // Database - Override H2 settings from application-test.yaml
         registry.add("spring.datasource.url", mysql::getJdbcUrl);
         registry.add("spring.datasource.username", mysql::getUsername);
         registry.add("spring.datasource.password", mysql::getPassword);
         registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+        registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.MySQL8Dialect");
+        registry.add("spring.jpa.properties.hibernate.dialect", () -> "org.hibernate.dialect.MySQL8Dialect");
+
+        // JWT
+        registry.add("jwt.secret", () -> "test-secret-key-for-testing-purposes-only-1234567890");
+        registry.add("jwt.access-token-expire-time-in-hours", () -> "24");
+        registry.add("jwt.refresh-token-expire-time-in-hours", () -> "168");
+
+        // OAuth2
+        registry.add("oauth2.client.registration.kakao.client_id", () -> "test-kakao-client-id");
+        registry.add("oauth2.client.registration.kakao.client_secret", () -> "test-kakao-secret");
+        registry.add("oauth2.client.registration.kakao.scope", () -> "account_email");
+        registry.add("oauth2.client.registration.apple.client-id", () -> "test-apple-client-id");
+        registry.add("oauth2.client.registration.apple.team-id", () -> "test-team-id");
+        registry.add("oauth2.client.registration.apple.key-id", () -> "test-key-id");
+        registry.add("oauth2.client.registration.apple.audience", () -> "https://appleid.apple.com");
+        registry.add("oauth2.client.registration.apple.grant-type", () -> "authorization_code");
+        registry.add("oauth2.client.registration.apple.private-key", () -> "test-private-key");
+
+        // Naver
+        registry.add("naver.client.client-id", () -> "test-naver-client-id");
+        registry.add("naver.client.client-secret", () -> "test-naver-secret");
+
+        // Odsay
+        registry.add("odsay.base-url", () -> "https://api.odsay.com/v1/api/searchPubTransPathT");
+        registry.add("odsay.api-key", () -> "test-odsay-api-key");
+
+        // External API
+        registry.add("external-api.seoul-transportation.base-url", () -> "https://test-url.com");
+        registry.add("external-api.seoul-transportation.service-key", () -> "test-service-key");
+        registry.add("external-api.safety-data.base-url", () -> "https://test-url.com");
+        registry.add("external-api.safety-data.service-key", () -> "test-service-key");
+        registry.add("external-api.discord.webhook.url", () -> "https://discord.com/api/webhooks/test");
+
+        // Async
+        registry.add("async.event.core-pool-size", () -> "1");
+        registry.add("async.event.max-pool-size", () -> "2");
+        registry.add("async.event.queue-capacity", () -> "10");
+        registry.add("async.discord.core-pool-size", () -> "1");
+        registry.add("async.discord.max-pool-size", () -> "2");
+        registry.add("async.discord.queue-capacity", () -> "10");
+
+        // Redis (disabled for test)
+        registry.add("spring.data.redis.host", () -> "localhost");
+        registry.add("spring.data.redis.port", () -> "6379");
+        registry.add("spring.data.redis.password", () -> "");
+
+        // Kafka (disabled for test)
+        registry.add("spring.kafka.producer.bootstrap-servers", () -> "localhost:9092");
+        registry.add("spring.kafka.consumer.bootstrap-servers", () -> "localhost:9092");
+        registry.add("spring.kafka.consumer.group-id", () -> "test-group");
+        registry.add("spring.kafka.consumer.auto-offset-reset", () -> "earliest");
+
+        // RabbitMQ
+        registry.add("spring.rabbitmq.host", () -> "localhost");
+        registry.add("spring.rabbitmq.port", () -> "5672");
+        registry.add("spring.rabbitmq.username", () -> "guest");
+        registry.add("spring.rabbitmq.password", () -> "guest");
+        registry.add("spring.rabbitmq.ttl.app-push", () -> "10000");
+        registry.add("spring.rabbitmq.ttl.member-status", () -> "20000");
+
+        // Spring AI
+        registry.add("spring.ai.openai.api-key", () -> "test-api-key");
+        registry.add("spring.ai.openai.model", () -> "gpt-4o");
     }
 
     @Autowired

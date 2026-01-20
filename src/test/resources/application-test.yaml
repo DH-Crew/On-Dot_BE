@@ -9,10 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+    show-sql: false
 
   data:
     redis:
@@ -75,7 +72,7 @@ oauth2:
         private-key: test-private-key
 
 jwt:
-  secret: 7e0b9479f72ce9dd31b6c8c661bb047b2dcfc324d81b78de870959a38826f712
+  secret: test-secret-key-for-testing-purposes-only-1234567890abcdef
   access-token-expire-time-in-hours: 24
   refresh-token-expire-time-in-hours: 168
 
@@ -90,10 +87,10 @@ odsay:
 
 external-api:
   seoul-transportation:
-    base-url: https://apis.data.go.kr/B553766/ntce/getNtceList
+    base-url: https://test-url.com
     service-key: test-service-key
   safety-data:
-    base-url: https://www.safetydata.go.kr//V2/api/DSSP-IF-00247
+    base-url: https://test-url.com
     service-key: test-service-key
   discord:
     webhook:
