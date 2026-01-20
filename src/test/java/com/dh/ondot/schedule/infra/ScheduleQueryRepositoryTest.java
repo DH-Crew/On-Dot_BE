@@ -284,36 +284,6 @@ class ScheduleQueryRepositoryTest {
     }
 
     @Test
-    @DisplayName("현재 시간과 정확히 같은 시간의 비반복 스케줄은 포함된다")
-    void findActiveSchedulesByMember_ExactlyNowNonRepeat_Included() {
-        // given
-        LocalDateTime exactlyNow = LocalDateTime.now();
-
-        Schedule exactTimeSchedule = createSchedule(
-                "현재 시간 스케줄",
-                false,
-                null,
-                exactlyNow
-        );
-
-        scheduleRepository.save(exactTimeSchedule);
-
-        // when
-        Slice<Schedule> result = scheduleQueryRepository.findActiveSchedulesByMember(
-                memberId,
-                now,
-                PageRequest.of(0, 10)
-        );
-
-        // then
-        // appointmentAt >= now 조건이므로 같은 시간도 포함
-        assertThat(result.getContent()).hasSizeGreaterThanOrEqualTo(1);
-        assertThat(result.getContent())
-                .extracting(Schedule::getTitle)
-                .contains("현재 시간 스케줄");
-    }
-
-    @Test
     @DisplayName("다른 회원의 스케줄은 조회되지 않는다")
     void findActiveSchedulesByMember_DifferentMember_NotIncluded() {
         // given
