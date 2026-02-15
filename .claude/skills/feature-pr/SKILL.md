@@ -21,45 +21,53 @@ digraph feature_pr {
   entry -> start [label="args = start"]
   entry -> finish [label="args = finish"]
 
-  start -> s1 [label=""]
-  s1 [label="Check branch = develop"]
-  s2 [label="git pull origin develop"]
+  start -> s0 [label=""]
+  s0 [label="Clean check:\ngit status"]
+  s0_fail [label="STOP\n사용자에게 알림"]
+  s1 [label="git fetch origin develop"]
+  s2 [label="Resolve develop ref:\nlocal develop or origin/develop"]
   s3 [label="Ask: type + Linear ID"]
-  s4 [label="git checkout -b {type}/DH-{id}"]
+  s4 [label="git checkout -b {type}/DH-{id}\nfrom {develop-ref}"]
+  s0 -> s0_fail [label="uncommitted changes 있음"]
+  s0 -> s1 [label="clean"]
   s1 -> s2 -> s3 -> s4
 
   finish -> f1 [label=""]
   f1 [label="Verify NOT develop/main"]
   f2 [label="Extract Linear ID from branch"]
-  f3 [label="./gradlew test"]
-  f4 [label="git status + diff review"]
-  f5 [label="Commit (Korean conventional)"]
-  f6 [label="git push -u origin {branch}"]
-  f7 [label="gh pr create --base develop"]
-  f8 [label="Report PR URL"]
-  f1 -> f2 -> f3 -> f4 -> f5 -> f6 -> f7 -> f8
+  f3 [label="git status + diff review"]
+  f4 [label="Commit (Korean conventional)"]
+  f5 [label="git push -u origin {branch}"]
+  f6 [label="gh pr create --base develop"]
+  f7 [label="Report PR URL"]
+  f1 -> f2 -> f3 -> f4 -> f5 -> f6 -> f7
 }
 ```
 
 ## Start Phase (`/feature-pr start`)
 
-1. **Check branch** -- if not on `develop`, ask user to switch
-2. **Pull latest**: `git pull origin develop`
-3. **Ask user** (multiple choice):
+1. **Clean check**: `git status`로 워킹 트리 상태 확인
+   - uncommitted changes가 있으면 → **STOP**, 사용자에게 변경사항 목록을 알리고 처리 방법 확인
+   - clean 상태면 → 다음 단계 진행
+2. **Fetch latest**: `git fetch origin develop`
+3. **Resolve develop ref**:
+   - 현재 `develop` 브랜치에 있으면: `git pull origin develop` 후 로컬 `develop` 사용
+   - `develop`이 다른 워크트리에 체크아웃되어 있으면: `origin/develop`을 base로 사용
+4. **Ask user** (multiple choice):
    - Branch type: `feat` | `fix` | `refactor`
    - Linear ID (숫자만, e.g. `6`)
-4. **Create & switch**: `git checkout -b {type}/DH-{id}`
-5. **Confirm**: report branch name, ready to work
+5. **Create & switch**: `git checkout -b {type}/DH-{id} {develop-ref}`
+   - `{develop-ref}`: 로컬 `develop` 또는 `origin/develop`
+6. **Confirm**: report branch name, ready to work
 
 ## Finish Phase (`/feature-pr finish`)
 
 1. **Guard**: current branch must NOT be `develop` or `main`. Abort if so.
 2. **Extract Linear ID** from branch name (e.g. `feat/DH-6` -> `DH-6`)
-3. **Run tests**: `./gradlew test` -- if tests fail, report and **STOP**
-4. **Review changes**: `git status`, `git diff`
-5. **Commit** in logical units using Korean conventional commits (e.g. `feat: 스케줄 정렬 기능 구현`)
-6. **Push**: `git push -u origin {branch-name}`
-7. **Ensure label exists** — check and create if missing:
+3. **Review changes**: `git status`, `git diff`
+4. **Commit** in logical units using Korean conventional commits (e.g. `feat: 스케줄 정렬 기능 구현`)
+5. **Push**: `git push -u origin {branch-name}`
+6. **Ensure label exists** — check and create if missing:
 
 ```bash
 # Label mapping: feat -> 🚀 FEAT, fix -> 🩺 FIX, refactor -> 🔋 REFACTOR
@@ -67,7 +75,7 @@ gh label list --search "{label}" --json name -q '.[].name' | grep -q "{label}" \
   || gh label create "{label}"
 ```
 
-8. **Create PR** to develop (intended for squash merge):
+7. **Create PR** to develop (intended for squash merge):
 
 ```bash
 gh pr create --base develop \
@@ -87,7 +95,7 @@ EOF
 | Assignee | `@me` (current user) |
 | Body | PR template below |
 
-9. **Report** PR URL to user
+8. **Report** PR URL to user
 
 ### PR Template
 
@@ -128,6 +136,6 @@ EOF
 
 ## Red Flags
 
-- **Never** create PR with failing tests
 - **Never** target any branch other than `develop`
 - **Never** run finish phase on `develop` or `main`
+- **Never** skip clean check — uncommitted changes must be handled before branch creation

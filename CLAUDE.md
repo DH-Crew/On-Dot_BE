@@ -2,11 +2,18 @@
 
 ## 필수 워크플로우
 
-### 브랜치 작업 규칙
-- feature/fix/refactor 작업을 시작할 때: 반드시 `/feature-pr start`를 먼저 실행한다
-  - 브랜치가 이미 생성된 상태라면 start는 생략 가능하나, 브랜치 네이밍이 컨벤션(`feat/DH-{id}`, `fix/DH-{id}`, `refactor/DH-{id}`)을 따르는지 확인한다
+### 작업 시작 플로우
+1. 새 작업 요청을 받으면 `git status`로 워킹 트리 상태 확인
+2. uncommitted changes가 없으면 (clean) → `/feature-pr start` 실행하여 브랜치 생성
+3. uncommitted changes가 있으면 → 사용자에게 알리고 처리 방법 확인
+4. 브랜치 생성 완료 후 → 실제 구현 작업 시작
+- 브랜치가 이미 생성된 상태라면 start는 생략 가능하나, 브랜치 네이밍이 컨벤션(`feat/DH-{id}`, `fix/DH-{id}`, `refactor/DH-{id}`)을 따르는지 확인한다
+
+### 작업 완료 플로우
 - 작업이 완료되면: 반드시 `/feature-pr finish`를 실행한다
   - 직접 커밋/push/PR 생성을 하지 않는다
+
+### 릴리스 플로우
 - develop의 누적 작업을 main에 릴리스할 때: 반드시 `/release-pr`를 실행한다
 
 ## Auto Commit & Push
