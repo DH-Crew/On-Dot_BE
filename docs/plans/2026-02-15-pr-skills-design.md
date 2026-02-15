@@ -19,7 +19,7 @@ Lifecycle skill with two phases, invoked via args.
 
 1. Verify on develop branch (switch if not)
 2. Pull latest develop
-3. Ask user: type (`feat`/`fix`/`refactor`) + Linear ID (e.g., `DH-6`)
+3. Ask user: type (`feat`/`fix`/`refactor`) + Linear ID (숫자만, e.g., `6`)
 4. Create branch: `{type}/DH-{id}`
 5. Switch to new branch
 
@@ -33,7 +33,7 @@ Lifecycle skill with two phases, invoked via args.
 6. Create squash PR to develop:
    - **Title**: Inferred from branch prefix + Linear ID + brief description
    - **Body** (follows PR template):
-     ```
+     ```markdown
      ## Issue Number
      DH-{id}
 
@@ -90,7 +90,7 @@ Standalone skill for creating release PRs from develop to main. Manually invoked
 5. Create PR (develop -> main):
    - **Title**: `Release: (version TBD)`
    - **Body**:
-     ```
+     ```markdown
      ## Summary
 
      ### Major Changes
@@ -125,7 +125,7 @@ Standalone skill for creating release PRs from develop to main. Manually invoked
 
 Project skills directory: `.claude/skills/` (`.gitignore`에 예외 처리)
 
-```
+```text
 .claude/skills/
   feature-pr/
     SKILL.md

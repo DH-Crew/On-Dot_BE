@@ -47,7 +47,7 @@ digraph feature_pr {
 2. **Pull latest**: `git pull origin develop`
 3. **Ask user** (multiple choice):
    - Branch type: `feat` | `fix` | `refactor`
-   - Linear ID (e.g. `DH-6`)
+   - Linear ID (숫자만, e.g. `6`)
 4. **Create & switch**: `git checkout -b {type}/DH-{id}`
 5. **Confirm**: report branch name, ready to work
 
@@ -62,7 +62,7 @@ digraph feature_pr {
 7. **Ensure label exists** — check and create if missing:
 
 ```bash
-# Label mapping: feat -> 🚀 FEAT, fix -> 🚨 FIX, refactor -> 🔋 REFACTOR
+# Label mapping: feat -> 🚀 FEAT, fix -> 🩺 FIX, refactor -> 🔋 REFACTOR
 gh label list --search "{label}" --json name -q '.[].name' | grep -q "{label}" \
   || gh label create "{label}"
 ```

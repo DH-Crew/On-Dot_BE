@@ -4,39 +4,39 @@
 
 **Goal:** Create two personal Claude skills (`feature-pr`, `release-pr`) for automating PR workflows in the Santiago project.
 
-**Architecture:** Two independent SKILL.md files in `~/.claude/skills/`, each containing flowcharts, step-by-step instructions, and exact commands for Claude to follow.
+**Architecture:** Two independent SKILL.md files in `.claude/skills/`, each containing flowcharts, step-by-step instructions, and exact commands for Claude to follow.
 
 **Tech Stack:** Claude skills (Markdown + YAML frontmatter), `gh` CLI, `git`
 
 ---
 
-### Task 1: Create skills directory structure
+## Task 1: Create skills directory structure
 
 **Files:**
-- Create: `~/.claude/skills/feature-pr/SKILL.md` (placeholder)
-- Create: `~/.claude/skills/release-pr/SKILL.md` (placeholder)
+- Create: `.claude/skills/feature-pr/SKILL.md` (placeholder)
+- Create: `.claude/skills/release-pr/SKILL.md` (placeholder)
 
 **Step 1: Create directories**
 
 ```bash
-mkdir -p ~/.claude/skills/feature-pr
-mkdir -p ~/.claude/skills/release-pr
+mkdir -p .claude/skills/feature-pr
+mkdir -p .claude/skills/release-pr
 ```
 
 **Step 2: Verify**
 
 ```bash
-ls -la ~/.claude/skills/
+ls -la .claude/skills/
 ```
 
 Expected: `feature-pr/` and `release-pr/` directories exist.
 
 ---
 
-### Task 2: Write `feature-pr` SKILL.md
+## Task 2: Write `feature-pr` SKILL.md
 
 **Files:**
-- Create: `~/.claude/skills/feature-pr/SKILL.md`
+- Create: `.claude/skills/feature-pr/SKILL.md`
 
 **Step 1: Write the skill file**
 
@@ -58,7 +58,7 @@ The skill must include:
    - Create squash PR with `gh pr create`:
      - Title from branch context
      - Body follows PR template exactly:
-       ```
+       ```markdown
        ## Issue Number
        DH-{id}
 
@@ -92,14 +92,14 @@ The skill must include:
 
        ## Additional Description
        ```
-     - Label: auto-detect (`feat` -> `🚀 FEAT`, `fix` -> `🚨 FIX`, `refactor` -> `🔋 REFACTOR`)
+     - Label: auto-detect (`feat` -> `🚀 FEAT`, `fix` -> `🩺 FIX`, `refactor` -> `🔋 REFACTOR`)
      - Assignee: auto-assign
 6. **Red Flags**: Never create PR with failing tests, never PR to wrong branch
 
 **Step 2: Verify skill is discoverable**
 
 ```bash
-cat ~/.claude/skills/feature-pr/SKILL.md | head -5
+cat .claude/skills/feature-pr/SKILL.md | head -5
 ```
 
 Expected: Valid YAML frontmatter with name and description.
@@ -107,17 +107,18 @@ Expected: Valid YAML frontmatter with name and description.
 **Step 3: Commit**
 
 ```bash
-git add -f ~/.claude/skills/feature-pr/SKILL.md  # won't work - not in repo
+git add .claude/skills/feature-pr/SKILL.md
+git commit -m "feat: feature-pr 스킬 정의 추가"
 ```
 
-Note: Skills live in `~/.claude/skills/`, outside the repo. No git commit needed for skill files themselves.
+Note: Skills live in `.claude/skills/` within the repo (`.gitignore`에 예외 처리). Commit is required.
 
 ---
 
-### Task 3: Write `release-pr` SKILL.md
+## Task 3: Write `release-pr` SKILL.md
 
 **Files:**
-- Create: `~/.claude/skills/release-pr/SKILL.md`
+- Create: `.claude/skills/release-pr/SKILL.md`
 
 **Step 1: Write the skill file**
 
@@ -135,7 +136,7 @@ The skill must include:
    - Create PR with `gh pr create`:
      - Title: `Release: (version TBD)`
      - Body:
-       ```
+       ```markdown
        ## Summary
 
        ### Major Changes
@@ -159,14 +160,14 @@ The skill must include:
 **Step 2: Verify skill is discoverable**
 
 ```bash
-cat ~/.claude/skills/release-pr/SKILL.md | head -5
+cat .claude/skills/release-pr/SKILL.md | head -5
 ```
 
 Expected: Valid YAML frontmatter with name and description.
 
 ---
 
-### Task 4: Manual smoke test
+## Task 4: Manual smoke test
 
 **Step 1: Verify both skills appear in skill list**
 
@@ -188,7 +189,7 @@ Invoke `/release-pr` and verify it:
 
 ---
 
-### Task 5: Commit design and plan docs
+## Task 5: Commit design and plan docs
 
 **Step 1: Commit**
 
