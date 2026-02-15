@@ -1,89 +1,18 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.4.4'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id "org.jetbrains.kotlin.jvm" version "${jetbrainKotlinVersion}"
+    id "org.jetbrains.kotlin.plugin.spring" version "${jetbrainKotlinVersion}"
+    id "org.jetbrains.kotlin.plugin.jpa" version "${jetbrainKotlinVersion}"
+    id "org.jetbrains.kotlin.kapt" version "${jetbrainKotlinVersion}"
+    id "org.springframework.boot" version "${springbootVersion}"
+    id "io.spring.dependency-management" version "${springDependencyManagementVersion}"
 }
 
-group = 'com.dh'
-version = '0.0.1-SNAPSHOT'
+group = "${group}"
+version = "${version}"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    // spring
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.retry:spring-retry'
-    implementation 'org.springframework:spring-aspects'
-    implementation 'io.micrometer:micrometer-registry-prometheus'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-    // Spring AI
-    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
-    implementation 'org.springframework.ai:spring-ai-openai:1.0.0-SNAPSHOT'
-    implementation 'org.springframework.ai:spring-ai-starter-model-openai:1.0.0-SNAPSHOT'
-
-    // 스프링부트 3.xx에서는 p6spy 버전 1.9.0 사용해야됨
-    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
-
-    // lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    // MapStruct
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
-
-    // JWT
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.12.5'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.5'
-
-    // jpa
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-    // Querydsl
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
-    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
-
-    // DB
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    // kafka
-    implementation 'org.springframework.kafka:spring-kafka'
-    testImplementation 'org.springframework.kafka:spring-kafka-test'
-
-    // BouncyCastle
-    implementation 'org.bouncycastle:bcprov-jdk15to18:1.76'
-    implementation 'org.bouncycastle:bcpkix-jdk15to18:1.76'
-
-    // test
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'com.h2database:h2'
-
-    // TestContainers
-    testImplementation 'org.testcontainers:testcontainers:2.0.3'
-    testImplementation 'org.testcontainers:testcontainers-junit-jupiter:2.0.3'
-    testImplementation 'org.testcontainers:testcontainers-mysql:2.0.3'
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
+        languageVersion = JavaLanguageVersion.of(jvmTarget)
     }
 }
 
@@ -97,7 +26,26 @@ repositories {
     }
 }
 
-
-tasks.named('test') {
-    useJUnitPlatform()
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
 }
+
+// TODO: Kotlin 전환 완료 후 제거 — Java Lombok이 compileJava에서 동작하도록 유지
+kapt {
+    keepJavacAnnotationProcessors = true
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.ai:spring-ai-bom:${springAiVersion}")
+    }
+}
+
+apply from: "gradle/core.gradle"
+apply from: "gradle/db.gradle"
+apply from: "gradle/jetbrains.gradle"
+apply from: "gradle/monitor.gradle"
+apply from: "gradle/spring.gradle"
+apply from: "gradle/test.gradle"
