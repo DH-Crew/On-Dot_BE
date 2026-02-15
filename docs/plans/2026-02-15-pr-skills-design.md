@@ -123,10 +123,10 @@ Standalone skill for creating release PRs from develop to main. Manually invoked
 
 ## Skill Location
 
-Project skills directory: `skills/`
+Project skills directory: `.claude/skills/` (`.gitignore`에 예외 처리)
 
 ```
-skills/
+.claude/skills/
   feature-pr/
     SKILL.md
   release-pr/
