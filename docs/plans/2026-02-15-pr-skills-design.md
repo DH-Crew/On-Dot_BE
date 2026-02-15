@@ -35,7 +35,7 @@ Lifecycle skill with two phases, invoked via args.
    - **Body** (follows PR template):
      ```markdown
      ## Issue Number
-     DH-{id}
+     [DH-{id}](https://linear.app/dh-crew/issue/DH-{id})
 
      ## As-Is
      ### 1. 기존 동작 및 문제 상황
