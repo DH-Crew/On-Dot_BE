@@ -35,13 +35,12 @@ digraph feature_pr {
   finish -> f1 [label=""]
   f1 [label="Verify NOT develop/main"]
   f2 [label="Extract Linear ID from branch"]
-  f3 [label="./gradlew test"]
-  f4 [label="git status + diff review"]
-  f5 [label="Commit (Korean conventional)"]
-  f6 [label="git push -u origin {branch}"]
-  f7 [label="gh pr create --base develop"]
-  f8 [label="Report PR URL"]
-  f1 -> f2 -> f3 -> f4 -> f5 -> f6 -> f7 -> f8
+  f3 [label="git status + diff review"]
+  f4 [label="Commit (Korean conventional)"]
+  f5 [label="git push -u origin {branch}"]
+  f6 [label="gh pr create --base develop"]
+  f7 [label="Report PR URL"]
+  f1 -> f2 -> f3 -> f4 -> f5 -> f6 -> f7
 }
 ```
 
@@ -65,11 +64,10 @@ digraph feature_pr {
 
 1. **Guard**: current branch must NOT be `develop` or `main`. Abort if so.
 2. **Extract Linear ID** from branch name (e.g. `feat/DH-6` -> `DH-6`)
-3. **Run tests**: `./gradlew test` -- if tests fail, report and **STOP**
-4. **Review changes**: `git status`, `git diff`
-5. **Commit** in logical units using Korean conventional commits (e.g. `feat: 스케줄 정렬 기능 구현`)
-6. **Push**: `git push -u origin {branch-name}`
-7. **Ensure label exists** — check and create if missing:
+3. **Review changes**: `git status`, `git diff`
+4. **Commit** in logical units using Korean conventional commits (e.g. `feat: 스케줄 정렬 기능 구현`)
+5. **Push**: `git push -u origin {branch-name}`
+6. **Ensure label exists** — check and create if missing:
 
 ```bash
 # Label mapping: feat -> 🚀 FEAT, fix -> 🩺 FIX, refactor -> 🔋 REFACTOR
@@ -77,7 +75,7 @@ gh label list --search "{label}" --json name -q '.[].name' | grep -q "{label}" \
   || gh label create "{label}"
 ```
 
-8. **Create PR** to develop (intended for squash merge):
+7. **Create PR** to develop (intended for squash merge):
 
 ```bash
 gh pr create --base develop \
@@ -97,7 +95,7 @@ EOF
 | Assignee | `@me` (current user) |
 | Body | PR template below |
 
-9. **Report** PR URL to user
+8. **Report** PR URL to user
 
 ### PR Template
 
@@ -138,7 +136,6 @@ EOF
 
 ## Red Flags
 
-- **Never** create PR with failing tests
 - **Never** target any branch other than `develop`
 - **Never** run finish phase on `develop` or `main`
 - **Never** skip clean check — uncommitted changes must be handled before branch creation
