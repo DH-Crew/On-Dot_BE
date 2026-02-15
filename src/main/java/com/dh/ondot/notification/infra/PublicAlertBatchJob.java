@@ -24,7 +24,7 @@ public class PublicAlertBatchJob {
     private final SubwayAlertService subwayAlertService;
     private final EmergencyAlertService emergencyAlertService;
 
-    @Scheduled(cron = EVERY_20_MINUTES)
+//    @Scheduled(cron = EVERY_20_MINUTES)
     public void refreshPublicAlerts() {
         LocalDate today = TimeUtils.nowSeoulDate();
         try {

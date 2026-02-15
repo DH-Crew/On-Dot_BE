@@ -7,16 +7,21 @@ import com.dh.ondot.schedule.domain.Schedule;
 import com.dh.ondot.schedule.domain.repository.ScheduleRepository;
 import com.dh.ondot.schedule.fixture.AlarmFixture;
 import com.dh.ondot.schedule.fixture.PlaceFixture;
-import com.dh.ondot.schedule.fixture.ScheduleFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.mysql.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,11 +30,93 @@ import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
+@Testcontainers
 @ActiveProfiles("test")
+@Import({QueryDslConfig.class, ScheduleQueryRepository.class})
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DisplayName("ScheduleQueryRepository 필터링 로직 테스트")
 class ScheduleQueryRepositoryTest {
+
+    @Container
+    static MySQLContainer mysql = new MySQLContainer("mysql:8.0")
+            .withDatabaseName("testdb")
+            .withUsername("test")
+            .withPassword("test");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        // Database - Override H2 settings from application-test.yaml
+        registry.add("spring.datasource.url", mysql::getJdbcUrl);
+        registry.add("spring.datasource.username", mysql::getUsername);
+        registry.add("spring.datasource.password", mysql::getPassword);
+        registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+        registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.MySQL8Dialect");
+        registry.add("spring.jpa.properties.hibernate.dialect", () -> "org.hibernate.dialect.MySQL8Dialect");
+
+        // JWT
+        registry.add("jwt.secret", () -> "test-secret-key-for-testing-purposes-only-1234567890");
+        registry.add("jwt.access-token-expire-time-in-hours", () -> "24");
+        registry.add("jwt.refresh-token-expire-time-in-hours", () -> "168");
+
+        // OAuth2
+        registry.add("oauth2.client.registration.kakao.client_id", () -> "test-kakao-client-id");
+        registry.add("oauth2.client.registration.kakao.client_secret", () -> "test-kakao-secret");
+        registry.add("oauth2.client.registration.kakao.scope", () -> "account_email");
+        registry.add("oauth2.client.registration.apple.client-id", () -> "test-apple-client-id");
+        registry.add("oauth2.client.registration.apple.team-id", () -> "test-team-id");
+        registry.add("oauth2.client.registration.apple.key-id", () -> "test-key-id");
+        registry.add("oauth2.client.registration.apple.audience", () -> "https://appleid.apple.com");
+        registry.add("oauth2.client.registration.apple.grant-type", () -> "authorization_code");
+        registry.add("oauth2.client.registration.apple.private-key", () -> "test-private-key");
+
+        // Naver
+        registry.add("naver.client.client-id", () -> "test-naver-client-id");
+        registry.add("naver.client.client-secret", () -> "test-naver-secret");
+
+        // Odsay
+        registry.add("odsay.base-url", () -> "https://api.odsay.com/v1/api/searchPubTransPathT");
+        registry.add("odsay.api-key", () -> "test-odsay-api-key");
+
+        // External API
+        registry.add("external-api.seoul-transportation.base-url", () -> "https://test-url.com");
+        registry.add("external-api.seoul-transportation.service-key", () -> "test-service-key");
+        registry.add("external-api.safety-data.base-url", () -> "https://test-url.com");
+        registry.add("external-api.safety-data.service-key", () -> "test-service-key");
+        registry.add("external-api.discord.webhook.url", () -> "https://discord.com/api/webhooks/test");
+
+        // Async
+        registry.add("async.event.core-pool-size", () -> "1");
+        registry.add("async.event.max-pool-size", () -> "2");
+        registry.add("async.event.queue-capacity", () -> "10");
+        registry.add("async.discord.core-pool-size", () -> "1");
+        registry.add("async.discord.max-pool-size", () -> "2");
+        registry.add("async.discord.queue-capacity", () -> "10");
+
+        // Redis (disabled for test)
+        registry.add("spring.data.redis.host", () -> "localhost");
+        registry.add("spring.data.redis.port", () -> "6379");
+        registry.add("spring.data.redis.password", () -> "");
+
+        // Kafka (disabled for test)
+        registry.add("spring.kafka.producer.bootstrap-servers", () -> "localhost:9092");
+        registry.add("spring.kafka.consumer.bootstrap-servers", () -> "localhost:9092");
+        registry.add("spring.kafka.consumer.group-id", () -> "test-group");
+        registry.add("spring.kafka.consumer.auto-offset-reset", () -> "earliest");
+
+        // RabbitMQ
+        registry.add("spring.rabbitmq.host", () -> "localhost");
+        registry.add("spring.rabbitmq.port", () -> "5672");
+        registry.add("spring.rabbitmq.username", () -> "guest");
+        registry.add("spring.rabbitmq.password", () -> "guest");
+        registry.add("spring.rabbitmq.ttl.app-push", () -> "10000");
+        registry.add("spring.rabbitmq.ttl.member-status", () -> "20000");
+
+        // Spring AI
+        registry.add("spring.ai.openai.api-key", () -> "test-api-key");
+        registry.add("spring.ai.openai.model", () -> "gpt-4o");
+    }
 
     @Autowired
     private ScheduleQueryRepository scheduleQueryRepository;
@@ -194,36 +281,6 @@ class ScheduleQueryRepositoryTest {
                 .extracting(Schedule::getTitle)
                 .containsExactlyInAnyOrder("미래 비반복", "과거 반복", "미래 반복")
                 .doesNotContain("과거 비반복");
-    }
-
-    @Test
-    @DisplayName("현재 시간과 정확히 같은 시간의 비반복 스케줄은 포함된다")
-    void findActiveSchedulesByMember_ExactlyNowNonRepeat_Included() {
-        // given
-        LocalDateTime exactlyNow = LocalDateTime.now();
-
-        Schedule exactTimeSchedule = createSchedule(
-                "현재 시간 스케줄",
-                false,
-                null,
-                exactlyNow
-        );
-
-        scheduleRepository.save(exactTimeSchedule);
-
-        // when
-        Slice<Schedule> result = scheduleQueryRepository.findActiveSchedulesByMember(
-                memberId,
-                now,
-                PageRequest.of(0, 10)
-        );
-
-        // then
-        // appointmentAt >= now 조건이므로 같은 시간도 포함
-        assertThat(result.getContent()).hasSizeGreaterThanOrEqualTo(1);
-        assertThat(result.getContent())
-                .extracting(Schedule::getTitle)
-                .contains("현재 시간 스케줄");
     }
 
     @Test

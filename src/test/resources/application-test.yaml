@@ -9,15 +9,94 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+    show-sql: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 1s
+      password: ""
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    ttl:
+      app-push: 10000
+      member-status: 20000
 
   kafka:
     producer:
-      bootstrap-servers: ${spring.embedded.kafka.brokers}
+      bootstrap-servers: localhost:9092
     consumer:
-      bootstrap-servers: ${spring.embedded.kafka.brokers}
+      bootstrap-servers: localhost:9092
       group-id: test-group
       auto-offset-reset: earliest
+
+  ai:
+    openai:
+      api-key: test-api-key
+      model: gpt-4o
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+async:
+  event:
+    core-pool-size: 1
+    max-pool-size: 2
+    queue-capacity: 10
+  discord:
+    core-pool-size: 1
+    max-pool-size: 2
+    queue-capacity: 10
+
+oauth2:
+  client:
+    registration:
+      kakao:
+        client_id: test-kakao-client-id
+        client_secret: test-kakao-secret
+        scope: account_email
+      apple:
+        client-id: test-apple-client-id
+        team-id: test-team-id
+        key-id: test-key-id
+        audience: https://appleid.apple.com
+        grant-type: authorization_code
+        private-key: test-private-key
+
+jwt:
+  secret: test-secret-key-for-testing-purposes-only-1234567890abcdef
+  access-token-expire-time-in-hours: 24
+  refresh-token-expire-time-in-hours: 168
+
+naver:
+  client:
+    client-id: test-naver-client-id
+    client-secret: test-naver-secret
+
+odsay:
+  base-url: https://api.odsay.com/v1/api/searchPubTransPathT
+  api-key: test-odsay-api-key
+
+external-api:
+  seoul-transportation:
+    base-url: https://test-url.com
+    service-key: test-service-key
+  safety-data:
+    base-url: https://test-url.com
+    service-key: test-service-key
+  discord:
+    webhook:
+      url: https://discord.com/api/webhooks/test
+
+logging:
+  level:
+    root: warn
+    com.dh.ondot: info

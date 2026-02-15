@@ -2,9 +2,9 @@ name: Java CI/CD with Gradle & Docker
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "main", "develop" ]
   workflow_dispatch:
 
 permissions:
@@ -44,8 +44,16 @@ jobs:
           mkdir -p src/main/resources/auth
           echo "${{ secrets.APPLE_PRIVATE_KEY_FILE }}" > src/main/resources/auth/ApplePrivateKey.p8
 
-      # 4) Gradle 빌드
+      # 4) Docker 상태 확인 (Testcontainers 사전 검증)
+      - name: Verify Docker availability
+        run: docker info
+
+      # 5) Gradle 빌드
       - name: Build with Gradle
+        env:
+          TESTCONTAINERS_RYUK_DISABLED: true
+          DOCKER_HOST: unix:///var/run/docker.sock
+          TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
         run: ./gradlew build -DPROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }} -Pspring.profiles.active=prod
 
       # ✨ 5) QEMU & Buildx 세팅 (멀티 아키텍처 빌드용)
@@ -64,7 +72,7 @@ jobs:
 
       # ✨ 7) 멀티‑아키텍처 이미지 빌드 & 푸시
       - name: Build & Push (amd64 + arm64)
-        if: contains(github.ref, 'develop')
+        if: contains(github.ref, 'main')
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
@@ -75,7 +83,7 @@ jobs:
       - name: Deploy to prod
         uses: appleboy/ssh-action@v0.1.5
         id: deploy-prod
-        if: contains(github.ref, 'develop')
+        if: contains(github.ref, 'main')
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
