@@ -123,10 +123,10 @@ Standalone skill for creating release PRs from develop to main. Manually invoked
 
 ## Skill Location
 
-Personal skills directory: `~/.claude/skills/`
+Project skills directory: `.claude/skills/`
 
 ```
-~/.claude/skills/
+.claude/skills/
   feature-pr/
     SKILL.md
   release-pr/
