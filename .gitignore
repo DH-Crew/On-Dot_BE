@@ -50,6 +50,8 @@ src/main/resources/application.yaml
 /prometheus.yml
 
 ### claude ###
-/CLAUDE.md
 /claudedocs/
 .claude
+!.claude/
+!.claude/skills/
+!.claude/skills/**
