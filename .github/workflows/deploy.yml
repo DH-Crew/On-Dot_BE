@@ -46,6 +46,8 @@ jobs:
 
       # 4) Gradle 빌드
       - name: Build with Gradle
+        env:
+          TESTCONTAINERS_RYUK_DISABLED: true
         run: ./gradlew build -DPROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }} -Pspring.profiles.active=prod
 
       # ✨ 5) QEMU & Buildx 세팅 (멀티 아키텍처 빌드용)
