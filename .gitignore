@@ -52,5 +52,4 @@ src/main/resources/application.yaml
 ### claude ###
 /CLAUDE.md
 /claudedocs/
-.claude/*
-!.claude/skills/
+.claude
