@@ -21,11 +21,15 @@ digraph feature_pr {
   entry -> start [label="args = start"]
   entry -> finish [label="args = finish"]
 
-  start -> s1 [label=""]
-  s1 [label="Check branch = develop"]
-  s2 [label="git pull origin develop"]
+  start -> s0 [label=""]
+  s0 [label="Clean check:\ngit status"]
+  s0_fail [label="STOP\n사용자에게 알림"]
+  s1 [label="git fetch origin develop"]
+  s2 [label="Resolve develop ref:\nlocal develop or origin/develop"]
   s3 [label="Ask: type + Linear ID"]
-  s4 [label="git checkout -b {type}/DH-{id}"]
+  s4 [label="git checkout -b {type}/DH-{id}\nfrom {develop-ref}"]
+  s0 -> s0_fail [label="uncommitted changes 있음"]
+  s0 -> s1 [label="clean"]
   s1 -> s2 -> s3 -> s4
 
   finish -> f1 [label=""]
@@ -43,13 +47,19 @@ digraph feature_pr {
 
 ## Start Phase (`/feature-pr start`)
 
-1. **Check branch** -- if not on `develop`, ask user to switch
-2. **Pull latest**: `git pull origin develop`
-3. **Ask user** (multiple choice):
+1. **Clean check**: `git status`로 워킹 트리 상태 확인
+   - uncommitted changes가 있으면 → **STOP**, 사용자에게 변경사항 목록을 알리고 처리 방법 확인
+   - clean 상태면 → 다음 단계 진행
+2. **Fetch latest**: `git fetch origin develop`
+3. **Resolve develop ref**:
+   - 현재 `develop` 브랜치에 있으면: `git pull origin develop` 후 로컬 `develop` 사용
+   - `develop`이 다른 워크트리에 체크아웃되어 있으면: `origin/develop`을 base로 사용
+4. **Ask user** (multiple choice):
    - Branch type: `feat` | `fix` | `refactor`
    - Linear ID (숫자만, e.g. `6`)
-4. **Create & switch**: `git checkout -b {type}/DH-{id}`
-5. **Confirm**: report branch name, ready to work
+5. **Create & switch**: `git checkout -b {type}/DH-{id} {develop-ref}`
+   - `{develop-ref}`: 로컬 `develop` 또는 `origin/develop`
+6. **Confirm**: report branch name, ready to work
 
 ## Finish Phase (`/feature-pr finish`)
 
@@ -131,3 +141,4 @@ EOF
 - **Never** create PR with failing tests
 - **Never** target any branch other than `develop`
 - **Never** run finish phase on `develop` or `main`
+- **Never** skip clean check — uncommitted changes must be handled before branch creation
