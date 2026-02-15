@@ -83,7 +83,7 @@ EOF
 | Field | Value |
 |-------|-------|
 | Title | `[{TYPE}] {한글 설명}` (e.g. `[FEAT] 스케줄 정렬 기능 구현`) |
-| Label | `feat` -> `🚀 FEAT`, `fix` -> `🚨 FIX`, `refactor` -> `🔋 REFACTOR` |
+| Label | `feat` -> `🚀 FEAT`, `fix` -> `🩺 FIX`, `refactor` -> `🔋 REFACTOR` |
 | Assignee | `@me` (current user) |
 | Body | PR template below |
 
