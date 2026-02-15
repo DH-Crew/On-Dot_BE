@@ -85,8 +85,8 @@ The skill must include:
        - [x] Have all tests passed?
        - [x] Have all commits been pushed?
        - [x] Did you verify the target branch for the merge?
-       - [ ] Did you assign the appropriate assignee(s)?
-       - [ ] Did you set the correct label(s)?
+       - [x] Did you assign the appropriate assignee(s)?
+       - [x] Did you set the correct label(s)?
 
        ## 📸 Test Screenshot
 
