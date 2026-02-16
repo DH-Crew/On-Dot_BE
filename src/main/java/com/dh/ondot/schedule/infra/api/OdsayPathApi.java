@@ -35,8 +35,8 @@ public class OdsayPathApi {
     public OdsayRouteApiResponse searchPublicTransportRoute(Double startX, Double startY, Double endX, Double endY) {
         String url = String.format(
                 "%s?apiKey=%s&SX=%s&SY=%s&EX=%s&EY=%s",
-                odsayApiConfig.baseUrl(),
-                odsayApiConfig.apiKey(),
+                odsayApiConfig.getBaseUrl(),
+                odsayApiConfig.getApiKey(),
                 startX, startY, endX, endY
         );
 
