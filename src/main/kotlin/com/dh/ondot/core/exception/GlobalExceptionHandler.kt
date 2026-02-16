@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.BindException
 import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.HttpRequestMethodNotSupportedException
+import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -42,6 +43,13 @@ class GlobalExceptionHandler {
     fun handleMissingParam(e: MissingServletRequestParameterException): ErrorResponse {
         log.warn(e.message)
         return ErrorResponse(ErrorCode.URL_PARAMETER_ERROR)
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleMissingRequestHeader(e: MissingRequestHeaderException): ErrorResponse {
+        log.warn(e.message)
+        return ErrorResponse(ErrorCode.MISSING_REQUEST_HEADER)
     }
 
     @ExceptionHandler

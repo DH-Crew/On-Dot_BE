@@ -87,10 +87,11 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("토큰 재발급 시 Authorization 헤더 누락하면 500을 반환한다")
-    fun reissue_missingAuthHeader_500() {
+    @DisplayName("토큰 재발급 시 Authorization 헤더 누락하면 400을 반환한다")
+    fun reissue_missingAuthHeader_400() {
         mockMvc.perform(post("/auth/reissue"))
-            .andExpect(status().isInternalServerError)
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.errorCode").value("MISSING_REQUEST_HEADER"))
     }
 
     @Test
