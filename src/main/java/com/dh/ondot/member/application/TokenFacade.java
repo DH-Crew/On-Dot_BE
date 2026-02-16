@@ -28,8 +28,8 @@ public class TokenFacade {
 
     @PostConstruct
     public void init() {
-        this.accessTokenTime = jwtProperties.accessTokenExpireTimeInHours() * HOURS_IN_MILLIS;
-        this.refreshTokenTime = jwtProperties.refreshTokenExpireTimeInHours() * HOURS_IN_MILLIS;
+        this.accessTokenTime = jwtProperties.getAccessTokenExpireTimeInHours() * HOURS_IN_MILLIS;
+        this.refreshTokenTime = jwtProperties.getRefreshTokenExpireTimeInHours() * HOURS_IN_MILLIS;
     }
 
     public Token issue(Long memberId) {

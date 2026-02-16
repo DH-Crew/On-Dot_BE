@@ -41,7 +41,7 @@ public class AppleOauthApi implements OauthApi {
             AppleSocialTokenInfoResponseDto tokenDto = requestTokenToApple(authorizationCode);
 
             ApplePublicKeyResponse appleKeys = restClient.get()
-                    .uri(appleProperties.audience() + "/auth/keys")
+                    .uri(appleProperties.getAudience() + "/auth/keys")
                     .retrieve()
                     .body(ApplePublicKeyResponse.class);
 
@@ -54,13 +54,13 @@ public class AppleOauthApi implements OauthApi {
 
     private AppleSocialTokenInfoResponseDto requestTokenToApple(String authorizationCode) {
         try {
-            String body = "client_id=" + appleProperties.clientId()
+            String body = "client_id=" + appleProperties.getClientId()
                     + "&client_secret=" + appleJwtUtil.generateClientSecret()
                     + "&code=" + authorizationCode
-                    + "&grant_type=" + appleProperties.grantType();
+                    + "&grant_type=" + appleProperties.getGrantType();
 
             ResponseEntity<AppleSocialTokenInfoResponseDto> response = restClient.post()
-                    .uri(appleProperties.audience() + "/auth/token")
+                    .uri(appleProperties.getAudience() + "/auth/token")
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .header("User-Agent", "Ondot-Server/1.0")
                     .body(body)
