@@ -31,41 +31,41 @@ class ScheduleCommandFacade(
 ) {
     fun createSchedule(memberId: Long, request: ScheduleCreateRequest): Schedule {
         val departurePlace = Place.createPlace(
-            request.departurePlace().title(),
-            request.departurePlace().roadAddress(),
-            request.departurePlace().longitude(),
-            request.departurePlace().latitude(),
+            request.departurePlace.title,
+            request.departurePlace.roadAddress,
+            request.departurePlace.longitude,
+            request.departurePlace.latitude,
         )
 
         val arrivalPlace = Place.createPlace(
-            request.arrivalPlace().title(),
-            request.arrivalPlace().roadAddress(),
-            request.arrivalPlace().longitude(),
-            request.arrivalPlace().latitude(),
+            request.arrivalPlace.title,
+            request.arrivalPlace.roadAddress,
+            request.arrivalPlace.longitude,
+            request.arrivalPlace.latitude,
         )
 
         val preparationAlarm = Alarm.createPreparationAlarm(
-            request.preparationAlarm().alarmMode(),
-            request.preparationAlarm().isEnabled(),
-            request.preparationAlarm().triggeredAt(),
-//                request.preparationAlarm().mission(),
-            request.preparationAlarm().isSnoozeEnabled(),
-            request.preparationAlarm().snoozeInterval(),
-            request.preparationAlarm().snoozeCount(),
-            request.preparationAlarm().soundCategory(),
-            request.preparationAlarm().ringTone(),
-            request.preparationAlarm().volume(),
+            request.preparationAlarm.alarmMode,
+            request.preparationAlarm.isEnabled,
+            request.preparationAlarm.triggeredAt,
+//                request.preparationAlarm.mission,
+            request.preparationAlarm.isSnoozeEnabled,
+            request.preparationAlarm.snoozeInterval,
+            request.preparationAlarm.snoozeCount,
+            request.preparationAlarm.soundCategory,
+            request.preparationAlarm.ringTone,
+            request.preparationAlarm.volume,
         )
 
         val departureAlarm = Alarm.createDepartureAlarm(
-            request.departureAlarm().alarmMode(),
-            request.departureAlarm().triggeredAt(),
-            request.departureAlarm().isSnoozeEnabled(),
-            request.departureAlarm().snoozeInterval(),
-            request.departureAlarm().snoozeCount(),
-            request.departureAlarm().soundCategory(),
-            request.departureAlarm().ringTone(),
-            request.departureAlarm().volume(),
+            request.departureAlarm.alarmMode,
+            request.departureAlarm.triggeredAt,
+            request.departureAlarm.isSnoozeEnabled,
+            request.departureAlarm.snoozeInterval,
+            request.departureAlarm.snoozeCount,
+            request.departureAlarm.soundCategory,
+            request.departureAlarm.ringTone,
+            request.departureAlarm.volume,
         )
 
         val schedule = Schedule.createSchedule(
@@ -74,12 +74,12 @@ class ScheduleCommandFacade(
             arrivalPlace,
             preparationAlarm,
             departureAlarm,
-            request.title(),
-            request.isRepeat(),
-            TreeSet(request.repeatDays()),
-            request.appointmentAt(),
-            request.isMedicationRequired(),
-            request.preparationNote(),
+            request.title,
+            request.isRepeat,
+            TreeSet(request.repeatDays),
+            request.appointmentAt,
+            request.isMedicationRequired,
+            request.preparationNote,
         )
 
         return scheduleService.saveSchedule(schedule)
@@ -90,25 +90,25 @@ class ScheduleCommandFacade(
         val member = memberService.getMemberIfExists(memberId)
 
         val dep = Place.createPlace(
-            request.departurePlace().title(),
-            request.departurePlace().roadAddress(),
-            request.departurePlace().longitude(),
-            request.departurePlace().latitude(),
+            request.departurePlace.title,
+            request.departurePlace.roadAddress,
+            request.departurePlace.longitude,
+            request.departurePlace.latitude,
         )
         val arr = Place.createPlace(
-            request.arrivalPlace().title(),
-            request.arrivalPlace().roadAddress(),
-            request.arrivalPlace().longitude(),
-            request.arrivalPlace().latitude(),
+            request.arrivalPlace.title,
+            request.arrivalPlace.roadAddress,
+            request.arrivalPlace.longitude,
+            request.arrivalPlace.latitude,
         )
 
         val estimatedTime = routeService.calculateRouteTime(
-            request.departurePlace().longitude(), request.departurePlace().latitude(),
-            request.arrivalPlace().longitude(), request.arrivalPlace().latitude(),
+            request.departurePlace.longitude, request.departurePlace.latitude,
+            request.arrivalPlace.longitude, request.arrivalPlace.latitude,
         )
 
         val schedule = scheduleService.setupSchedule(
-            member, request.appointmentAt(), estimatedTime,
+            member, request.appointmentAt, estimatedTime,
         )
         schedule.registerPlaces(dep, arr)
 
@@ -130,19 +130,19 @@ class ScheduleCommandFacade(
 
         // 장소 변경 여부 확인
         val departureChanged = schedule.departurePlace!!.isPlaceChanged(
-            request.departurePlace().roadAddress(),
-            request.departurePlace().longitude(),
-            request.departurePlace().latitude(),
+            request.departurePlace.roadAddress,
+            request.departurePlace.longitude,
+            request.departurePlace.latitude,
         )
 
         val arrivalChanged = schedule.arrivalPlace!!.isPlaceChanged(
-            request.arrivalPlace().roadAddress(),
-            request.arrivalPlace().longitude(),
-            request.arrivalPlace().latitude(),
+            request.arrivalPlace.roadAddress,
+            request.arrivalPlace.longitude,
+            request.arrivalPlace.latitude,
         )
 
         val placeChanged = departureChanged || arrivalChanged
-        val timeChanged = schedule.isAppointmentTimeChanged(request.appointmentAt())
+        val timeChanged = schedule.isAppointmentTimeChanged(request.appointmentAt)
 
         // 장소가 달라졌다면 → (비동기) 새로운 시간 계산 후 처리 (TODO 주석으로 남김)
         if (placeChanged || timeChanged) {
@@ -150,48 +150,48 @@ class ScheduleCommandFacade(
         }
 
         schedule.departurePlace!!.update(
-            request.departurePlace().title(),
-            request.departurePlace().roadAddress(),
-            request.departurePlace().longitude(),
-            request.departurePlace().latitude(),
+            request.departurePlace.title,
+            request.departurePlace.roadAddress,
+            request.departurePlace.longitude,
+            request.departurePlace.latitude,
         )
 
         schedule.arrivalPlace!!.update(
-            request.arrivalPlace().title(),
-            request.arrivalPlace().roadAddress(),
-            request.arrivalPlace().longitude(),
-            request.arrivalPlace().latitude(),
+            request.arrivalPlace.title,
+            request.arrivalPlace.roadAddress,
+            request.arrivalPlace.longitude,
+            request.arrivalPlace.latitude,
         )
 
         schedule.preparationAlarm!!.updatePreparation(
-            request.preparationAlarm().alarmMode(),
-            request.preparationAlarm().isEnabled(),
-            request.preparationAlarm().triggeredAt(),
-//                request.preparationAlarm().mission(),
-            request.preparationAlarm().isSnoozeEnabled(),
-            request.preparationAlarm().snoozeInterval(),
-            request.preparationAlarm().snoozeCount(),
-            request.preparationAlarm().soundCategory(),
-            request.preparationAlarm().ringTone(),
-            request.preparationAlarm().volume(),
+            request.preparationAlarm.alarmMode,
+            request.preparationAlarm.isEnabled,
+            request.preparationAlarm.triggeredAt,
+//                request.preparationAlarm.mission,
+            request.preparationAlarm.isSnoozeEnabled,
+            request.preparationAlarm.snoozeInterval,
+            request.preparationAlarm.snoozeCount,
+            request.preparationAlarm.soundCategory,
+            request.preparationAlarm.ringTone,
+            request.preparationAlarm.volume,
         )
 
         schedule.departureAlarm!!.updateDeparture(
-            request.departureAlarm().alarmMode(),
-            request.departureAlarm().triggeredAt(),
-            request.departureAlarm().isSnoozeEnabled(),
-            request.departureAlarm().snoozeInterval(),
-            request.departureAlarm().snoozeCount(),
-            request.departureAlarm().soundCategory(),
-            request.departureAlarm().ringTone(),
-            request.departureAlarm().volume(),
+            request.departureAlarm.alarmMode,
+            request.departureAlarm.triggeredAt,
+            request.departureAlarm.isSnoozeEnabled,
+            request.departureAlarm.snoozeInterval,
+            request.departureAlarm.snoozeCount,
+            request.departureAlarm.soundCategory,
+            request.departureAlarm.ringTone,
+            request.departureAlarm.volume,
         )
 
         schedule.updateCore(
-            request.title(),
-            request.isRepeat(),
-            TreeSet(request.repeatDays()),
-            request.appointmentAt(),
+            request.title,
+            request.isRepeat,
+            TreeSet(request.repeatDays),
+            request.appointmentAt,
         )
 
         return UpdateScheduleResult(schedule, placeChanged || timeChanged)
