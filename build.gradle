@@ -32,11 +32,6 @@ allOpen {
     annotation("jakarta.persistence.Embeddable")
 }
 
-// TODO: Kotlin 전환 완료 후 제거 — Java Lombok이 compileJava에서 동작하도록 유지
-kapt {
-    keepJavacAnnotationProcessors = true
-}
-
 dependencyManagement {
     imports {
         mavenBom("org.springframework.ai:spring-ai-bom:${springAiVersion}")
