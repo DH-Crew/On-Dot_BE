@@ -1,10 +1,10 @@
 package com.dh.ondot.schedule.application
 
 import com.dh.ondot.member.domain.service.MemberService
-import com.dh.ondot.schedule.api.request.QuickScheduleCreateRequest
-import com.dh.ondot.schedule.api.request.ScheduleCreateRequest
-import com.dh.ondot.schedule.api.request.ScheduleUpdateRequest
-import com.dh.ondot.schedule.api.response.ScheduleParsedResponse
+import com.dh.ondot.schedule.presentation.request.QuickScheduleCreateRequest
+import com.dh.ondot.schedule.presentation.request.ScheduleCreateRequest
+import com.dh.ondot.schedule.presentation.request.ScheduleUpdateRequest
+import com.dh.ondot.schedule.presentation.response.ScheduleParsedResponse
 import com.dh.ondot.schedule.application.dto.UpdateScheduleResult
 import com.dh.ondot.schedule.application.mapper.QuickScheduleMapper
 import com.dh.ondot.schedule.domain.Alarm

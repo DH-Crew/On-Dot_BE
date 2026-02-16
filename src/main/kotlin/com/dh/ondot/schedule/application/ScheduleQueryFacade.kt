@@ -2,7 +2,7 @@ package com.dh.ondot.schedule.application
 
 import com.dh.ondot.member.domain.service.MemberService
 import com.dh.ondot.notification.domain.service.EmergencyAlertService
-import com.dh.ondot.schedule.api.response.*
+import com.dh.ondot.schedule.presentation.response.*
 import com.dh.ondot.schedule.application.dto.HomeScheduleListItem
 import com.dh.ondot.schedule.application.mapper.HomeScheduleListItemMapper
 import com.dh.ondot.schedule.domain.Schedule

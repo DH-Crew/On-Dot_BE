@@ -1,7 +1,7 @@
 package com.dh.ondot.schedule.application.dto
 
 import com.dh.ondot.core.util.TimeUtils
-import com.dh.ondot.schedule.api.response.AlarmDto
+import com.dh.ondot.schedule.presentation.response.AlarmDto
 import com.dh.ondot.schedule.domain.Schedule
 import java.time.Instant
 import java.time.LocalDateTime

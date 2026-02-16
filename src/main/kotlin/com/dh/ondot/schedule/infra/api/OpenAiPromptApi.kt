@@ -1,7 +1,7 @@
 package com.dh.ondot.schedule.infra.api
 
 import com.dh.ondot.core.util.TimeUtils
-import com.dh.ondot.schedule.api.response.ScheduleParsedResponse
+import com.dh.ondot.schedule.presentation.response.ScheduleParsedResponse
 import com.dh.ondot.schedule.core.exception.OpenAiParsingException
 import com.dh.ondot.schedule.core.exception.UnavailableOpenAiServerException
 import com.dh.ondot.schedule.core.exception.UnhandledOpenAiException

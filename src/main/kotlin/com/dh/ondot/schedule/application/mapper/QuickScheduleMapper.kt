@@ -1,7 +1,7 @@
 package com.dh.ondot.schedule.application.mapper
 
-import com.dh.ondot.schedule.api.request.PlaceDto
-import com.dh.ondot.schedule.api.request.QuickScheduleCreateRequest
+import com.dh.ondot.schedule.presentation.request.PlaceDto
+import com.dh.ondot.schedule.presentation.request.QuickScheduleCreateRequest
 import com.dh.ondot.schedule.application.command.QuickScheduleCommand
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
