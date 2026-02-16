@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.presentation
 
+import com.dh.ondot.schedule.application.command.GenerateAlarmCommand
 import com.dh.ondot.schedule.presentation.request.RecordAlarmTriggerRequest
 import com.dh.ondot.schedule.presentation.request.SetAlarmRequest
 import com.dh.ondot.schedule.presentation.response.SettingAlarmResponse
@@ -27,11 +28,12 @@ class AlarmController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: SetAlarmRequest,
     ): SettingAlarmResponse {
-        val schedule = alarmFacade.generateAlarmSettingByRoute(
-            memberId, request.appointmentAt,
+        val command = GenerateAlarmCommand(
+            request.appointmentAt,
             request.startLongitude, request.startLatitude,
             request.endLongitude, request.endLatitude,
         )
+        val schedule = alarmFacade.generateAlarmSettingByRoute(memberId, command)
 
         return SettingAlarmResponse.from(
             schedule.preparationAlarm!!,

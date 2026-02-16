@@ -125,7 +125,7 @@ class PlaceControllerTest {
                     .content(objectMapper.writeValueAsString(body))
             ).andExpect(status().isCreated)
 
-            verify(placeFacade).saveHistory(any(), any(), any(), any(), any())
+            verify(placeFacade).saveHistory(any(), any())
         }
 
         @Test

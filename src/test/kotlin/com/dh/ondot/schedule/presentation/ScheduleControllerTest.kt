@@ -16,7 +16,7 @@ import com.dh.ondot.schedule.domain.enums.SoundCategory
 import com.dh.ondot.schedule.domain.vo.Snooze
 import com.dh.ondot.schedule.domain.vo.Sound
 import com.dh.ondot.schedule.presentation.response.HomeScheduleListResponse
-import com.dh.ondot.schedule.presentation.response.ScheduleParsedResponse
+import com.dh.ondot.schedule.application.dto.ScheduleParsedResult
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -276,8 +276,8 @@ class ScheduleControllerTest {
         @Test
         @DisplayName("정상 요청 시 200과 ScheduleParsedResponse를 반환한다")
         fun success_200() {
-            val response = ScheduleParsedResponse("서울역", LocalDateTime.of(2025, 1, 1, 10, 0))
-            whenever(scheduleCommandFacade.parseVoiceSchedule(any(), any())).thenReturn(response)
+            val result = ScheduleParsedResult("서울역", LocalDateTime.of(2025, 1, 1, 10, 0))
+            whenever(scheduleCommandFacade.parseVoiceSchedule(any(), any())).thenReturn(result)
 
             mockMvc.perform(
                 post("/schedules/voice")

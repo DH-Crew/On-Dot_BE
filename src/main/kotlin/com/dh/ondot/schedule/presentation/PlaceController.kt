@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.presentation
 
+import com.dh.ondot.schedule.application.command.SavePlaceHistoryCommand
 import com.dh.ondot.schedule.presentation.request.PlaceHistoryDeleteRequest
 import com.dh.ondot.schedule.presentation.request.PlaceHistorySaveRequest
 import com.dh.ondot.schedule.presentation.response.PlaceHistoryResponse
@@ -44,10 +45,13 @@ class PlaceController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: PlaceHistorySaveRequest,
     ) {
-        placeFacade.saveHistory(
-            memberId, request.title ?: request.roadAddress,
-            request.roadAddress, request.longitude, request.latitude,
+        val command = SavePlaceHistoryCommand(
+            title = request.title ?: request.roadAddress,
+            roadAddress = request.roadAddress,
+            longitude = request.longitude,
+            latitude = request.latitude,
         )
+        placeFacade.saveHistory(memberId, command)
     }
 
     @ResponseStatus(HttpStatus.OK)

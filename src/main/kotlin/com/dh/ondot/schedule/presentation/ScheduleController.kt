@@ -47,8 +47,7 @@ class ScheduleController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: ScheduleCreateRequest,
     ): ScheduleCreateResponse {
-        val schedule = scheduleCommandFacade.createSchedule(memberId, request)
-
+        val schedule = scheduleCommandFacade.createSchedule(memberId, request.toCommand())
         return ScheduleCreateResponse.of(schedule)
     }
 
@@ -58,7 +57,7 @@ class ScheduleController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: QuickScheduleCreateRequest,
     ) {
-        scheduleCommandFacade.createQuickSchedule(memberId, request)
+        scheduleCommandFacade.createQuickSchedule(memberId, request.toCommand())
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -67,7 +66,7 @@ class ScheduleController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: QuickScheduleCreateRequest,
     ) {
-        scheduleCommandFacade.createQuickScheduleV1(memberId, request)
+        scheduleCommandFacade.createQuickScheduleV1(memberId, request.toCommand())
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -76,7 +75,8 @@ class ScheduleController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: ScheduleParsedRequest,
     ): ScheduleParsedResponse {
-        return scheduleCommandFacade.parseVoiceSchedule(memberId, request.text)
+        val result = scheduleCommandFacade.parseVoiceSchedule(memberId, request.text)
+        return ScheduleParsedResponse.from(result)
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -88,7 +88,6 @@ class ScheduleController(
             request.startLongitude, request.startLatitude,
             request.endLongitude, request.endLatitude,
         )
-
         return EstimateTimeResponse.from(estimatedTime)
     }
 
@@ -99,7 +98,6 @@ class ScheduleController(
         @PathVariable scheduleId: Long,
     ): ScheduleDetailResponse {
         val schedule = scheduleQueryFacade.findOneByMemberAndSchedule(memberId, scheduleId)
-
         return ScheduleDetailResponse.from(schedule)
     }
 
@@ -109,7 +107,6 @@ class ScheduleController(
         @PathVariable scheduleId: Long,
     ): SchedulePreparationResponse {
         val schedule = scheduleQueryFacade.findOne(scheduleId)
-
         return SchedulePreparationResponse.from(schedule)
     }
 
@@ -138,9 +135,8 @@ class ScheduleController(
         @PathVariable scheduleId: Long,
         @Valid @RequestBody request: ScheduleUpdateRequest,
     ): ResponseEntity<ScheduleUpdateResponse> {
-        val result = scheduleCommandFacade.updateSchedule(memberId, scheduleId, request)
+        val result = scheduleCommandFacade.updateSchedule(memberId, scheduleId, request.toCommand())
         val status = if (result.needsDepartureTimeRecalculation) HttpStatus.ACCEPTED else HttpStatus.OK
-
         return ResponseEntity.status(status).body(ScheduleUpdateResponse.of(result.schedule))
     }
 
@@ -152,7 +148,6 @@ class ScheduleController(
         @Valid @RequestBody request: AlarmSwitchRequest,
     ): AlarmSwitchResponse {
         val schedule = scheduleCommandFacade.switchAlarm(memberId, scheduleId, request.isEnabled)
-
         return AlarmSwitchResponse.from(schedule)
     }
 

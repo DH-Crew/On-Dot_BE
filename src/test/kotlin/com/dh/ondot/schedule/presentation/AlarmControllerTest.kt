@@ -111,7 +111,7 @@ class AlarmControllerTest {
         @DisplayName("정상 요청 시 200과 SettingAlarmResponse를 반환한다")
         fun success_200() {
             val schedule = mockScheduleWithAlarms()
-            whenever(alarmFacade.generateAlarmSettingByRoute(any(), any(), any(), any(), any(), any()))
+            whenever(alarmFacade.generateAlarmSettingByRoute(any(), any()))
                 .thenReturn(schedule)
 
             mockMvc.perform(
@@ -126,7 +126,7 @@ class AlarmControllerTest {
                 .andExpect(jsonPath("$.departureAlarm.alarmId").value(1))
                 .andExpect(jsonPath("$.departureAlarm.alarmMode").value("VIBRATE"))
 
-            verify(alarmFacade).generateAlarmSettingByRoute(any(), any(), any(), any(), any(), any())
+            verify(alarmFacade).generateAlarmSettingByRoute(any(), any())
         }
 
         @Test

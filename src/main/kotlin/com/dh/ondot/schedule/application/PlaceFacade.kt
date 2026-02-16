@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.application
 
+import com.dh.ondot.schedule.application.command.SavePlaceHistoryCommand
 import com.dh.ondot.schedule.application.dto.PlaceSearchResult
 import com.dh.ondot.schedule.domain.PlaceHistory
 import com.dh.ondot.schedule.domain.service.PlaceHistoryService
@@ -12,13 +13,10 @@ class PlaceFacade(
     private val searchPlaceApi: SearchPlaceApi,
     private val searchRoadAddressApi: SearchRoadAddressApi,
 ) {
-    fun saveHistory(
-        memberId: Long, title: String,
-        roadAddr: String, longitude: Double, latitude: Double,
-    ) {
+    fun saveHistory(memberId: Long, command: SavePlaceHistoryCommand) {
         placeHistoryService.record(
-            memberId, title, roadAddr,
-            longitude, latitude,
+            memberId, command.title, command.roadAddress,
+            command.longitude, command.latitude,
         )
     }
 

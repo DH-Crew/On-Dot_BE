@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.presentation.request
 
+import com.dh.ondot.schedule.application.command.CreateScheduleCommand
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -96,5 +97,35 @@ data class ScheduleCreateRequest(
 
         @field:NotNull @field:Min(0) @field:Max(1)
         val volume: Double,
+    )
+
+    fun toCommand(): CreateScheduleCommand = CreateScheduleCommand(
+        title = title,
+        isRepeat = isRepeat,
+        repeatDays = repeatDays,
+        appointmentAt = appointmentAt,
+        isMedicationRequired = isMedicationRequired,
+        preparationNote = preparationNote,
+        departurePlace = CreateScheduleCommand.PlaceInfo(
+            departurePlace.title, departurePlace.roadAddress,
+            departurePlace.longitude, departurePlace.latitude,
+        ),
+        arrivalPlace = CreateScheduleCommand.PlaceInfo(
+            arrivalPlace.title, arrivalPlace.roadAddress,
+            arrivalPlace.longitude, arrivalPlace.latitude,
+        ),
+        preparationAlarm = CreateScheduleCommand.PreparationAlarmInfo(
+            preparationAlarm.alarmMode, preparationAlarm.isEnabled,
+            preparationAlarm.triggeredAt, preparationAlarm.isSnoozeEnabled,
+            preparationAlarm.snoozeInterval, preparationAlarm.snoozeCount,
+            preparationAlarm.soundCategory, preparationAlarm.ringTone,
+            preparationAlarm.volume,
+        ),
+        departureAlarm = CreateScheduleCommand.DepartureAlarmInfo(
+            departureAlarm.alarmMode, departureAlarm.triggeredAt,
+            departureAlarm.isSnoozeEnabled, departureAlarm.snoozeInterval,
+            departureAlarm.snoozeCount, departureAlarm.soundCategory,
+            departureAlarm.ringTone, departureAlarm.volume,
+        ),
     )
 }
