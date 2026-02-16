@@ -22,11 +22,11 @@ class ChoiceService(
     fun createChoices(member: Member, command: CreateChoicesCommand): List<Choice> {
         val choiceList = mutableListOf<Choice>()
 
-        for (pair in command.questionAnswerPairs()) {
-            val question = questionRepository.findById(pair.questionId())
-                .orElseThrow { NotFoundQuestionException(pair.questionId()) }
-            val answer = answerRepository.findById(pair.answerId())
-                .orElseThrow { NotFoundAnswerException(pair.answerId()) }
+        for (pair in command.questionAnswerPairs) {
+            val question = questionRepository.findById(pair.questionId)
+                .orElseThrow { NotFoundQuestionException(pair.questionId) }
+            val answer = answerRepository.findById(pair.answerId)
+                .orElseThrow { NotFoundAnswerException(pair.answerId) }
 
             val choice = Choice.createChoice(member, question, answer)
             choiceList.add(choice)

@@ -18,9 +18,9 @@ class AddressService(
     fun createHomeAddress(member: Member, command: CreateAddressCommand): Address {
         val address = Address.createByOnboarding(
             member,
-            command.roadAddress(),
-            command.longitude(),
-            command.latitude(),
+            command.roadAddress,
+            command.longitude,
+            command.latitude,
         )
         return addressRepository.save(address)
     }
@@ -32,7 +32,7 @@ class AddressService(
     @Transactional
     fun updateHomeAddress(memberId: Long, command: CreateAddressCommand): Address {
         val address = getHomeAddress(memberId)
-        address.update(command.roadAddress(), command.longitude(), command.latitude())
+        address.update(command.roadAddress, command.longitude, command.latitude)
         return address
     }
 

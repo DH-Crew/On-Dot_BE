@@ -57,6 +57,6 @@ public class AuthController implements AuthSwagger {
     @PostMapping("/test/token")
     public AccessToken testToken() {
         Token token = tokenFacade.issue(1L);
-        return new AccessToken(token.accessToken());
+        return new AccessToken(token.getAccessToken());
     }
 }

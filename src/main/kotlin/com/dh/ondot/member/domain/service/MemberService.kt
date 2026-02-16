@@ -53,9 +53,9 @@ class MemberService(
     @Transactional
     fun updateOnboardingInfo(member: Member, command: OnboardingCommand): Member {
         member.updateOnboarding(
-            command.preparationTime(), command.alarmMode(),
-            command.isSnoozeEnabled(), command.snoozeInterval(), command.snoozeCount(),
-            command.soundCategory(), command.ringTone(), command.volume(),
+            command.preparationTime, command.alarmMode,
+            command.isSnoozeEnabled, command.snoozeInterval, command.snoozeCount,
+            command.soundCategory, command.ringTone, command.volume,
         )
         return member
     }
