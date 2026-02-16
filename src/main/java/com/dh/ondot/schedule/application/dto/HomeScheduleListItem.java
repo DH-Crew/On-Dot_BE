@@ -31,7 +31,7 @@ public record HomeScheduleListItem(
                 schedule.getArrivalPlace().getLongitude(),
                 schedule.getArrivalPlace().getLatitude(),
                 schedule.getTitle(),
-                schedule.getIsRepeat(),
+                schedule.isRepeat(),
                 schedule.getRepeatDays() == null ? List.of() : List.copyOf(schedule.getRepeatDays()),
                 TimeUtils.toSeoulDateTime(schedule.getAppointmentAt()),
                 AlarmDto.of(schedule.getPreparationAlarm(), schedule),

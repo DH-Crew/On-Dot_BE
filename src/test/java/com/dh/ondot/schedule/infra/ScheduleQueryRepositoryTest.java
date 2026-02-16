@@ -207,7 +207,7 @@ class ScheduleQueryRepositoryTest {
         // then
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getContent().get(0).getTitle()).isEqualTo("과거 반복 스케줄");
-        assertThat(result.getContent().get(0).getIsRepeat()).isTrue();
+        assertThat(result.getContent().get(0).isRepeat()).isTrue();
     }
 
     @Test

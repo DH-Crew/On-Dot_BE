@@ -8,7 +8,7 @@ public record SchedulePreparationResponse(
 ) {
     public static SchedulePreparationResponse from(Schedule s) {
         return new SchedulePreparationResponse(
-                s.getIsMedicationRequired(),
+                s.isMedicationRequired(),
                 s.getPreparationNote()
         );
     }

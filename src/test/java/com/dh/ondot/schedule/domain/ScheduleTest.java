@@ -167,7 +167,7 @@ class ScheduleTest {
 
         // then
         assertThat(schedule.getTitle()).isEqualTo(newTitle);
-        assertThat(schedule.getIsRepeat()).isEqualTo(newIsRepeat);
+        assertThat(schedule.isRepeat()).isEqualTo(newIsRepeat);
         assertThat(schedule.getRepeatDays()).isEqualTo(newRepeatDays);
     }
 
@@ -183,7 +183,7 @@ class ScheduleTest {
         schedule.updateCore(newTitle, false, null, newAppointmentAt);
 
         // then
-        assertThat(schedule.getIsRepeat()).isFalse();
+        assertThat(schedule.isRepeat()).isFalse();
         assertThat(schedule.getRepeatDays()).isNull();
     }
 
@@ -201,6 +201,6 @@ class ScheduleTest {
         // then
         assertThat(schedule.getMemberId()).isEqualTo(memberId);
         assertThat(schedule.getTitle()).isEqualTo("새로운 일정");
-        assertThat(schedule.getIsRepeat()).isFalse();
+        assertThat(schedule.isRepeat()).isFalse();
     }
 }

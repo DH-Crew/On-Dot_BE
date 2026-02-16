@@ -15,11 +15,11 @@ public record PlaceHistoryResponse(
 ) {
     public static PlaceHistoryResponse from(PlaceHistory history) {
         return new PlaceHistoryResponse(
-                history.title(),
-                history.roadAddress(),
-                history.longitude(),
-                history.latitude(),
-                TimeUtils.toSeoulDateTime(history.searchedAt())
+                history.getTitle(),
+                history.getRoadAddress(),
+                history.getLongitude(),
+                history.getLatitude(),
+                TimeUtils.toSeoulDateTime(history.getSearchedAt())
         );
     }
     public static List<PlaceHistoryResponse> fromList(List<PlaceHistory> list) {

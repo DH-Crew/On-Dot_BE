@@ -138,7 +138,7 @@ class ScheduleQueryServiceTest {
         // then
         assertThat(result.getContent()).hasSize(2);
         assertThat(result.hasNext()).isTrue();
-        assertThat(result.getContent()).allMatch(schedule -> schedule.getMemberId().equals(memberId));
+        assertThat(result.getContent()).allMatch(schedule -> schedule.getMemberId() == memberId);
     }
 
     @Test

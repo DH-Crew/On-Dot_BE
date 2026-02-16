@@ -49,7 +49,7 @@ class ScheduleServiceTest {
         // then
         assertThat(result.getMemberId()).isEqualTo(member.getId());
         assertThat(result.getTitle()).isEqualTo("새로운 일정");
-        assertThat(result.getIsRepeat()).isFalse();
+        assertThat(result.isRepeat()).isFalse();
         assertThat(result.getAppointmentAt()).isNotNull();
     }
 

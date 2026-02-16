@@ -20,7 +20,7 @@ public record ScheduleDetailResponse(
 ) {
     public static ScheduleDetailResponse from(Schedule s) {
         return new ScheduleDetailResponse(
-                s.getId(), s.getTitle(), s.getIsRepeat(),
+                s.getId(), s.getTitle(), s.isRepeat(),
                 s.getRepeatDays() == null ? List.of() : List.copyOf(s.getRepeatDays()),
                 TimeUtils.toSeoulDateTime(s.getAppointmentAt()),
                 AlarmDto.of(s.getPreparationAlarm()),

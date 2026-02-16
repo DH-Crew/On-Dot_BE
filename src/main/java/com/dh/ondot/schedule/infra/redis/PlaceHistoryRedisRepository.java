@@ -25,14 +25,14 @@ public class PlaceHistoryRedisRepository {
     private final PlaceHistoryJsonConverter converter;
 
     public void push(PlaceHistory history) {
-        String key = key(history.memberId());
+        String key = key(history.getMemberId());
 
         // 중복 체크
         Set<String> existing = redisTemplate.opsForZSet().range(key, 0, -1);
         String duplicateJson = findDuplicate(existing, history);
 
         String value = converter.toJson(history);
-        double score = history.searchedAt().getEpochSecond();
+        double score = history.getSearchedAt().getEpochSecond();
 
         redisTemplate.execute(new SessionCallback<Void>() {
             @SuppressWarnings("unchecked")
@@ -96,9 +96,9 @@ public class PlaceHistoryRedisRepository {
     }
 
     private boolean isDuplicate(PlaceHistory a, PlaceHistory b) {
-        return a.title().equals(b.title())
-                && a.longitude().equals(b.longitude())
-                && a.latitude().equals(b.latitude());
+        return a.getTitle().equals(b.getTitle())
+                && Double.compare(a.getLongitude(), b.getLongitude()) == 0
+                && Double.compare(a.getLatitude(), b.getLatitude()) == 0;
     }
 
     private String key(Long memberId) {

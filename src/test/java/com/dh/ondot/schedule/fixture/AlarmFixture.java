@@ -23,13 +23,14 @@ public class AlarmFixture {
     }
 
     public static Alarm enabledAlarm(LocalDateTime triggeredAt) {
-        return Alarm.builder()
-                .mode(AlarmMode.SOUND)
-                .isEnabled(true)
-                .triggeredAt(TimeUtils.toInstant(triggeredAt))
-                .snooze(defaultSnooze())
-                .sound(defaultSound())
-                .build();
+        return new Alarm(
+                0L,
+                AlarmMode.SOUND,
+                true,
+                TimeUtils.toInstant(triggeredAt),
+                defaultSnooze(),
+                defaultSound()
+        );
     }
 
     public static Alarm disabledAlarm() {
@@ -37,13 +38,14 @@ public class AlarmFixture {
     }
 
     public static Alarm disabledAlarm(LocalDateTime triggeredAt) {
-        return Alarm.builder()
-                .mode(AlarmMode.SOUND)
-                .isEnabled(false)
-                .triggeredAt(TimeUtils.toInstant(triggeredAt))
-                .snooze(defaultSnooze())
-                .sound(defaultSound())
-                .build();
+        return new Alarm(
+                0L,
+                AlarmMode.SOUND,
+                false,
+                TimeUtils.toInstant(triggeredAt),
+                defaultSnooze(),
+                defaultSound()
+        );
     }
 
     private static Snooze defaultSnooze() {

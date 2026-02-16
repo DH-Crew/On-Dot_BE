@@ -22,9 +22,9 @@ public class QuickScheduleInternalEventHandler {
 
     @Transactional
     public void handleEvent(QuickScheduleRequestedEvent event) {
-        Member member = memberService.getMemberIfExists(event.memberId());
-        Place dep = placeRepository.getReferenceById(event.departurePlaceId());
-        Place arr = placeRepository.getReferenceById(event.arrivalPlaceId());
+        Member member = memberService.getMemberIfExists(event.getMemberId());
+        Place dep = placeRepository.getReferenceById(event.getDeparturePlaceId());
+        Place arr = placeRepository.getReferenceById(event.getArrivalPlaceId());
 
         int estimatedTimeMin = routeService.calculateRouteTime(
                 dep.getLongitude(), dep.getLatitude(),
@@ -32,7 +32,7 @@ public class QuickScheduleInternalEventHandler {
         );
 
         Schedule schedule = scheduleService.setupSchedule(
-                member, event.appointmentAt(), estimatedTimeMin
+                member, event.getAppointmentAt(), estimatedTimeMin
         );
         schedule.registerPlaces(dep, arr);
 
