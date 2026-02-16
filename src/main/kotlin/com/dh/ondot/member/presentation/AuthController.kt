@@ -7,8 +7,6 @@ import com.dh.ondot.member.application.AuthFacade
 import com.dh.ondot.member.application.TokenFacade
 import com.dh.ondot.member.application.dto.Token
 import com.dh.ondot.member.core.TokenExtractor
-import com.dh.ondot.member.core.exception.InvalidTokenHeaderException
-import com.dh.ondot.member.core.exception.TokenMissingException
 import com.dh.ondot.member.domain.enums.OauthProvider
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -47,12 +45,7 @@ class AuthController(
     override fun logout(
         @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
     ) {
-        try {
-            val refreshToken = TokenExtractor.extract(token)
-            tokenFacade.logout(refreshToken)
-        } catch (_: TokenMissingException) {
-        } catch (_: InvalidTokenHeaderException) {
-        }
+        tokenFacade.logoutByHeader(token)
     }
 
     @ResponseStatus(HttpStatus.OK)

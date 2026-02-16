@@ -103,7 +103,7 @@ class AuthControllerTest {
         )
             .andExpect(status().isNoContent)
 
-        verify(tokenFacade).logout("some-refresh-token")
+        verify(tokenFacade).logoutByHeader("Bearer some-refresh-token")
     }
 
     @Test

@@ -3,8 +3,11 @@ package com.dh.ondot.member.application
 import com.dh.ondot.member.application.dto.Token
 import com.dh.ondot.member.application.dto.TokenInfo
 import com.dh.ondot.member.core.JwtProperties
+import com.dh.ondot.member.core.TokenExtractor
+import com.dh.ondot.member.core.exception.InvalidTokenHeaderException
 import com.dh.ondot.member.core.exception.RefreshTokenExpiredException
 import com.dh.ondot.member.core.exception.TokenBlacklistedException
+import com.dh.ondot.member.core.exception.TokenMissingException
 import com.dh.ondot.member.infra.RedisTokenRepository
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
@@ -58,6 +61,15 @@ class TokenFacade(
             redisTokenRepository.addBlacklistToken(jti, getRemainingDuration(expiration))
         } catch (e: Exception) {
             log.warn("Invalid refresh token during logout. Token: {}", refreshToken, e)
+        }
+    }
+
+    fun logoutByHeader(authorizationHeader: String) {
+        try {
+            val refreshToken = TokenExtractor.extract(authorizationHeader)
+            logout(refreshToken)
+        } catch (_: TokenMissingException) {
+        } catch (_: InvalidTokenHeaderException) {
         }
     }
 
