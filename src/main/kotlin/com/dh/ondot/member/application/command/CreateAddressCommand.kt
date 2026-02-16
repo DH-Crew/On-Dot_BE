@@ -10,9 +10,9 @@ data class CreateAddressCommand(
     companion object {
         fun from(request: OnboardingRequest): CreateAddressCommand =
             CreateAddressCommand(
-                roadAddress = request.roadAddress(),
-                longitude = request.longitude(),
-                latitude = request.latitude(),
+                roadAddress = request.roadAddress,
+                longitude = request.longitude,
+                latitude = request.latitude,
             )
     }
 }

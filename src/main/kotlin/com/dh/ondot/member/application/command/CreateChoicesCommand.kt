@@ -12,8 +12,8 @@ data class CreateChoicesCommand(
 
     companion object {
         fun from(request: OnboardingRequest): CreateChoicesCommand {
-            val pairs = request.questions().map { q ->
-                QuestionAnswerPair(q.questionId(), q.answerId())
+            val pairs = request.questions.map { q ->
+                QuestionAnswerPair(q.questionId, q.answerId)
             }
             return CreateChoicesCommand(pairs)
         }

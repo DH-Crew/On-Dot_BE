@@ -96,7 +96,7 @@ class MemberFacade(
         memberService.updatePreparationTime(memberId, preparationTime)
 
     @Transactional
-    fun deleteMember(memberId: Long, withdrawalReasonId: Long, customReason: String) {
+    fun deleteMember(memberId: Long, withdrawalReasonId: Long, customReason: String?) {
         memberService.getMemberIfExists(memberId)
         withdrawalService.saveWithdrawalReason(memberId, withdrawalReasonId, customReason)
 

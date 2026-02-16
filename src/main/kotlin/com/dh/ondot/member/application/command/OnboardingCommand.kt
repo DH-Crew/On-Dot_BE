@@ -15,14 +15,14 @@ data class OnboardingCommand(
     companion object {
         fun from(request: OnboardingRequest): OnboardingCommand =
             OnboardingCommand(
-                preparationTime = request.preparationTime(),
-                alarmMode = request.alarmMode(),
-                isSnoozeEnabled = request.isSnoozeEnabled(),
-                snoozeInterval = request.snoozeInterval(),
-                snoozeCount = request.snoozeCount(),
-                soundCategory = request.soundCategory(),
-                ringTone = request.ringTone(),
-                volume = request.volume(),
+                preparationTime = request.preparationTime,
+                alarmMode = request.alarmMode,
+                isSnoozeEnabled = request.isSnoozeEnabled,
+                snoozeInterval = request.snoozeInterval,
+                snoozeCount = request.snoozeCount,
+                soundCategory = request.soundCategory,
+                ringTone = request.ringTone,
+                volume = request.volume,
             )
     }
 }
