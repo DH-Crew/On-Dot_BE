@@ -1,8 +1,8 @@
-package com.dh.ondot.member.api
+package com.dh.ondot.member.presentation
 
-import com.dh.ondot.member.api.response.AccessToken
-import com.dh.ondot.member.api.response.LoginResponse
-import com.dh.ondot.member.api.swagger.AuthSwagger
+import com.dh.ondot.member.presentation.response.AccessToken
+import com.dh.ondot.member.presentation.response.LoginResponse
+import com.dh.ondot.member.presentation.swagger.AuthSwagger
 import com.dh.ondot.member.application.AuthFacade
 import com.dh.ondot.member.application.TokenFacade
 import com.dh.ondot.member.application.dto.Token

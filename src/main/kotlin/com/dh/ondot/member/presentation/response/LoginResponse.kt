@@ -1,4 +1,4 @@
-package com.dh.ondot.member.api.response
+package com.dh.ondot.member.presentation.response
 
 data class LoginResponse(
     val memberId: Long,

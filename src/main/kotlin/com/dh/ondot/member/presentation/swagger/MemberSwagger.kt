@@ -1,16 +1,16 @@
-package com.dh.ondot.member.api.swagger
+package com.dh.ondot.member.presentation.swagger
 
 import com.dh.ondot.core.ErrorResponse
-import com.dh.ondot.member.api.request.OnboardingRequest
-import com.dh.ondot.member.api.request.UpdateHomeAddressRequest
-import com.dh.ondot.member.api.request.UpdateMapProviderRequest
-import com.dh.ondot.member.api.request.UpdatePreparationTimeRequest
-import com.dh.ondot.member.api.request.WithdrawalRequest
-import com.dh.ondot.member.api.response.HomeAddressResponse
-import com.dh.ondot.member.api.response.MapProviderResponse
-import com.dh.ondot.member.api.response.OnboardingResponse
-import com.dh.ondot.member.api.response.PreparationTimeResponse
-import com.dh.ondot.member.api.response.UpdateHomeAddressResponse
+import com.dh.ondot.member.presentation.request.OnboardingRequest
+import com.dh.ondot.member.presentation.request.UpdateHomeAddressRequest
+import com.dh.ondot.member.presentation.request.UpdateMapProviderRequest
+import com.dh.ondot.member.presentation.request.UpdatePreparationTimeRequest
+import com.dh.ondot.member.presentation.request.WithdrawalRequest
+import com.dh.ondot.member.presentation.response.HomeAddressResponse
+import com.dh.ondot.member.presentation.response.MapProviderResponse
+import com.dh.ondot.member.presentation.response.OnboardingResponse
+import com.dh.ondot.member.presentation.response.PreparationTimeResponse
+import com.dh.ondot.member.presentation.response.UpdateHomeAddressResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject

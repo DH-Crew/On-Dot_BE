@@ -1,7 +1,7 @@
 package com.dh.ondot.member.application
 
-import com.dh.ondot.member.api.request.OnboardingRequest
-import com.dh.ondot.member.api.response.OnboardingResponse
+import com.dh.ondot.member.presentation.request.OnboardingRequest
+import com.dh.ondot.member.presentation.response.OnboardingResponse
 import com.dh.ondot.member.application.command.CreateAddressCommand
 import com.dh.ondot.member.application.command.CreateChoicesCommand
 import com.dh.ondot.member.application.command.OnboardingCommand

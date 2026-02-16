@@ -1,8 +1,8 @@
-package com.dh.ondot.member.api.swagger
+package com.dh.ondot.member.presentation.swagger
 
 import com.dh.ondot.core.ErrorResponse
-import com.dh.ondot.member.api.response.AccessToken
-import com.dh.ondot.member.api.response.LoginResponse
+import com.dh.ondot.member.presentation.response.AccessToken
+import com.dh.ondot.member.presentation.response.LoginResponse
 import com.dh.ondot.member.application.dto.Token
 import com.dh.ondot.member.domain.enums.OauthProvider
 import io.swagger.v3.oas.annotations.Operation

@@ -1,6 +1,6 @@
 package com.dh.ondot.member.application.command
 
-import com.dh.ondot.member.api.request.OnboardingRequest
+import com.dh.ondot.member.presentation.request.OnboardingRequest
 
 data class OnboardingCommand(
     val preparationTime: Int,

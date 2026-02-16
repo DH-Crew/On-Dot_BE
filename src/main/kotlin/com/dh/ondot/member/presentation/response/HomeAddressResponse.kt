@@ -1,4 +1,4 @@
-package com.dh.ondot.member.api.response
+package com.dh.ondot.member.presentation.response
 
 import com.dh.ondot.member.domain.Address
 

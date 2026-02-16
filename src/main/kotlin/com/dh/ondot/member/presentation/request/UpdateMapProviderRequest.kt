@@ -1,4 +1,4 @@
-package com.dh.ondot.member.api.request
+package com.dh.ondot.member.presentation.request
 
 import jakarta.validation.constraints.NotBlank
 

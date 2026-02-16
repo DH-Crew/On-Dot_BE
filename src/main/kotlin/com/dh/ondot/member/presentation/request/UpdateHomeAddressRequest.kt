@@ -1,4 +1,4 @@
-package com.dh.ondot.member.api.request
+package com.dh.ondot.member.presentation.request
 
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin

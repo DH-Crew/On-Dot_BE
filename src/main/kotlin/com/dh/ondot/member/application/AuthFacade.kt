@@ -1,6 +1,6 @@
 package com.dh.ondot.member.application
 
-import com.dh.ondot.member.api.response.LoginResponse
+import com.dh.ondot.member.presentation.response.LoginResponse
 import com.dh.ondot.member.application.dto.Token
 import com.dh.ondot.member.domain.OauthApiFactory
 import com.dh.ondot.member.domain.enums.OauthProvider
