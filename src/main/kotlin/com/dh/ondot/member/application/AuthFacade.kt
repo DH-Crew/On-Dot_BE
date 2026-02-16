@@ -1,6 +1,6 @@
 package com.dh.ondot.member.application
 
-import com.dh.ondot.member.presentation.response.LoginResponse
+import com.dh.ondot.member.application.dto.LoginResult
 import com.dh.ondot.member.application.dto.Token
 import com.dh.ondot.member.domain.OauthApiFactory
 import com.dh.ondot.member.domain.enums.OauthProvider
@@ -18,7 +18,7 @@ class AuthFacade(
     private val log = LoggerFactory.getLogger(AuthFacade::class.java)
 
     @Transactional
-    fun loginWithOAuth(oauthProvider: OauthProvider, accessToken: String): LoginResponse {
+    fun loginWithOAuth(oauthProvider: OauthProvider, accessToken: String): LoginResult {
         val oauthApi = oauthApiFactory.getOauthApi(oauthProvider)
         val userInfo = oauthApi.fetchUser(accessToken)
 
@@ -27,9 +27,9 @@ class AuthFacade(
         val isNewMember = member.isNewMember()
         val token: Token = tokenFacade.issue(member.id)
         return if (isNewMember) {
-            LoginResponse.of(member.id, token.accessToken, "", true)
+            LoginResult(member.id, token.accessToken, "", true)
         } else {
-            LoginResponse.of(member.id, token.accessToken, token.refreshToken, false)
+            LoginResult(member.id, token.accessToken, token.refreshToken, false)
         }
     }
 }

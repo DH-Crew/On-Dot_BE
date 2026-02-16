@@ -2,6 +2,7 @@ package com.dh.ondot.member.presentation
 
 import com.dh.ondot.member.application.AuthFacade
 import com.dh.ondot.member.application.TokenFacade
+import com.dh.ondot.member.application.dto.LoginResult
 import com.dh.ondot.member.application.dto.Token
 import com.dh.ondot.member.core.OauthProviderConverter
 import com.dh.ondot.member.domain.enums.OauthProvider
@@ -36,8 +37,8 @@ class AuthControllerTest {
     @Test
     @DisplayName("OAuth 로그인 정상 요청 시 200과 LoginResponse를 반환한다")
     fun loginWithOAuth_success_200() {
-        val response = LoginResponse.of(1L, "access-token", "refresh-token", true)
-        given(authFacade.loginWithOAuth(OauthProvider.KAKAO, "oauth-token")).willReturn(response)
+        val result = LoginResult(1L, "access-token", "refresh-token", true)
+        given(authFacade.loginWithOAuth(OauthProvider.KAKAO, "oauth-token")).willReturn(result)
 
         mockMvc.perform(
             post("/auth/login/oauth")

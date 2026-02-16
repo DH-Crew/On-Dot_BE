@@ -1,5 +1,8 @@
 package com.dh.ondot.member.presentation.request
 
+import com.dh.ondot.member.application.command.CreateAddressCommand
+import com.dh.ondot.member.application.command.CreateChoicesCommand
+import com.dh.ondot.member.application.command.OnboardingCommand
 import jakarta.validation.Valid
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
@@ -50,4 +53,30 @@ data class OnboardingRequest(
         @field:NotNull val questionId: Long,
         @field:NotNull val answerId: Long,
     )
+
+    fun toOnboardingCommand(): OnboardingCommand =
+        OnboardingCommand(
+            preparationTime = preparationTime,
+            alarmMode = alarmMode,
+            isSnoozeEnabled = isSnoozeEnabled,
+            snoozeInterval = snoozeInterval,
+            snoozeCount = snoozeCount,
+            soundCategory = soundCategory,
+            ringTone = ringTone,
+            volume = volume,
+        )
+
+    fun toAddressCommand(): CreateAddressCommand =
+        CreateAddressCommand(
+            roadAddress = roadAddress,
+            longitude = longitude,
+            latitude = latitude,
+        )
+
+    fun toChoicesCommand(): CreateChoicesCommand =
+        CreateChoicesCommand(
+            questionAnswerPairs = questions.map { q ->
+                CreateChoicesCommand.QuestionAnswerPair(q.questionId, q.answerId)
+            }
+        )
 }

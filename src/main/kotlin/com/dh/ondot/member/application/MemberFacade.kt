@@ -1,10 +1,12 @@
 package com.dh.ondot.member.application
 
-import com.dh.ondot.member.presentation.request.OnboardingRequest
-import com.dh.ondot.member.presentation.response.OnboardingResponse
+import com.dh.ondot.core.util.TimeUtils
 import com.dh.ondot.member.application.command.CreateAddressCommand
 import com.dh.ondot.member.application.command.CreateChoicesCommand
+import com.dh.ondot.member.application.command.DeleteMemberCommand
 import com.dh.ondot.member.application.command.OnboardingCommand
+import com.dh.ondot.member.application.command.UpdateHomeAddressCommand
+import com.dh.ondot.member.application.dto.OnboardingResult
 import com.dh.ondot.member.application.dto.Token
 import com.dh.ondot.member.domain.Address
 import com.dh.ondot.member.domain.Member
@@ -40,12 +42,14 @@ class MemberFacade(
     }
 
     @Transactional
-    fun onboarding(memberId: Long, mobileType: String, request: OnboardingRequest): OnboardingResponse {
+    fun onboarding(
+        memberId: Long,
+        mobileType: String,
+        onboardingCommand: OnboardingCommand,
+        addressCommand: CreateAddressCommand,
+        choicesCommand: CreateChoicesCommand,
+    ): OnboardingResult {
         val member = memberService.getAndValidateAlreadyOnboarded(memberId)
-
-        val onboardingCommand = OnboardingCommand.from(request)
-        val addressCommand = CreateAddressCommand.from(request)
-        val choicesCommand = CreateChoicesCommand.from(request)
 
         memberService.updateOnboardingInfo(member, onboardingCommand)
         addressService.createHomeAddress(member, addressCommand)
@@ -55,7 +59,11 @@ class MemberFacade(
 
         publishUserRegistrationEvent(member, member.oauthInfo.oauthProvider, mobileType)
 
-        return OnboardingResponse.from(token.accessToken, token.refreshToken, member)
+        return OnboardingResult(
+            accessToken = token.accessToken,
+            refreshToken = token.refreshToken,
+            createdAt = TimeUtils.toSeoulDateTime(member.updatedAt)!!,
+        )
     }
 
     private fun publishUserRegistrationEvent(member: Member, oauthProvider: OauthProvider, mobileType: String) {
@@ -81,24 +89,19 @@ class MemberFacade(
     }
 
     @Transactional
-    fun updateHomeAddress(
-        memberId: Long,
-        roadAddress: String,
-        longitude: Double,
-        latitude: Double,
-    ): Address {
+    fun updateHomeAddress(memberId: Long, command: UpdateHomeAddressCommand): Address {
         memberService.getMemberIfExists(memberId)
-        val command = CreateAddressCommand(roadAddress, longitude, latitude)
-        return addressService.updateHomeAddress(memberId, command)
+        val addressCommand = CreateAddressCommand(command.roadAddress, command.longitude, command.latitude)
+        return addressService.updateHomeAddress(memberId, addressCommand)
     }
 
     fun updatePreparationTime(memberId: Long, preparationTime: Int): Member =
         memberService.updatePreparationTime(memberId, preparationTime)
 
     @Transactional
-    fun deleteMember(memberId: Long, withdrawalReasonId: Long, customReason: String?) {
+    fun deleteMember(memberId: Long, command: DeleteMemberCommand) {
         memberService.getMemberIfExists(memberId)
-        withdrawalService.saveWithdrawalReason(memberId, withdrawalReasonId, customReason)
+        withdrawalService.saveWithdrawalReason(memberId, command.withdrawalReasonId, command.customReason)
 
         scheduleService.deleteAllByMemberId(memberId)
         addressService.deleteAllByMemberId(memberId)

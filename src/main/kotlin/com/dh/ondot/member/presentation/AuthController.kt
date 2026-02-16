@@ -29,7 +29,10 @@ class AuthController(
     override fun loginWithOAuth(
         @RequestParam("provider") provider: OauthProvider,
         @RequestParam("access_token") accessToken: String,
-    ): LoginResponse = authFacade.loginWithOAuth(provider, accessToken)
+    ): LoginResponse {
+        val result = authFacade.loginWithOAuth(provider, accessToken)
+        return LoginResponse.from(result)
+    }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/reissue")

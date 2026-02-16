@@ -1,5 +1,7 @@
 package com.dh.ondot.member.presentation.response
 
+import com.dh.ondot.member.application.dto.LoginResult
+
 data class LoginResponse(
     val memberId: Long,
     val accessToken: String,
@@ -7,12 +9,7 @@ data class LoginResponse(
     val isNewMember: Boolean,
 ) {
     companion object {
-        fun of(
-            memberId: Long,
-            accessToken: String,
-            refreshToken: String,
-            isNewMember: Boolean,
-        ): LoginResponse =
-            LoginResponse(memberId, accessToken, refreshToken, isNewMember)
+        fun from(result: LoginResult): LoginResponse =
+            LoginResponse(result.memberId, result.accessToken, result.refreshToken, result.isNewMember)
     }
 }

@@ -1,5 +1,8 @@
 package com.dh.ondot.member.presentation
 
+import com.dh.ondot.member.application.MemberFacade
+import com.dh.ondot.member.application.command.DeleteMemberCommand
+import com.dh.ondot.member.application.command.UpdateHomeAddressCommand
 import com.dh.ondot.member.presentation.request.OnboardingRequest
 import com.dh.ondot.member.presentation.request.UpdateHomeAddressRequest
 import com.dh.ondot.member.presentation.request.UpdateMapProviderRequest
@@ -11,7 +14,6 @@ import com.dh.ondot.member.presentation.response.OnboardingResponse
 import com.dh.ondot.member.presentation.response.PreparationTimeResponse
 import com.dh.ondot.member.presentation.response.UpdateHomeAddressResponse
 import com.dh.ondot.member.presentation.swagger.MemberSwagger
-import com.dh.ondot.member.application.MemberFacade
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -37,7 +39,7 @@ class MemberController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: WithdrawalRequest,
     ) {
-        memberFacade.deleteMember(memberId, request.withdrawalReasonId, request.customReason)
+        memberFacade.deleteMember(memberId, DeleteMemberCommand(request.withdrawalReasonId, request.customReason))
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -46,7 +48,15 @@ class MemberController(
         @RequestAttribute("memberId") memberId: Long,
         @RequestHeader(value = "X-Mobile-Type", required = false) mobileType: String,
         @Valid @RequestBody request: OnboardingRequest,
-    ): OnboardingResponse = memberFacade.onboarding(memberId, mobileType, request)
+    ): OnboardingResponse {
+        val result = memberFacade.onboarding(
+            memberId, mobileType,
+            request.toOnboardingCommand(),
+            request.toAddressCommand(),
+            request.toChoicesCommand(),
+        )
+        return OnboardingResponse.from(result)
+    }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/home-address")
@@ -82,7 +92,8 @@ class MemberController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: UpdateHomeAddressRequest,
     ): UpdateHomeAddressResponse {
-        val address = memberFacade.updateHomeAddress(memberId, request.roadAddress, request.longitude, request.latitude)
+        val command = UpdateHomeAddressCommand(request.roadAddress, request.longitude, request.latitude)
+        val address = memberFacade.updateHomeAddress(memberId, command)
         return UpdateHomeAddressResponse.from(address)
     }
 

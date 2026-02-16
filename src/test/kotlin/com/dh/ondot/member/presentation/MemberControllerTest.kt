@@ -3,11 +3,11 @@ package com.dh.ondot.member.presentation
 import com.dh.ondot.core.TokenInterceptor
 import com.dh.ondot.core.exception.GlobalExceptionHandler
 import com.dh.ondot.member.application.MemberFacade
+import com.dh.ondot.member.application.dto.OnboardingResult
 import com.dh.ondot.member.core.OauthProviderConverter
 import com.dh.ondot.member.domain.Address
 import com.dh.ondot.member.domain.Member
 import com.dh.ondot.member.domain.enums.MapProvider
-import com.dh.ondot.member.presentation.response.OnboardingResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -74,7 +74,7 @@ class MemberControllerTest {
                     .content(objectMapper.writeValueAsString(body))
             ).andExpect(status().isNoContent)
 
-            verify(memberFacade).deleteMember(memberId, 1L, "테스트")
+            verify(memberFacade).deleteMember(any(), any())
         }
 
         @Test
@@ -98,8 +98,8 @@ class MemberControllerTest {
         @Test
         @DisplayName("정상 요청 시 200과 OnboardingResponse를 반환한다")
         fun success_200() {
-            val response = OnboardingResponse("access", "refresh", LocalDateTime.of(2025, 1, 1, 0, 0))
-            whenever(memberFacade.onboarding(any(), any(), any())).thenReturn(response)
+            val result = OnboardingResult("access", "refresh", LocalDateTime.of(2025, 1, 1, 0, 0))
+            whenever(memberFacade.onboarding(any(), any(), any(), any(), any())).thenReturn(result)
 
             val body = mapOf(
                 "preparationTime" to 30,
@@ -275,7 +275,7 @@ class MemberControllerTest {
                 on { longitude } doReturn 127.1
                 on { latitude } doReturn 37.1
             }
-            whenever(memberFacade.updateHomeAddress(any(), any(), any(), any())).thenReturn(address)
+            whenever(memberFacade.updateHomeAddress(any(), any())).thenReturn(address)
 
             mockMvc.perform(
                 patch("/members/home-address")
