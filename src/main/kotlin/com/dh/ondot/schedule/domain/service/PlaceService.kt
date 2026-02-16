@@ -13,24 +13,24 @@ class PlaceService(
     fun savePlaces(cmd: QuickScheduleCommand): QuickScheduleRequestedEvent {
         val dep = placeRepository.save(
             Place.createPlace(
-                cmd.departure().title(),
-                cmd.departure().roadAddress(),
-                cmd.departure().longitude(),
-                cmd.departure().latitude(),
+                cmd.departure.title,
+                cmd.departure.roadAddress,
+                cmd.departure.longitude,
+                cmd.departure.latitude,
             )
         )
 
         val arr = placeRepository.save(
             Place.createPlace(
-                cmd.arrival().title(),
-                cmd.arrival().roadAddress(),
-                cmd.arrival().longitude(),
-                cmd.arrival().latitude(),
+                cmd.arrival.title,
+                cmd.arrival.roadAddress,
+                cmd.arrival.longitude,
+                cmd.arrival.latitude,
             )
         )
 
         return QuickScheduleRequestedEvent(
-            cmd.memberId(), dep.id, arr.id, cmd.appointmentAt()
+            cmd.memberId, dep.id, arr.id, cmd.appointmentAt,
         )
     }
 }

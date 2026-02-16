@@ -122,9 +122,9 @@ public class ScheduleController implements ScheduleSwagger {
             @Valid @RequestBody ScheduleUpdateRequest request
     ) {
         UpdateScheduleResult result = scheduleCommandFacade.updateSchedule(memberId, scheduleId, request);
-        HttpStatus status = result.needsDepartureTimeRecalculation() ? HttpStatus.ACCEPTED : HttpStatus.OK;
+        HttpStatus status = result.getNeedsDepartureTimeRecalculation() ? HttpStatus.ACCEPTED : HttpStatus.OK;
 
-        return ResponseEntity.status(status).body(ScheduleUpdateResponse.of(result.schedule()));
+        return ResponseEntity.status(status).body(ScheduleUpdateResponse.of(result.getSchedule()));
     }
 
     @ResponseStatus(HttpStatus.OK)

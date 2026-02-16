@@ -47,8 +47,8 @@ class HomeScheduleListItemMapperTest {
         // then
         // 1순위: 알람 활성화 상태 (ON > OFF)
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).hasActiveAlarm()).isTrue();  // enabledSchedule
-        assertThat(result.get(1).hasActiveAlarm()).isFalse(); // disabledSchedule
+        assertThat(result.get(0).getHasActiveAlarm()).isTrue();  // enabledSchedule
+        assertThat(result.get(1).getHasActiveAlarm()).isFalse(); // disabledSchedule
     }
 
     @Test
@@ -82,9 +82,9 @@ class HomeScheduleListItemMapperTest {
         // then
         // 2순위: 다음 알람 시간 오름차순 (가장 빠른 알람부터)
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).scheduleId()).isEqualTo(schedule3.getId()); // 가장 빠른 알람
-        assertThat(result.get(1).scheduleId()).isEqualTo(schedule2.getId());
-        assertThat(result.get(2).scheduleId()).isEqualTo(schedule1.getId()); // 가장 늦은 알람
+        assertThat(result.get(0).getScheduleId()).isEqualTo(schedule3.getId()); // 가장 빠른 알람
+        assertThat(result.get(1).getScheduleId()).isEqualTo(schedule2.getId());
+        assertThat(result.get(2).getScheduleId()).isEqualTo(schedule1.getId()); // 가장 늦은 알람
     }
 
     @Test
@@ -146,9 +146,9 @@ class HomeScheduleListItemMapperTest {
         // then
         // 반복 스케줄의 다음 발생 시간 기준으로 정렬
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).scheduleTitle()).isEqualTo("내일 반복 일정");      // 가장 빠름
-        assertThat(result.get(1).scheduleTitle()).isEqualTo("모레 반복 일정");
-        assertThat(result.get(2).scheduleTitle()).isEqualTo("테스트 일정");          // 일주일 후
+        assertThat(result.get(0).getScheduleTitle()).isEqualTo("내일 반복 일정");      // 가장 빠름
+        assertThat(result.get(1).getScheduleTitle()).isEqualTo("모레 반복 일정");
+        assertThat(result.get(2).getScheduleTitle()).isEqualTo("테스트 일정");          // 일주일 후
     }
 
     @Test
@@ -244,18 +244,18 @@ class HomeScheduleListItemMapperTest {
         assertThat(result).hasSize(5);
 
         // 알람 ON 그룹
-        assertThat(result.get(0).hasActiveAlarm()).isTrue();
-        assertThat(result.get(0).scheduleTitle()).isEqualTo("ON-반복-내일");
+        assertThat(result.get(0).getHasActiveAlarm()).isTrue();
+        assertThat(result.get(0).getScheduleTitle()).isEqualTo("ON-반복-내일");
 
-        assertThat(result.get(1).hasActiveAlarm()).isTrue();
-        assertThat(result.get(1).scheduleId()).isEqualTo(onOneTime3Days.getId());
+        assertThat(result.get(1).getHasActiveAlarm()).isTrue();
+        assertThat(result.get(1).getScheduleId()).isEqualTo(onOneTime3Days.getId());
 
-        assertThat(result.get(2).hasActiveAlarm()).isTrue();
-        assertThat(result.get(2).scheduleId()).isEqualTo(onOneTime5Days.getId());
+        assertThat(result.get(2).getHasActiveAlarm()).isTrue();
+        assertThat(result.get(2).getScheduleId()).isEqualTo(onOneTime5Days.getId());
 
         // 알람 OFF 그룹 (nextAlarmAt = null이므로 순서 보장 안 됨, 둘 다 마지막)
-        assertThat(result.get(3).hasActiveAlarm()).isFalse();
-        assertThat(result.get(4).hasActiveAlarm()).isFalse();
+        assertThat(result.get(3).getHasActiveAlarm()).isFalse();
+        assertThat(result.get(4).getHasActiveAlarm()).isFalse();
     }
 
     @Test
@@ -289,12 +289,12 @@ class HomeScheduleListItemMapperTest {
         // then
         assertThat(result).hasSize(3);
         // 활성화된 알람이 첫 번째
-        assertThat(result.get(0).hasActiveAlarm()).isTrue();
-        assertThat(result.get(0).scheduleId()).isEqualTo(enabledSchedule.getId());
+        assertThat(result.get(0).getHasActiveAlarm()).isTrue();
+        assertThat(result.get(0).getScheduleId()).isEqualTo(enabledSchedule.getId());
 
         // 비활성화된 알람들은 마지막
-        assertThat(result.get(1).hasActiveAlarm()).isFalse();
-        assertThat(result.get(2).hasActiveAlarm()).isFalse();
+        assertThat(result.get(1).getHasActiveAlarm()).isFalse();
+        assertThat(result.get(2).getHasActiveAlarm()).isFalse();
     }
 
     @Test
@@ -323,8 +323,8 @@ class HomeScheduleListItemMapperTest {
         // then
         // 준비 알람(1시간 전)이 출발 알람(30분 전)보다 빠르므로 먼저 옴
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).scheduleId()).isEqualTo(preparationOnly.getId());
-        assertThat(result.get(1).scheduleId()).isEqualTo(departureOnly.getId());
+        assertThat(result.get(0).getScheduleId()).isEqualTo(preparationOnly.getId());
+        assertThat(result.get(1).getScheduleId()).isEqualTo(departureOnly.getId());
     }
 
     @Test
@@ -350,9 +350,9 @@ class HomeScheduleListItemMapperTest {
      */
     private Long findEarliestActiveAlarmScheduleId(List<HomeScheduleListItem> sortedItems) {
         return sortedItems.stream()
-                .filter(HomeScheduleListItem::hasActiveAlarm)
+                .filter(HomeScheduleListItem::getHasActiveAlarm)
                 .findFirst()
-                .map(HomeScheduleListItem::scheduleId)
+                .map(HomeScheduleListItem::getScheduleId)
                 .orElse(null);
     }
 
@@ -392,7 +392,7 @@ class HomeScheduleListItemMapperTest {
          * - earliestAlarmId = schedule2의 ID
          */
         assertThat(earliestAlarmId).isEqualTo(schedule2.getId());
-        assertThat(sortedItems.get(0).scheduleId()).isEqualTo(schedule2.getId());
+        assertThat(sortedItems.get(0).getScheduleId()).isEqualTo(schedule2.getId());
     }
 
     @Test
@@ -432,8 +432,8 @@ class HomeScheduleListItemMapperTest {
          * - earliestAlarmId = enabledSchedule1의 ID
          */
         assertThat(earliestAlarmId).isEqualTo(enabledSchedule1.getId());
-        assertThat(sortedItems.get(0).scheduleId()).isEqualTo(enabledSchedule1.getId());
-        assertThat(sortedItems.get(0).hasActiveAlarm()).isTrue();
+        assertThat(sortedItems.get(0).getScheduleId()).isEqualTo(enabledSchedule1.getId());
+        assertThat(sortedItems.get(0).getHasActiveAlarm()).isTrue();
     }
 
     @Test
@@ -488,7 +488,7 @@ class HomeScheduleListItemMapperTest {
          */
         assertThat(earliestAlarmId).isNull();
         assertThat(sortedItems).hasSize(3);
-        assertThat(sortedItems).allMatch(item -> !item.hasActiveAlarm());
+        assertThat(sortedItems).allMatch(item -> !item.getHasActiveAlarm());
     }
 
     @Test
@@ -511,7 +511,7 @@ class HomeScheduleListItemMapperTest {
         // then
         assertThat(earliestAlarmId).isEqualTo(schedule.getId());
         assertThat(sortedItems).hasSize(1);
-        assertThat(sortedItems.get(0).hasActiveAlarm()).isTrue();
+        assertThat(sortedItems.get(0).getHasActiveAlarm()).isTrue();
     }
 
     @Test
@@ -534,7 +534,7 @@ class HomeScheduleListItemMapperTest {
         // then
         assertThat(earliestAlarmId).isNull();
         assertThat(sortedItems).hasSize(1);
-        assertThat(sortedItems.get(0).hasActiveAlarm()).isFalse();
+        assertThat(sortedItems.get(0).getHasActiveAlarm()).isFalse();
     }
 
     @Test
@@ -588,7 +588,7 @@ class HomeScheduleListItemMapperTest {
          * - earliestAlarmId = onRepeatTomorrow의 ID (반복 스케줄의 다음 알람이 가장 빠름)
          */
         assertThat(earliestAlarmId).isEqualTo(onRepeatTomorrow.getId());
-        assertThat(sortedItems.get(0).scheduleTitle()).isEqualTo("ON-반복-내일");
-        assertThat(sortedItems.get(0).hasActiveAlarm()).isTrue();
+        assertThat(sortedItems.get(0).getScheduleTitle()).isEqualTo("ON-반복-내일");
+        assertThat(sortedItems.get(0).getHasActiveAlarm()).isTrue();
     }
 }

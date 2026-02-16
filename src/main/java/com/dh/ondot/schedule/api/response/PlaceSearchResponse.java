@@ -12,10 +12,10 @@ public record PlaceSearchResponse(
 ) {
     public static PlaceSearchResponse from(PlaceSearchResult result) {
         return new PlaceSearchResponse(
-                result.title(),
-                result.roadAddress(),
-                result.longitude(),
-                result.latitude()
+                result.getTitle(),
+                result.getRoadAddress(),
+                result.getLongitude(),
+                result.getLatitude()
         );
     }
 
