@@ -13,6 +13,7 @@ enum class ErrorCode(
     URL_PARAMETER_ERROR(BAD_REQUEST, "입력이 잘못되었습니다."),
     METHOD_ARGUMENT_TYPE_MISMATCH(BAD_REQUEST, "입력한 값의 타입이 잘못되었습니다."),
     ALREADY_DISCONNECTED(BAD_REQUEST, "이미 클라이언트에서 요청이 종료되었습니다."),
+    MISSING_REQUEST_HEADER(BAD_REQUEST, "필수 요청 헤더가 누락되었습니다."),
     NO_RESOURCE_FOUND(NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
     METHOD_NOT_SUPPORTED(METHOD_NOT_ALLOWED, "허용되지 않은 메서드입니다."),
     MEDIA_TYPE_NOT_SUPPORTED(UNSUPPORTED_MEDIA_TYPE, "허용되지 않은 미디어 타입입니다."),
