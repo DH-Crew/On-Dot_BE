@@ -52,6 +52,12 @@ class ScheduleQueryRepositoryTest {
             registry.add("spring.jpa.database-platform") { "org.hibernate.dialect.MySQL8Dialect" }
             registry.add("spring.jpa.properties.hibernate.dialect") { "org.hibernate.dialect.MySQL8Dialect" }
 
+            // HikariCP - 테스트 환경 최적화
+            registry.add("spring.datasource.hikari.maximum-pool-size") { "2" }
+            registry.add("spring.datasource.hikari.max-lifetime") { "30000" }
+            registry.add("spring.datasource.hikari.connection-timeout") { "5000" }
+            registry.add("spring.datasource.hikari.validation-timeout") { "3000" }
+
             // JWT
             registry.add("jwt.secret") { "test-secret-key-for-testing-purposes-only-1234567890" }
             registry.add("jwt.access-token-expire-time-in-hours") { "24" }
