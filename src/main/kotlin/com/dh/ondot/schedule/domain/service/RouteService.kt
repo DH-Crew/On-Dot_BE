@@ -46,8 +46,8 @@ class RouteService(
      * 모든 경로에 대해 보정된 시간 계산
      */
     private fun calculateAdjustedTimesForAllPaths(response: OdsayRouteApiResponse): List<Double> =
-        response.result()
-            .path().stream()
+        response.result!!
+            .path!!.stream()
             .map { calculateAdjustedTimeForSinglePath(it) }
             .sorted()
             .limit(TOP_ROUTES_LIMIT.toLong())
@@ -57,7 +57,7 @@ class RouteService(
      * 단일 경로에 대한 시간 보정 계산
      */
     private fun calculateAdjustedTimeForSinglePath(path: OdsayRouteApiResponse.Path): Double {
-        val baseTime = path.info().totalTime()
+        val baseTime = path.info.totalTime
         val transferPenalty = calculateTransferPenalty(path)
         val longWalkPenalty = calculateLongWalkPenalty(path)
 
@@ -85,16 +85,16 @@ class RouteService(
      * 대중교통 구간 개수 계산 (지하철, 버스)
      */
     private fun countPublicTransportLegs(path: OdsayRouteApiResponse.Path): Long =
-        path.subPath().stream()
-            .filter { it.trafficType() == SUBWAY_TRAFFIC_TYPE || it.trafficType() == BUS_TRAFFIC_TYPE }
+        path.subPath.stream()
+            .filter { it.trafficType == SUBWAY_TRAFFIC_TYPE || it.trafficType == BUS_TRAFFIC_TYPE }
             .count()
 
     /**
      * 긴 도보 구간 개수 계산 (800m 초과)
      */
     private fun countLongWalkSegments(path: OdsayRouteApiResponse.Path): Long =
-        path.subPath().stream()
-            .filter { it.trafficType() == WALKING_TRAFFIC_TYPE && it.distance() > LONG_WALK_DISTANCE_THRESHOLD }
+        path.subPath.stream()
+            .filter { it.trafficType == WALKING_TRAFFIC_TYPE && it.distance > LONG_WALK_DISTANCE_THRESHOLD }
             .count()
 
     /**
