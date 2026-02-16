@@ -1,0 +1,19 @@
+jar {
+    enabled = false
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.retry:spring-retry"
+    implementation "org.springframework:spring-aspects"
+    implementation "org.springframework.kafka:spring-kafka"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    implementation "com.github.gavlyukovskiy:p6spy-spring-boot-starter:${p6spyVersion}"
+    developmentOnly "org.springframework.boot:spring-boot-devtools"
+
+    // Spring AI
+    implementation platform("org.springframework.ai:spring-ai-bom:${springAiVersion}")
+    implementation "org.springframework.ai:spring-ai-openai:${springAiVersion}"
+    implementation "org.springframework.ai:spring-ai-starter-model-openai:${springAiVersion}"
+}
