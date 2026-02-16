@@ -48,6 +48,7 @@ class OpenAiPromptApi(
                 .user(userText)
                 .call()
                 .entity(CONVERTER)
+                ?: throw OpenAiParsingException()
         } catch (ex: HttpClientErrorException) {
             throw OpenAiParsingException()
         }

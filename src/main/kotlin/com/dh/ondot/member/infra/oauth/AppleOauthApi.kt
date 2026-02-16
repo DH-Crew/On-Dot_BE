@@ -36,9 +36,9 @@ class AppleOauthApi(
         maxAttempts = 2,
         backoff = Backoff(delay = 500),
     )
-    override fun fetchUser(authorizationCode: String): UserInfo {
+    override fun fetchUser(accessToken: String): UserInfo {
         try {
-            val tokenDto = requestTokenToApple(authorizationCode)
+            val tokenDto = requestTokenToApple(accessToken)
 
             val appleKeys = restClient.get()
                 .uri(appleProperties.audience + "/auth/keys")

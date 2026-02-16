@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.infra.redis
 
 import org.slf4j.LoggerFactory
+import org.springframework.data.redis.connection.RedisConnection
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ScanOptions
 import org.springframework.scheduling.annotation.Scheduled
@@ -54,14 +55,13 @@ class PlaceHistoryCleaner(
             .build()
 
         try {
-            redisTemplate.connectionFactory!!
-                .connection
-                .scan(options).use { cursor ->
+            redisTemplate.execute { connection: RedisConnection ->
+                connection.keyCommands().scan(options).use { cursor ->
                     while (cursor.hasNext() && keys.size < limit) {
-                        val key = String(cursor.next(), StandardCharsets.UTF_8)
-                        keys.add(key)
+                        keys.add(String(cursor.next(), StandardCharsets.UTF_8))
                     }
                 }
+            }
         } catch (e: Exception) {
             log.warn("PlaceHistoryCleaner \u2011 SCAN failed : {}", e.message, e)
         }
