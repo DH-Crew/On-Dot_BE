@@ -13,7 +13,6 @@ import com.dh.ondot.schedule.domain.enums.RingTone
 import com.dh.ondot.schedule.domain.enums.SnoozeCount
 import com.dh.ondot.schedule.domain.enums.SnoozeInterval
 import com.dh.ondot.schedule.domain.enums.SoundCategory
-import com.dh.ondot.schedule.domain.service.RouteService
 import com.dh.ondot.schedule.domain.vo.Snooze
 import com.dh.ondot.schedule.domain.vo.Sound
 import com.dh.ondot.schedule.presentation.response.HomeScheduleListResponse
@@ -61,9 +60,6 @@ class ScheduleControllerTest {
 
     @MockitoBean
     private lateinit var scheduleCommandFacade: ScheduleCommandFacade
-
-    @MockitoBean
-    private lateinit var routeService: RouteService
 
     @MockitoBean
     private lateinit var tokenInterceptor: TokenInterceptor
@@ -316,7 +312,7 @@ class ScheduleControllerTest {
         @Test
         @DisplayName("정상 요청 시 200과 EstimateTimeResponse를 반환한다")
         fun success_200() {
-            whenever(routeService.calculateRouteTime(any(), any(), any(), any())).thenReturn(30)
+            whenever(scheduleQueryFacade.estimateTravelTime(any(), any(), any(), any())).thenReturn(30)
 
             mockMvc.perform(
                 post("/schedules/estimate-time")

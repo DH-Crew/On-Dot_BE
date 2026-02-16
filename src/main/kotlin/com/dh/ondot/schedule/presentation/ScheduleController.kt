@@ -17,7 +17,6 @@ import com.dh.ondot.schedule.presentation.response.ScheduleUpdateResponse
 import com.dh.ondot.schedule.presentation.swagger.ScheduleSwagger
 import com.dh.ondot.schedule.application.ScheduleCommandFacade
 import com.dh.ondot.schedule.application.ScheduleQueryFacade
-import com.dh.ondot.schedule.domain.service.RouteService
 import jakarta.validation.Valid
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
@@ -40,7 +39,6 @@ import org.springframework.web.bind.annotation.RestController
 class ScheduleController(
     private val scheduleQueryFacade: ScheduleQueryFacade,
     private val scheduleCommandFacade: ScheduleCommandFacade,
-    private val routeService: RouteService,
 ) : ScheduleSwagger {
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -86,7 +84,7 @@ class ScheduleController(
     override fun estimateTravelTime(
         @Valid @RequestBody request: EstimateTimeRequest,
     ): EstimateTimeResponse {
-        val estimatedTime = routeService.calculateRouteTime(
+        val estimatedTime = scheduleQueryFacade.estimateTravelTime(
             request.startLongitude, request.startLatitude,
             request.endLongitude, request.endLatitude,
         )

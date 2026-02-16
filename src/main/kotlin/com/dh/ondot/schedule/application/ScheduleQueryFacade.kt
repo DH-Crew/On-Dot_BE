@@ -6,6 +6,7 @@ import com.dh.ondot.schedule.presentation.response.*
 import com.dh.ondot.schedule.application.dto.HomeScheduleListItem
 import com.dh.ondot.schedule.application.mapper.HomeScheduleListItemMapper
 import com.dh.ondot.schedule.domain.Schedule
+import com.dh.ondot.schedule.domain.service.RouteService
 import com.dh.ondot.schedule.domain.service.ScheduleQueryService
 import com.dh.ondot.schedule.domain.service.ScheduleService
 import org.springframework.data.domain.Pageable
@@ -20,6 +21,7 @@ class ScheduleQueryFacade(
     private val scheduleQueryService: ScheduleQueryService,
     private val emergencyAlertService: EmergencyAlertService,
     private val homeScheduleListItemMapper: HomeScheduleListItemMapper,
+    private val routeService: RouteService,
 ) {
     fun findOne(scheduleId: Long): Schedule {
         return scheduleQueryService.findScheduleById(scheduleId)
@@ -54,5 +56,12 @@ class ScheduleQueryFacade(
         val roadAddress = schedule.arrivalPlace!!.roadAddress
         // todo: 출발지 기반 긴급 알림, 지하철 알림 추가
         return emergencyAlertService.getIssuesByAddress(roadAddress)
+    }
+
+    fun estimateTravelTime(
+        startLongitude: Double, startLatitude: Double,
+        endLongitude: Double, endLatitude: Double,
+    ): Int {
+        return routeService.calculateRouteTime(startLongitude, startLatitude, endLongitude, endLatitude)
     }
 }
