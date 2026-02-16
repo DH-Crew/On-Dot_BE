@@ -22,15 +22,15 @@ public class UserRegistrationEventListener {
     public void handleUserRegistration(UserRegistrationEvent event) {
         try {
             String message = discordMessageTemplate.createUserRegistrationMessage(
-                event.email(),
-                event.oauthProvider(),
-                event.totalMemberCount(),
-                event.mobileType()
+                event.getEmail(),
+                event.getOauthProvider(),
+                event.getTotalMemberCount(),
+                event.getMobileType()
             );
 
             discordWebhookClient.sendMessage(message);
         } catch (Exception e) {
-            log.error("[DISCORD FAIL] 회원 가입 완료 디스코드 메시지를 전송하는데 실패했습니다.[ memberId={} ]", event.memberId(), e);
+            log.error("[DISCORD FAIL] 회원 가입 완료 디스코드 메시지를 전송하는데 실패했습니다.[ memberId={} ]", event.getMemberId(), e);
         }
     }
 }

@@ -46,10 +46,10 @@ class ChoiceServiceTest {
         // given
         Member member = MemberFixture.defaultMember();
         
-        Question question1 = Question.builder().id(1L).content("질문1").build();
-        Question question2 = Question.builder().id(2L).content("질문2").build();
-        Answer answer1 = Answer.builder().id(1L).content("답변1").question(question1).build();
-        Answer answer2 = Answer.builder().id(2L).content("답변2").question(question2).build();
+        Question question1 = new Question(1L, "질문1");
+        Question question2 = new Question(2L, "질문2");
+        Answer answer1 = new Answer(1L, question1, "답변1");
+        Answer answer2 = new Answer(2L, question2, "답변2");
         
         List<CreateChoicesCommand.QuestionAnswerPair> pairs = Arrays.asList(
                 new CreateChoicesCommand.QuestionAnswerPair(1L, 1L),
@@ -103,7 +103,7 @@ class ChoiceServiceTest {
     void createChoices_InvalidAnswerId_ThrowsException() {
         // given
         Member member = MemberFixture.defaultMember();
-        Question question = Question.builder().id(1L).content("질문1").build();
+        Question question = new Question(1L, "질문1");
         List<CreateChoicesCommand.QuestionAnswerPair> pairs = Arrays.asList(
                 new CreateChoicesCommand.QuestionAnswerPair(1L, 999L)
         );

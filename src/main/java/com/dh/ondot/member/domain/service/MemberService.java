@@ -36,15 +36,15 @@ public class MemberService {
 
     @Transactional
     public Member findOrRegisterOauthMember(UserInfo userInfo, OauthProvider oauthProvider) {
-        return memberRepository.findByOauthInfo(userInfo.oauthProviderId(), oauthProvider)
+        return memberRepository.findByOauthInfo(userInfo.getOauthProviderId(), oauthProvider)
                 .orElseGet(() -> registerMemberWithOauth(userInfo, oauthProvider));
     }
 
     private Member registerMemberWithOauth(UserInfo userInfo, OauthProvider oauthProvider) {
         Member newMember = Member.registerWithOauth(
-                userInfo.email(),
+                userInfo.getEmail(),
                 oauthProvider,
-                userInfo.oauthProviderId()
+                userInfo.getOauthProviderId()
         );
         return memberRepository.save(newMember);
     }
