@@ -5,7 +5,6 @@ import com.dh.ondot.schedule.presentation.request.SetAlarmRequest
 import com.dh.ondot.schedule.presentation.response.SettingAlarmResponse
 import com.dh.ondot.schedule.presentation.swagger.AlarmSwagger
 import com.dh.ondot.schedule.application.AlarmFacade
-import com.dh.ondot.schedule.domain.service.AlarmService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/alarms")
 class AlarmController(
     private val alarmFacade: AlarmFacade,
-    private val alarmService: AlarmService,
 ) : AlarmSwagger {
 
     @ResponseStatus(HttpStatus.OK)
@@ -48,7 +46,7 @@ class AlarmController(
         @RequestHeader(value = "X-Mobile-Type", required = false) mobileType: String?,
         @Valid @RequestBody request: RecordAlarmTriggerRequest,
     ) {
-        alarmService.recordTrigger(
+        alarmFacade.recordAlarmTrigger(
             memberId,
             request.alarmId,
             request.scheduleId,

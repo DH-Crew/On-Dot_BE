@@ -10,7 +10,6 @@ import com.dh.ondot.schedule.domain.enums.RingTone
 import com.dh.ondot.schedule.domain.enums.SnoozeCount
 import com.dh.ondot.schedule.domain.enums.SnoozeInterval
 import com.dh.ondot.schedule.domain.enums.SoundCategory
-import com.dh.ondot.schedule.domain.service.AlarmService
 import com.dh.ondot.schedule.domain.vo.Snooze
 import com.dh.ondot.schedule.domain.vo.Sound
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -47,9 +46,6 @@ class AlarmControllerTest {
 
     @MockitoBean
     private lateinit var alarmFacade: AlarmFacade
-
-    @MockitoBean
-    private lateinit var alarmService: AlarmService
 
     @MockitoBean
     private lateinit var tokenInterceptor: TokenInterceptor
@@ -166,7 +162,7 @@ class AlarmControllerTest {
                     .content(objectMapper.writeValueAsString(validRecordTriggerBody()))
             ).andExpect(status().isCreated)
 
-            verify(alarmService).recordTrigger(any(), any(), any(), any(), any())
+            verify(alarmFacade).recordAlarmTrigger(any(), any(), any(), any(), any())
         }
 
         @Test

@@ -2,6 +2,7 @@ package com.dh.ondot.schedule.application
 
 import com.dh.ondot.member.domain.service.MemberService
 import com.dh.ondot.schedule.domain.Schedule
+import com.dh.ondot.schedule.domain.service.AlarmService
 import com.dh.ondot.schedule.domain.service.RouteService
 import com.dh.ondot.schedule.domain.service.ScheduleService
 import org.springframework.stereotype.Service
@@ -13,6 +14,7 @@ class AlarmFacade(
     private val memberService: MemberService,
     private val routeService: RouteService,
     private val scheduleService: ScheduleService,
+    private val alarmService: AlarmService,
 ) {
     @Transactional
     fun generateAlarmSettingByRoute(
@@ -29,5 +31,15 @@ class AlarmFacade(
         return scheduleService.setupSchedule(
             member, appointmentAt, estimatedTimeMin,
         )
+    }
+
+    fun recordAlarmTrigger(
+        memberId: Long,
+        alarmId: Long,
+        scheduleId: Long,
+        action: String,
+        mobileType: String,
+    ) {
+        alarmService.recordTrigger(memberId, alarmId, scheduleId, action, mobileType)
     }
 }
