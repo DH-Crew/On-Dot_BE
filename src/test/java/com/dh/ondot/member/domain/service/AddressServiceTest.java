@@ -14,8 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -60,7 +58,7 @@ class AddressServiceTest {
         Address address = Address.createByOnboarding(member, "서울시 강남구", 127.027619, 37.497952);
         
         given(addressRepository.findByMemberIdAndType(memberId, AddressType.HOME))
-                .willReturn(Optional.of(address));
+                .willReturn(address);
 
         // when
         Address result = addressService.getHomeAddress(memberId);
@@ -79,7 +77,7 @@ class AddressServiceTest {
         Long memberId = 999L;
         
         given(addressRepository.findByMemberIdAndType(memberId, AddressType.HOME))
-                .willReturn(Optional.empty());
+                .willReturn(null);
 
         // when & then
         assertThatThrownBy(() -> addressService.getHomeAddress(memberId))
@@ -98,7 +96,7 @@ class AddressServiceTest {
         CreateAddressCommand command = new CreateAddressCommand("새로운 주소", 127.027619, 37.497952);
         
         given(addressRepository.findByMemberIdAndType(memberId, AddressType.HOME))
-                .willReturn(Optional.of(existingAddress));
+                .willReturn(existingAddress);
 
         // when
         Address result = addressService.updateHomeAddress(memberId, command);
