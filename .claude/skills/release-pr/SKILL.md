@@ -147,8 +147,9 @@ EOF
 
 ```bash
 source ~/.claude/env
+payload=$(printf '%s' "$message" | python3 -c 'import json,sys; print(json.dumps({"content": sys.stdin.read()}))')
 curl -H "Content-Type: application/json" \
-  -d "{\"content\": \"${message}\"}" \
+  -d "$payload" \
   "$DH_API_UPDATE_DISCORD_WEBHOOK_URL"
 ```
 
