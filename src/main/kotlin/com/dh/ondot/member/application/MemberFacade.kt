@@ -108,4 +108,8 @@ class MemberFacade(
         choiceService.deleteAllByMemberId(memberId)
         memberService.deleteMember(memberId)
     }
+
+    @Transactional
+    fun updateDailyReminderEnabled(memberId: Long, enabled: Boolean): Member =
+        memberService.updateDailyReminderEnabled(memberId, enabled)
 }
