@@ -1,11 +1,13 @@
 ---
 name: release-pr
-description: Use when releasing accumulated work from develop to main, creating a release PR with versioned changelog — triggers on `/release-pr`
+description: >
+  Use when releasing accumulated work from develop to main, creating a release PR
+  with versioned changelog and Discord #api-update notification — triggers on `/release-pr`
 ---
 
 # Release PR
 
-Standalone skill for creating release PRs from `develop` to `main`. Includes two confirmation gates, automatic version suggestion, and GitHub Release creation.
+Standalone skill for creating release PRs from `develop` to `main`. Includes three confirmation gates (PR content, version, Discord message), automatic version suggestion, GitHub Release creation, and Discord `#api-update` channel notification.
 
 ## Flowchart
 
@@ -28,7 +30,11 @@ digraph release_pr {
   v8 [label="gh pr edit --title\n\"Release: v{version}\""]
   v9 [label="gh pr merge --merge"]
   v10 [label="gh release create v{version}\n--target main\n(tag + GitHub Release)"]
-  done [label="Report: merged + version + release URL"]
+  v11 [label="Discord 알림 메시지 작성\n(PR Summary → 프론트 친화 포맷)"]
+  gate3 [label="Gate 3: Discord 메시지 확인" shape=diamond]
+  edit3 [label="Edit message as requested"]
+  v12 [label="curl webhook POST\nto #api-update"]
+  done [label="Report: merged + version + release URL + Discord"]
 
   entry -> v1 -> v2 -> v3 -> v4 -> v5 -> gate1
   gate1 -> edit [label="수정 필요"]
@@ -37,7 +43,11 @@ digraph release_pr {
   v6 -> v7 -> gate2
   gate2 -> v7 [label="다른 버전 선택"]
   gate2 -> v8 [label="확인 완료"]
-  v8 -> v9 -> v10 -> done
+  v8 -> v9 -> v10 -> v11 -> gate3
+  gate3 -> edit3 [label="수정 필요"]
+  edit3 -> gate3
+  gate3 -> v12 [label="확인 완료"]
+  v12 -> done
 }
 ```
 
@@ -114,7 +124,36 @@ EOF
    - `gh release create`가 태그 생성과 GitHub Release 생성을 동시에 처리
    - Release title: `v{version}`
    - Release notes: PR body의 Summary 섹션 내용
-   - Report: done, merged, version, release URL
+
+7. **Discord 알림** — `#api-update` 채널에 변경사항 전송:
+   - `~/.claude/env` 파일에서 `DH_API_UPDATE_DISCORD_WEBHOOK_URL` 로드
+   - 파일이 없거나 변수가 없으면 → 안내 메시지 출력 후 skip (릴리스 자체는 정상 완료)
+   - PR Summary를 프론트엔드 팀원이 이해하기 쉬운 포맷으로 변환:
+
+```
+✅ {YYYY.MM.DD} 변경사항
+1. {변경사항 제목}
+  - {세부 설명 (프론트에서 필요한 액션이 있으면 명시)}
+2. {변경사항 제목}
+  - {세부 설명}
+```
+
+   - 작성 원칙:
+     - 백엔드 내부 구현보다 **API 변경/영향**에 초점
+     - 프론트에서 대응이 필요한 경우 구체적으로 명시
+     - 한글로 간결하게 작성
+   - **Gate 3 — Discord 메시지 확인**: "Discord에 전송할 메시지를 확인해주세요" → 수정 요청 시 반영 후 재확인
+   - 확인 완료 후 전송:
+
+```bash
+source ~/.claude/env
+payload=$(printf '%s' "$message" | python3 -c 'import json,sys; print(json.dumps({"content": sys.stdin.read()}))')
+curl -H "Content-Type: application/json" \
+  -d "$payload" \
+  "$DH_API_UPDATE_DISCORD_WEBHOOK_URL"
+```
+
+   - Report: done, merged, version, release URL, Discord 전송 결과
 
 ## Red Flags
 
@@ -123,3 +162,5 @@ EOF
 - **Never** create release PR from any branch other than `develop`
 - **Never** create tag separately — always use `gh release create` to ensure tag + release are atomic
 - **Never** delete `develop` branch — merge 시 반드시 `--delete-branch=false` 사용
+- **Never** hardcode webhook URL in skill files — always load from `~/.claude/env`
+- **Never** send Discord message without Gate 3 confirmation

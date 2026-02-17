@@ -34,7 +34,8 @@
 ### `/release-pr` — Release PR 생성
 - develop → main 릴리스 PR 생성
 - 커밋 분류 (Major/Minor/Patch) 및 SemVer 자동 제안
-- PR 내용 확인 → 버전 확인 2단계 게이트
+- PR 내용 확인 → 버전 확인 → Discord 메시지 확인 3단계 게이트
+- 릴리스 완료 후 Discord `#api-update` 채널에 변경사항 자동 전송 (webhook URL은 `~/.claude/env`에서 로드)
 - 사용 시점: develop의 누적 작업을 main에 릴리스할 때
 
 ## Skill 변경 관리
