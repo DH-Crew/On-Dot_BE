@@ -60,12 +60,14 @@ digraph feature_pr {
    - `{develop-ref}`: 로컬 `develop` 또는 `origin/develop`
 6. **Confirm**: report branch name, ready to work
 
+> **실행 시점**: 설계/계획 문서 작성 등 파일을 생성하기 **전에** 실행한다. 브랜치가 먼저 생성되어야 모든 작업 산출물이 해당 브랜치에 포함된다.
+
 ## Finish Phase (`/feature-pr finish`)
 
 1. **Guard**: current branch must NOT be `develop` or `main`. Abort if so.
 2. **Extract Linear ID** from branch name (e.g. `feat/DH-6` -> `DH-6`)
 3. **Review changes**: `git status`, `git diff`
-4. **Commit** in logical units using Korean conventional commits (e.g. `feat: 스케줄 정렬 기능 구현`)
+4. **Commit** in logical units using Korean conventional commits (e.g. `feat: 스케줄 정렬 기능 구현`). Co-Authored-By 헤더를 포함하지 않는다.
 5. **Push**: `git push -u origin {branch-name}`
 6. **Ensure label exists** — check and create if missing:
 
