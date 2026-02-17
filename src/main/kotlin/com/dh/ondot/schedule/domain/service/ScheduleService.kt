@@ -35,6 +35,8 @@ class ScheduleService(
         appointment: LocalDateTime, estimatedTimeMin: Int,
     ): Schedule {
         val copy = copySchedule(latestSchedule)
+        copy.preparationAlarm!!.changeEnabled(true)
+        copy.departureAlarm!!.changeEnabled(true)
         val depAlarmAt = appointment.minusMinutes(estimatedTimeMin.toLong())
         val prepAlarmAt = depAlarmAt.minusMinutes(member.preparationTime!!.toLong())
         copy.departureAlarm!!.updateTriggeredAt(depAlarmAt)
