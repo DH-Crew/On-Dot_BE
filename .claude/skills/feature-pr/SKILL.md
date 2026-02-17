@@ -1,6 +1,11 @@
 ---
 name: feature-pr
-description: Use when starting feature work on a new branch from develop, or finishing feature work by creating a squash PR to develop — triggers on `/feature-pr start` or `/feature-pr finish`
+description: >
+  MUST invoke before ANY new task/issue/feature/bugfix/refactor work begins (branch creation)
+  and when work is complete (PR creation). Triggers: `/feature-pr start` to create branch from develop,
+  `/feature-pr finish` to commit, push, and create squash PR to develop.
+  Auto-trigger: When user provides a new task, Linear issue, or implementation request and no
+  feature branch exists yet — run `start` phase first before any code changes.
 ---
 
 # Feature PR Lifecycle
