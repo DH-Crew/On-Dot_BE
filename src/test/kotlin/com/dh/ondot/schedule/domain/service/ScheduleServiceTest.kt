@@ -73,6 +73,26 @@ class ScheduleServiceTest {
     }
 
     @Test
+    @DisplayName("기존 스케줄의 알람이 꺼져있어도 새 스케줄의 알람은 활성화 상태로 생성한다")
+    fun setupSchedule_WithDisabledAlarms_CreatesWithEnabledAlarms() {
+        // given
+        val member = MemberFixture.defaultMember()
+        val appointmentAt = LocalDateTime.of(2025, 12, 16, 14, 0)
+        val estimatedTimeMin = 30
+        val latestSchedule = ScheduleFixture.builder().disabledAlarms().build()
+
+        given(scheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc(member.id))
+            .willReturn(Optional.of(latestSchedule))
+
+        // when
+        val result = scheduleService.setupSchedule(member, appointmentAt, estimatedTimeMin)
+
+        // then
+        assertThat(result.preparationAlarm!!.isEnabled).isTrue()
+        assertThat(result.departureAlarm!!.isEnabled).isTrue()
+    }
+
+    @Test
     @DisplayName("활성 알람이 없는 스케줄들만 있는 경우 null을 반환한다")
     fun getEarliestActiveAlarmAt_NoActiveAlarms_ReturnsNull() {
         // given
