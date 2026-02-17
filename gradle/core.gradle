@@ -20,4 +20,7 @@ dependencies {
     kapt "jakarta.annotation:jakarta.annotation-api"
     kapt "jakarta.persistence:jakarta.persistence-api"
 
+    // Firebase
+    implementation "com.google.firebase:firebase-admin:${firebaseAdminVersion}"
+
 }
