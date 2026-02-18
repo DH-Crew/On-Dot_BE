@@ -38,7 +38,7 @@ interface DeviceTokenSwagger {
                 examples = [ExampleObject(
                     value = """
                     {
-                      "fcmToken": "dGVzdC10b2tlbi0xMjM0NTY...",
+                      "fcmToken": "example-fcm-device-token",
                       "deviceType": "iOS"
                     }"""
                 )]
@@ -77,7 +77,7 @@ interface DeviceTokenSwagger {
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = Schema(implementation = DeleteDeviceTokenRequest::class),
                 examples = [ExampleObject(
-                    value = """{ "fcmToken": "dGVzdC10b2tlbi0xMjM0NTY..." }"""
+                    value = """{ "fcmToken": "example-fcm-device-token" }"""
                 )]
             )]
         ),

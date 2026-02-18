@@ -2,6 +2,8 @@ package com.dh.ondot.notification.domain.service
 
 import com.dh.ondot.notification.domain.DeviceToken
 import com.dh.ondot.notification.domain.repository.DeviceTokenRepository
+import org.slf4j.LoggerFactory
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -11,11 +13,17 @@ class DeviceTokenService(
     private val deviceTokenRepository: DeviceTokenRepository,
 ) {
 
+    private val log = LoggerFactory.getLogger(javaClass)
+
     @Transactional
     fun registerOrUpdate(memberId: Long, fcmToken: String, deviceType: String) {
         val existing = deviceTokenRepository.findByFcmToken(fcmToken)
         if (existing == null) {
-            deviceTokenRepository.save(DeviceToken.create(memberId, fcmToken, deviceType))
+            try {
+                deviceTokenRepository.save(DeviceToken.create(memberId, fcmToken, deviceType))
+            } catch (e: DataIntegrityViolationException) {
+                log.warn("Duplicate FCM token detected (concurrent registration): {}", fcmToken)
+            }
         } else if (existing.memberId != memberId || existing.deviceType != deviceType) {
             existing.updateOwner(memberId, deviceType)
         }
