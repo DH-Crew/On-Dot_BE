@@ -1,9 +1,9 @@
 package com.dh.ondot.notification.presentation.swagger
 
 import com.dh.ondot.core.ErrorResponse
-import com.dh.ondot.notification.presentation.request.DeleteDeviceTokenRequest
 import com.dh.ondot.notification.presentation.request.RegisterDeviceTokenRequest
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 
 @Tag(
     name = "Device Token API",
@@ -71,16 +72,14 @@ interface DeviceTokenSwagger {
     @Operation(
         summary = "FCM 디바이스 토큰 삭제",
         description = "로그아웃 시 FCM 토큰을 서버에서 삭제합니다. 본인 소유의 토큰만 삭제 가능합니다.",
-        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            content = [Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = Schema(implementation = DeleteDeviceTokenRequest::class),
-                examples = [ExampleObject(
-                    value = """{ "fcmToken": "example-fcm-device-token" }"""
-                )]
-            )]
-        ),
+        parameters = [
+            Parameter(
+                name = "fcmToken",
+                description = "삭제할 FCM 토큰",
+                required = true,
+                example = "example-fcm-device-token",
+            )
+        ],
         responses = [
             ApiResponse(responseCode = "204", description = "삭제 완료"),
         ]
@@ -88,6 +87,6 @@ interface DeviceTokenSwagger {
     @DeleteMapping
     fun deleteToken(
         @RequestAttribute("memberId") memberId: Long,
-        @RequestBody request: DeleteDeviceTokenRequest,
+        @RequestParam fcmToken: String,
     )
 }

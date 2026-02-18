@@ -1,7 +1,6 @@
 package com.dh.ondot.notification.presentation
 
 import com.dh.ondot.notification.application.DeviceTokenFacade
-import com.dh.ondot.notification.presentation.request.DeleteDeviceTokenRequest
 import com.dh.ondot.notification.presentation.request.RegisterDeviceTokenRequest
 import com.dh.ondot.notification.presentation.swagger.DeviceTokenSwagger
 import jakarta.validation.Valid
@@ -27,8 +26,8 @@ class DeviceTokenController(
     @DeleteMapping
     override fun deleteToken(
         @RequestAttribute("memberId") memberId: Long,
-        @Valid @RequestBody request: DeleteDeviceTokenRequest,
+        @RequestParam fcmToken: String,
     ) {
-        deviceTokenFacade.deleteToken(memberId, request.fcmToken)
+        deviceTokenFacade.deleteToken(memberId, fcmToken)
     }
 }

@@ -22,7 +22,7 @@ class DeviceTokenService(
             try {
                 deviceTokenRepository.save(DeviceToken.create(memberId, fcmToken, deviceType))
             } catch (e: DataIntegrityViolationException) {
-                log.warn("Duplicate FCM token detected (concurrent registration): {}", fcmToken)
+                log.warn("Duplicate FCM token detected (concurrent registration): {}", fcmToken, e)
             }
         } else if (existing.memberId != memberId || existing.deviceType != deviceType) {
             existing.updateOwner(memberId, deviceType)
