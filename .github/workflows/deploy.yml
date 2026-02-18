@@ -44,12 +44,6 @@ jobs:
           mkdir -p src/main/resources/auth
           echo "${{ secrets.APPLE_PRIVATE_KEY_FILE }}" > src/main/resources/auth/ApplePrivateKey.p8
 
-      - name: Create Firebase service account file
-        env:
-          FCM_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
-        run: |
-          echo "$FCM_JSON" > src/main/resources/firebase-service-account.json
-
       # 4) Docker 상태 확인 (Testcontainers 사전 검증)
       - name: Verify Docker availability
         run: docker info
@@ -94,12 +88,16 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
+          envs: FCM_SERVICE_ACCOUNT_JSON
           script: |
+            echo "$FCM_SERVICE_ACCOUNT_JSON" > /home/${{ secrets.EC2_USERNAME }}/firebase-service-account.json
+
             sudo docker stop ${{ secrets.DOCKER_REPOSITORY }} || true
             sudo docker rm   ${{ secrets.DOCKER_REPOSITORY }} || true
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
-            
+
             sudo docker run -d -p 8080:8080 \
+              -v /home/${{ secrets.EC2_USERNAME }}/firebase-service-account.json:/app/firebase-service-account.json \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_NAME=${{ secrets.DB_NAME }} \
               -e DB_PORT=${{ secrets.DB_PORT }} \
@@ -124,6 +122,7 @@ jobs:
               -e PROD_SERVER_URL=${{ secrets.PROD_SERVER_URL }} \
               -e DISCORD_WEBHOOK_ID=${{ secrets.DISCORD_WEBHOOK_ID }} \
               -e DISCORD_WEBHOOK_TOKEN=${{ secrets.DISCORD_WEBHOOK_TOKEN }} \
+              -e FCM_SERVICE_ACCOUNT_FILE=/app/firebase-service-account.json \
               --name ${{ secrets.DOCKER_REPOSITORY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
             

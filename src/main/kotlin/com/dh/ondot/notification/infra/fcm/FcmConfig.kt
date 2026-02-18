@@ -26,9 +26,8 @@ class FcmConfig(
             return
         }
         try {
-            val resource = org.springframework.core.io.ClassPathResource(serviceAccountFile)
             val options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(resource.inputStream))
+                .setCredentials(GoogleCredentials.fromStream(java.io.FileInputStream(serviceAccountFile)))
                 .build()
             FirebaseApp.initializeApp(options)
             log.info("FirebaseApp initialized with service account: {}", serviceAccountFile)
