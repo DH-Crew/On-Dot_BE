@@ -44,6 +44,10 @@ jobs:
           mkdir -p src/main/resources/auth
           echo "${{ secrets.APPLE_PRIVATE_KEY_FILE }}" > src/main/resources/auth/ApplePrivateKey.p8
 
+      - name: Create Firebase service account file
+        run: |
+          echo '${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}' > src/main/resources/firebase-service-account.json
+
       # 4) Docker 상태 확인 (Testcontainers 사전 검증)
       - name: Verify Docker availability
         run: docker info

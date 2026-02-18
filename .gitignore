@@ -45,6 +45,9 @@ mysql/
 ### applicaion 제외 ###
 src/main/resources/application.yaml
 
+### Firebase ###
+**/firebase-service-account.json
+
 ### 개발 DB용 docker-compose 제외 ###
 /docker-compose.yaml
 /prometheus.yml

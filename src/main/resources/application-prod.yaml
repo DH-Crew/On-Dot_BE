@@ -97,6 +97,9 @@ logging:
   level:
     root: info
 
+fcm:
+  service-account-file: firebase-service-account.json
+
 decorator:
   datasource:
     p6spy:
