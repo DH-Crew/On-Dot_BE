@@ -16,6 +16,16 @@ class DeviceTokenService(
         val existing = deviceTokenRepository.findByFcmToken(fcmToken)
         if (existing == null) {
             deviceTokenRepository.save(DeviceToken.create(memberId, fcmToken, deviceType))
+        } else if (existing.memberId != memberId || existing.deviceType != deviceType) {
+            existing.updateOwner(memberId, deviceType)
+        }
+    }
+
+    @Transactional
+    fun deleteByMemberAndFcmToken(memberId: Long, fcmToken: String) {
+        val token = deviceTokenRepository.findByFcmToken(fcmToken) ?: return
+        if (token.memberId == memberId) {
+            deviceTokenRepository.deleteByFcmToken(fcmToken)
         }
     }
 

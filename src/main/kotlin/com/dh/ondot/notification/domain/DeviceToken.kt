@@ -17,14 +17,19 @@ class DeviceToken(
     val id: Long = 0L,
 
     @Column(name = "member_id", nullable = false)
-    val memberId: Long,
+    var memberId: Long,
 
     @Column(name = "fcm_token", nullable = false, length = 512)
     var fcmToken: String,
 
     @Column(name = "device_type", nullable = false, length = 20)
-    val deviceType: String,
+    var deviceType: String,
 ) : BaseTimeEntity() {
+
+    fun updateOwner(memberId: Long, deviceType: String) {
+        this.memberId = memberId
+        this.deviceType = deviceType
+    }
 
     companion object {
         fun create(memberId: Long, fcmToken: String, deviceType: String): DeviceToken =

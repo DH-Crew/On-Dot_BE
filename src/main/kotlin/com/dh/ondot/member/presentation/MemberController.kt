@@ -131,7 +131,7 @@ class MemberController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: UpdateDailyReminderRequest,
     ): DailyReminderResponse {
-        val member = memberFacade.updateDailyReminderEnabled(memberId, request.enabled)
+        val member = memberFacade.updateDailyReminderEnabled(memberId, request.enabled!!)
         return DailyReminderResponse.from(member.dailyReminderEnabled)
     }
 }

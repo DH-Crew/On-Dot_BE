@@ -29,6 +29,6 @@ class DeviceTokenController(
         @RequestAttribute("memberId") memberId: Long,
         @Valid @RequestBody request: DeleteDeviceTokenRequest,
     ) {
-        deviceTokenFacade.deleteToken(request.fcmToken)
+        deviceTokenFacade.deleteToken(memberId, request.fcmToken)
     }
 }

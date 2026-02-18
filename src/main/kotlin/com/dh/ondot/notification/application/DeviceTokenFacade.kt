@@ -19,7 +19,7 @@ class DeviceTokenFacade(
     }
 
     @Transactional
-    fun deleteToken(fcmToken: String) {
-        deviceTokenService.deleteByFcmToken(fcmToken)
+    fun deleteToken(memberId: Long, fcmToken: String) {
+        deviceTokenService.deleteByMemberAndFcmToken(memberId, fcmToken)
     }
 }

@@ -47,7 +47,7 @@ class DailyReminderSchedulerTest {
         val appointmentAt = TimeUtils.toInstant(tomorrow.atTime(10, 0))
         val schedule = Schedule(memberId = 1L, appointmentAt = appointmentAt)
 
-        given(scheduleRepository.findAllByMemberIdInAndAppointmentAtBetween(
+        given(scheduleRepository.findAllByMemberIdInAndAppointmentAtRange(
             eq(listOf(1L)), any(), any()
         )).willReturn(listOf(schedule))
 
@@ -76,7 +76,7 @@ class DailyReminderSchedulerTest {
         // given
         val member = createMember(1L)
         given(memberService.findAllDailyReminderEnabledMembers()).willReturn(listOf(member))
-        given(scheduleRepository.findAllByMemberIdInAndAppointmentAtBetween(
+        given(scheduleRepository.findAllByMemberIdInAndAppointmentAtRange(
             eq(listOf(1L)), any(), any()
         )).willReturn(emptyList())
         given(scheduleRepository.findAllByMemberIdInAndIsRepeatTrue(
@@ -100,7 +100,7 @@ class DailyReminderSchedulerTest {
         scheduler.sendDailyReminder()
 
         // then
-        verify(scheduleRepository, never()).findAllByMemberIdInAndAppointmentAtBetween(any(), any(), any())
+        verify(scheduleRepository, never()).findAllByMemberIdInAndAppointmentAtRange(any(), any(), any())
         verify(fcmClient, never()).sendToTokens(any(), any(), any())
     }
 

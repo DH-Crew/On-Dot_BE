@@ -59,7 +59,7 @@ class DailyReminderScheduler(
                 deviceTokenService.deleteByFcmTokens(invalidTokens)
                 log.info("Deleted {} invalid FCM tokens", invalidTokens.size)
             }
-            totalSent += fcmTokens.size
+            totalSent += fcmTokens.size - invalidTokens.size
         }
 
         log.info("Daily reminder completed: {} members, {} tokens", scheduleCountByMember.size, totalSent)
@@ -69,9 +69,10 @@ class DailyReminderScheduler(
         val startOfDay = TimeUtils.toInstant(date.atStartOfDay())
         val endOfDay = TimeUtils.toInstant(date.plusDays(1).atStartOfDay())
 
-        // 단발성 일정
+        // 단발성 일정 (반복 일정 제외)
         val singleSchedules = scheduleRepository
-            .findAllByMemberIdInAndAppointmentAtBetween(memberIds, startOfDay, endOfDay)
+            .findAllByMemberIdInAndAppointmentAtRange(memberIds, startOfDay, endOfDay)
+            .filter { !it.isRepeat }
 
         // 반복 일정
         val repeatSchedules = scheduleRepository
