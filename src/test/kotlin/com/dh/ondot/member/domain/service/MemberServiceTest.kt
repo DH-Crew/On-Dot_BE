@@ -202,4 +202,20 @@ class MemberServiceTest {
         // then
         verify(memberRepository).deleteById(memberId)
     }
+
+    @Test
+    @DisplayName("회원의 데일리 리마인더 설정을 변경한다")
+    fun updateDailyReminderEnabled_ValidInput_UpdatesSuccessfully() {
+        // given
+        val memberId = 1L
+        val member = Member.registerWithOauth("test@example.com", OauthProvider.KAKAO, "kakao123")
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member))
+
+        // when
+        val result = memberService.updateDailyReminderEnabled(memberId, false)
+
+        // then
+        assertThat(result.dailyReminderEnabled).isFalse()
+        verify(memberRepository).findById(memberId)
+    }
 }

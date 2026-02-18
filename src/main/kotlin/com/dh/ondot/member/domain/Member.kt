@@ -71,6 +71,9 @@ class Member(
 
     @Column(name = "deleted_at")
     var deletedAt: Instant? = null,
+
+    @Column(name = "daily_reminder_enabled", nullable = false, columnDefinition = "TINYINT(1)")
+    var dailyReminderEnabled: Boolean = true,
 ) : BaseTimeEntity() {
 
     fun updateOnboarding(
@@ -98,6 +101,10 @@ class Member(
     }
 
     fun isNewMember(): Boolean = preparationTime == null
+
+    fun updateDailyReminderEnabled(enabled: Boolean) {
+        this.dailyReminderEnabled = enabled
+    }
 
     companion object {
         @JvmStatic

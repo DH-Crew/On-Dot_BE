@@ -17,6 +17,7 @@ import com.dh.ondot.member.domain.service.ChoiceService
 import com.dh.ondot.member.domain.service.MemberService
 import com.dh.ondot.member.domain.service.WithdrawalService
 import com.dh.ondot.schedule.domain.service.ScheduleService
+import com.dh.ondot.notification.domain.service.DeviceTokenService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -28,6 +29,7 @@ class MemberFacade(
     private val addressService: AddressService,
     private val choiceService: ChoiceService,
     private val scheduleService: ScheduleService,
+    private val deviceTokenService: DeviceTokenService,
     private val withdrawalService: WithdrawalService,
     private val eventPublisher: ApplicationEventPublisher,
 ) {
@@ -106,6 +108,11 @@ class MemberFacade(
         scheduleService.deleteAllByMemberId(memberId)
         addressService.deleteAllByMemberId(memberId)
         choiceService.deleteAllByMemberId(memberId)
+        deviceTokenService.deleteAllByMemberId(memberId)
         memberService.deleteMember(memberId)
     }
+
+    @Transactional
+    fun updateDailyReminderEnabled(memberId: Long, enabled: Boolean): Member =
+        memberService.updateDailyReminderEnabled(memberId, enabled)
 }

@@ -13,6 +13,8 @@ import com.dh.ondot.member.presentation.response.MapProviderResponse
 import com.dh.ondot.member.presentation.response.OnboardingResponse
 import com.dh.ondot.member.presentation.response.PreparationTimeResponse
 import com.dh.ondot.member.presentation.response.UpdateHomeAddressResponse
+import com.dh.ondot.member.presentation.request.UpdateDailyReminderRequest
+import com.dh.ondot.member.presentation.response.DailyReminderResponse
 import com.dh.ondot.member.presentation.swagger.MemberSwagger
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -114,5 +116,22 @@ class MemberController(
     ): PreparationTimeResponse {
         val member = memberFacade.updatePreparationTime(memberId, request.preparationTime)
         return PreparationTimeResponse.from(member)
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/daily-reminder")
+    override fun getDailyReminder(@RequestAttribute("memberId") memberId: Long): DailyReminderResponse {
+        val member = memberFacade.getMember(memberId)
+        return DailyReminderResponse.from(member.dailyReminderEnabled)
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping("/daily-reminder")
+    override fun updateDailyReminder(
+        @RequestAttribute("memberId") memberId: Long,
+        @Valid @RequestBody request: UpdateDailyReminderRequest,
+    ): DailyReminderResponse {
+        val member = memberFacade.updateDailyReminderEnabled(memberId, request.enabled!!)
+        return DailyReminderResponse.from(member.dailyReminderEnabled)
     }
 }

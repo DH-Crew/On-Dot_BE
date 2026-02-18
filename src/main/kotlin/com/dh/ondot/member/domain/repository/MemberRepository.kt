@@ -12,4 +12,6 @@ interface MemberRepository : JpaRepository<Member, Long> {
         @Param("providerId") providerId: String,
         @Param("provider") provider: OauthProvider,
     ): Member?
+
+    fun findAllByDailyReminderEnabledTrue(): List<Member>
 }

@@ -11,6 +11,8 @@ import com.dh.ondot.member.presentation.response.MapProviderResponse
 import com.dh.ondot.member.presentation.response.OnboardingResponse
 import com.dh.ondot.member.presentation.response.PreparationTimeResponse
 import com.dh.ondot.member.presentation.response.UpdateHomeAddressResponse
+import com.dh.ondot.member.presentation.request.UpdateDailyReminderRequest
+import com.dh.ondot.member.presentation.response.DailyReminderResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
@@ -574,4 +576,88 @@ interface MemberSwagger {
         @RequestAttribute("memberId") memberId: Long,
         @RequestBody request: UpdatePreparationTimeRequest,
     ): PreparationTimeResponse
+
+    /*──────────────────────────────────────────────────────
+     * 데일리 리마인더 설정 조회
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+        summary = "데일리 리마인더 설정 조회",
+        description = "로그인한 회원의 데일리 리마인더(매일 저녁 10시 내일 일정 알림) on/off 설정을 조회합니다.",
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "조회 성공",
+                content = [Content(
+                    schema = Schema(implementation = DailyReminderResponse::class),
+                    examples = [ExampleObject(
+                        name = "success",
+                        value = """{ "enabled": true }"""
+                    )]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "NOT_FOUND_MEMBER",
+                content = [Content(
+                    schema = Schema(implementation = ErrorResponse::class),
+                    examples = [ExampleObject(
+                        value = """
+                        {
+                          "errorCode": "NOT_FOUND_MEMBER",
+                          "message": "회원을 찾을 수 없습니다. MemberId : 42"
+                        }"""
+                    )]
+                )]
+            ),
+        ]
+    )
+    @GetMapping("/daily-reminder")
+    fun getDailyReminder(@RequestAttribute("memberId") memberId: Long): DailyReminderResponse
+
+    /*──────────────────────────────────────────────────────
+     * 데일리 리마인더 설정 변경
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+        summary = "데일리 리마인더 on/off 변경",
+        description = "매일 저녁 10시 내일 일정 푸시 알림의 수신 여부를 변경합니다.",
+        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            content = [Content(
+                schema = Schema(implementation = UpdateDailyReminderRequest::class),
+                examples = [ExampleObject(value = """{ "enabled": false }""")]
+            )]
+        ),
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "변경 성공",
+                content = [Content(
+                    schema = Schema(implementation = DailyReminderResponse::class),
+                    examples = [ExampleObject(
+                        name = "success",
+                        value = """{ "enabled": false }"""
+                    )]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "NOT_FOUND_MEMBER",
+                content = [Content(
+                    schema = Schema(implementation = ErrorResponse::class),
+                    examples = [ExampleObject(
+                        value = """
+                        {
+                          "errorCode": "NOT_FOUND_MEMBER",
+                          "message": "회원을 찾을 수 없습니다. MemberId : 42"
+                        }"""
+                    )]
+                )]
+            ),
+        ]
+    )
+    @PatchMapping("/daily-reminder")
+    fun updateDailyReminder(
+        @RequestAttribute("memberId") memberId: Long,
+        @RequestBody request: UpdateDailyReminderRequest,
+    ): DailyReminderResponse
 }

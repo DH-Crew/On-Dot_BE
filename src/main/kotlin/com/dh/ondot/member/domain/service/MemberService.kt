@@ -64,4 +64,14 @@ class MemberService(
     fun deleteMember(memberId: Long) {
         memberRepository.deleteById(memberId)
     }
+
+    @Transactional
+    fun updateDailyReminderEnabled(memberId: Long, enabled: Boolean): Member {
+        val member = getMemberIfExists(memberId)
+        member.updateDailyReminderEnabled(enabled)
+        return member
+    }
+
+    fun findAllDailyReminderEnabledMembers(): List<Member> =
+        memberRepository.findAllByDailyReminderEnabledTrue()
 }
