@@ -6,7 +6,6 @@ import com.dh.ondot.notification.domain.service.DeviceTokenService
 import com.dh.ondot.notification.infra.fcm.FcmClient
 import com.dh.ondot.schedule.domain.Schedule
 import com.dh.ondot.schedule.domain.repository.ScheduleRepository
-import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -18,8 +17,6 @@ class DailyReminderScheduler(
     private val deviceTokenService: DeviceTokenService,
     private val fcmClient: FcmClient,
 ) {
-    private val log = LoggerFactory.getLogger(javaClass)
-
     companion object {
         private const val EVERY_DAY_10PM_KST = "0 0 22 * * *"
         private const val PUSH_TITLE = "온닷"
@@ -27,28 +24,19 @@ class DailyReminderScheduler(
 
     @Scheduled(cron = EVERY_DAY_10PM_KST, zone = "Asia/Seoul")
     fun sendDailyReminder() {
-        log.info("Daily reminder scheduler started")
-
         val enabledMembers = memberService.findAllDailyReminderEnabledMembers()
-        if (enabledMembers.isEmpty()) {
-            log.info("No members with daily reminder enabled")
-            return
-        }
+        if (enabledMembers.isEmpty()) return
 
         val memberIds = enabledMembers.map { it.id }
         val tomorrow = TimeUtils.nowSeoulDate().plusDays(1)
 
         val scheduleCountByMember = countSchedulesForDate(memberIds, tomorrow)
-        if (scheduleCountByMember.isEmpty()) {
-            log.info("No schedules found for tomorrow ({})", tomorrow)
-            return
-        }
+        if (scheduleCountByMember.isEmpty()) return
 
         val memberIdsWithSchedules = scheduleCountByMember.keys.toList()
         val tokens = deviceTokenService.findAllByMemberIds(memberIdsWithSchedules)
         val tokensByMember = tokens.groupBy { it.memberId }
 
-        var totalSent = 0
         for ((memberId, count) in scheduleCountByMember) {
             val memberTokens = tokensByMember[memberId] ?: continue
             val fcmTokens = memberTokens.map { it.fcmToken }
@@ -57,12 +45,8 @@ class DailyReminderScheduler(
             val invalidTokens = fcmClient.sendToTokens(fcmTokens, PUSH_TITLE, body)
             if (invalidTokens.isNotEmpty()) {
                 deviceTokenService.deleteByFcmTokens(invalidTokens)
-                log.info("Deleted {} invalid FCM tokens", invalidTokens.size)
             }
-            totalSent += fcmTokens.size - invalidTokens.size
         }
-
-        log.info("Daily reminder completed: {} members, {} tokens", scheduleCountByMember.size, totalSent)
     }
 
     private fun countSchedulesForDate(memberIds: List<Long>, date: LocalDate): Map<Long, Int> {

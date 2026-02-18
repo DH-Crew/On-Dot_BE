@@ -46,11 +46,6 @@ class FcmClient {
                     }
                 }
 
-                log.info(
-                    "FCM multicast result: success={}, failure={}",
-                    response.successCount,
-                    response.failureCount
-                )
             } catch (e: Exception) {
                 log.error("FCM multicast send failed for chunk of {} tokens", chunk.size, e)
             }

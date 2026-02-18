@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
+import java.io.FileInputStream
 
 @Configuration
 class FcmConfig(
@@ -17,20 +18,16 @@ class FcmConfig(
 
     @PostConstruct
     fun initialize() {
-        if (FirebaseApp.getApps().isNotEmpty()) {
-            log.info("FirebaseApp already initialized")
-            return
-        }
+        if (FirebaseApp.getApps().isNotEmpty()) return
         if (serviceAccountFile.isBlank()) {
             log.warn("FCM service account file not configured. Push notifications will not work.")
             return
         }
         try {
             val options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(java.io.FileInputStream(serviceAccountFile)))
+                .setCredentials(GoogleCredentials.fromStream(FileInputStream(serviceAccountFile)))
                 .build()
             FirebaseApp.initializeApp(options)
-            log.info("FirebaseApp initialized with service account: {}", serviceAccountFile)
         } catch (e: Exception) {
             log.error("Failed to initialize FirebaseApp: {}", e.message, e)
         }
