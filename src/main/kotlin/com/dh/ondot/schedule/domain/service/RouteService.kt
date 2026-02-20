@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.domain.service
 
 import com.dh.ondot.core.util.GeoUtils
+import com.dh.ondot.schedule.domain.enums.ApiType
 import com.dh.ondot.schedule.infra.api.OdsayPathApi
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse
 import com.dh.ondot.schedule.infra.exception.OdsayTooCloseException
@@ -10,7 +11,7 @@ import kotlin.math.round
 @Service
 class RouteService(
     private val odayPathApi: OdsayPathApi,
-    private val odsayUsageService: OdsayUsageService,
+    private val apiUsageService: ApiUsageService,
 ) {
     fun calculateRouteTime(startX: Double, startY: Double, endX: Double, endY: Double): Int {
         checkApiUsageLimit()
@@ -19,7 +20,7 @@ class RouteService(
     }
 
     private fun checkApiUsageLimit() {
-        odsayUsageService.checkAndIncrementUsage()
+        apiUsageService.checkAndIncrementUsage(ApiType.ODSAY)
     }
 
     private fun getRouteTimeFromApi(startX: Double, startY: Double, endX: Double, endY: Double): OdsayRouteApiResponse {

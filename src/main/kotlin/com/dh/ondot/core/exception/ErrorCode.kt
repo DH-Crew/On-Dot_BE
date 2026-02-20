@@ -66,6 +66,9 @@ enum class ErrorCode(
     UNAVAILABLE_OPEN_AI_SERVER(BAD_GATEWAY, "일시적으로 Open AI 서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."),
     UNHANDLED_OPEN_AI(INTERNAL_SERVER_ERROR, "Open AI 요청 과정에서 알 수 없는 문제가 발생했습니다. 관리자에게 문의해주세요."),
 
+    // API Usage
+    API_USAGE_LIMIT_EXCEEDED(FORBIDDEN, "오늘 %s API 사용 한도를 초과했습니다. Date : %s"),
+
     // ODsay API
     ODSAY_BAD_INPUT(BAD_REQUEST, "필수 입력값 형식 및 범위를 확인해주세요: %s"),
     ODSAY_MISSING_PARAM(BAD_REQUEST, "필수 입력값이 누락되었습니다: %s"),
