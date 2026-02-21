@@ -47,7 +47,6 @@ class Address(
     }
 
     companion object {
-        @JvmStatic
         fun createByOnboarding(member: Member, roadAddress: String, longitude: Double, latitude: Double): Address =
             Address(
                 member = member,

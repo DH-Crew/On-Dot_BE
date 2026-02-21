@@ -12,7 +12,6 @@ enum class SnoozeCount(val value: Int) {
     TEN(10);
 
     companion object {
-        @JvmStatic
         fun from(count: String): SnoozeCount =
             try {
                 valueOf(count.uppercase(Locale.ENGLISH))
@@ -20,7 +19,6 @@ enum class SnoozeCount(val value: Int) {
                 throw UnsupportedException(UNSUPPORTED_SNOOZE_COUNT, count)
             }
 
-        @JvmStatic
         fun from(value: Int): SnoozeCount =
             entries.firstOrNull { it.value == value }
                 ?: throw UnsupportedException(UNSUPPORTED_SNOOZE_COUNT, value.toString())

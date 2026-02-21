@@ -34,14 +34,12 @@ class ScheduleQueryRepositoryTest {
 
     companion object {
         @Container
-        @JvmStatic
         val mysql: MySQLContainer = MySQLContainer("mysql:8.0")
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test")
 
         @DynamicPropertySource
-        @JvmStatic
         fun configureProperties(registry: DynamicPropertyRegistry) {
             // Database - Override H2 settings from application-test.yaml
             registry.add("spring.datasource.url") { mysql.jdbcUrl }

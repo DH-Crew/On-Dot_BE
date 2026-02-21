@@ -8,7 +8,6 @@ enum class Mission {
     NONE;
 
     companion object {
-        @JvmStatic
         fun from(mission: String): Mission =
             try {
                 valueOf(mission.uppercase(Locale.ENGLISH))

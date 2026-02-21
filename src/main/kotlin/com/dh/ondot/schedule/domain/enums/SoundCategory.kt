@@ -9,7 +9,6 @@ enum class SoundCategory {
     FAST_INTENSE;
 
     companion object {
-        @JvmStatic
         fun from(category: String): SoundCategory =
             try {
                 valueOf(category.uppercase(Locale.ENGLISH))

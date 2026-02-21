@@ -19,7 +19,6 @@ data class ScheduleDetailResponse(
     val transportType: TransportType,
 ) {
     companion object {
-        @JvmStatic
         fun from(s: Schedule): ScheduleDetailResponse {
             return ScheduleDetailResponse(
                 scheduleId = s.id,

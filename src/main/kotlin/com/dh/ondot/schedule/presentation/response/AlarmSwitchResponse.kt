@@ -10,7 +10,6 @@ data class AlarmSwitchResponse(
     val updatedAt: LocalDateTime?,
 ) {
     companion object {
-        @JvmStatic
         fun from(schedule: Schedule): AlarmSwitchResponse {
             return AlarmSwitchResponse(
                 scheduleId = schedule.id,

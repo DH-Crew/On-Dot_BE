@@ -16,7 +16,6 @@ class OauthInfo(
     val oauthProviderId: String,
 ) {
     companion object {
-        @JvmStatic
         fun of(oauthProvider: OauthProvider, oauthProviderId: String): OauthInfo =
             OauthInfo(oauthProvider, oauthProviderId)
     }

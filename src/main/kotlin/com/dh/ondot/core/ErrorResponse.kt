@@ -53,7 +53,6 @@ data class ErrorResponse(
         val reason: String?,
     ) {
         companion object {
-            @JvmStatic
             fun from(bindingResult: BindingResult): List<FieldError> =
                 bindingResult.fieldErrors.map { e ->
                     FieldError(
@@ -73,7 +72,6 @@ data class ErrorResponse(
         companion object {
             private const val FIELD_POSITION = 1
 
-            @JvmStatic
             fun from(violations: Set<ConstraintViolation<*>>): List<ConstraintViolationError> =
                 violations.map { v ->
                     ConstraintViolationError(

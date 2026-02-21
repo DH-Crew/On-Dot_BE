@@ -12,7 +12,6 @@ data class PlaceHistoryResponse(
     val searchedAt: LocalDateTime?,
 ) {
     companion object {
-        @JvmStatic
         fun from(history: PlaceHistory): PlaceHistoryResponse {
             return PlaceHistoryResponse(
                 title = history.title,
@@ -23,7 +22,6 @@ data class PlaceHistoryResponse(
             )
         }
 
-        @JvmStatic
         fun fromList(list: List<PlaceHistory>): List<PlaceHistoryResponse> {
             return list.map { from(it) }
         }

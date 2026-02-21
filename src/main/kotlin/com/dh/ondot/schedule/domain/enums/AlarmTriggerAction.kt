@@ -10,7 +10,6 @@ enum class AlarmTriggerAction(val value: String, val description: String) {
     START_PREPARE("start_prepare", "준비 시작하기");
 
     companion object {
-        @JvmStatic
         fun from(value: String): AlarmTriggerAction {
             if (value.isBlank()) {
                 throw InvalidAlarmTriggerActionException("null or empty")

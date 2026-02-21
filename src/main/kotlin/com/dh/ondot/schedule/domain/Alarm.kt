@@ -82,7 +82,6 @@ class Alarm(
     )
 
     companion object {
-        @JvmStatic
         fun createPreparationAlarm(
             alarmMode: String, isEnabled: Boolean, triggeredAt: LocalDateTime,
             isSnoozeEnabled: Boolean, snoozeInterval: Int, snoozeCount: Int,
@@ -95,7 +94,6 @@ class Alarm(
             sound = Sound.of(soundCategory, ringTone, volume),
         )
 
-        @JvmStatic
         fun createDepartureAlarm(
             alarmMode: String, triggeredAt: LocalDateTime,
             isSnoozeEnabled: Boolean, snoozeInterval: Int, snoozeCount: Int,
@@ -108,7 +106,6 @@ class Alarm(
             sound = Sound.of(soundCategory, ringTone, volume),
         )
 
-        @JvmStatic
         fun createPreparationAlarmWithDefaultSetting(
             alarmMode: AlarmMode, snooze: Snooze, sound: Sound,
             appointmentAt: LocalDateTime, estimatedTime: Int, preparationTime: Int,
@@ -120,7 +117,6 @@ class Alarm(
             sound = sound,
         )
 
-        @JvmStatic
         fun createDepartureAlarmWithDefaultSetting(
             alarmMode: AlarmMode, snooze: Snooze, sound: Sound,
             appointmentAt: LocalDateTime, estimatedTime: Int,

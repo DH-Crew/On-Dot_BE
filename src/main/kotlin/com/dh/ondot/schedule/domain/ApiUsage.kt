@@ -34,7 +34,6 @@ class ApiUsage(
     companion object {
         const val DAILY_LIMIT = 1000
 
-        @JvmStatic
         fun newForToday(apiType: ApiType, date: LocalDate): ApiUsage =
             ApiUsage(apiType = apiType, usageDate = date, count = 1)
     }

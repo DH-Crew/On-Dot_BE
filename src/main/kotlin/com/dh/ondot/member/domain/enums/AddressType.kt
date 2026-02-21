@@ -8,7 +8,6 @@ enum class AddressType {
     ;
 
     companion object {
-        @JvmStatic
         fun from(type: String): AddressType =
             entries.find { it.name.equals(type, ignoreCase = true) }
                 ?: throw UnsupportedException(UNSUPPORTED_ADDRESS_TYPE, type)

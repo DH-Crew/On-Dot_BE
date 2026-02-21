@@ -31,7 +31,6 @@ class Snooze protected constructor() {
     }
 
     companion object {
-        @JvmStatic
         fun of(isSnoozeEnabled: Boolean, snoozeInterval: Int?, snoozeCount: Int?): Snooze =
             Snooze(isSnoozeEnabled, SnoozeInterval.from(snoozeInterval!!), SnoozeCount.from(snoozeCount!!))
     }
