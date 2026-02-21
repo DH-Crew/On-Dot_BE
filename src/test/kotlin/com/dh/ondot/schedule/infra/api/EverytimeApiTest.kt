@@ -1,7 +1,7 @@
 package com.dh.ondot.schedule.infra.api
 
 import com.dh.ondot.schedule.application.dto.EverytimeLecture
-import com.dh.ondot.schedule.infra.exception.EverytimeNotFoundException
+import com.dh.ondot.schedule.infra.exception.EverytimeEmptyTimetableException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -68,8 +68,8 @@ class EverytimeApiTest {
         }
 
         @Test
-        @DisplayName("수업이 없는 XML일 경우 EverytimeNotFoundException이 발생한다")
-        fun parseXml_NoSubjects_ThrowsNotFoundException() {
+        @DisplayName("수업이 없는 XML일 경우 EverytimeEmptyTimetableException이 발생한다")
+        fun parseXml_NoSubjects_ThrowsEmptyTimetableException() {
             // given
             val xml = """
                 <response>
@@ -79,7 +79,7 @@ class EverytimeApiTest {
 
             // when & then
             assertThatThrownBy { parseXml(xml) }
-                .isInstanceOf(EverytimeNotFoundException::class.java)
+                .isInstanceOf(EverytimeEmptyTimetableException::class.java)
         }
 
         @Test
@@ -138,26 +138,31 @@ class EverytimeApiTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 identifier로 조회 시 EverytimeNotFoundException이 발생한다")
-        fun fetchTimetable_WithInvalidIdentifier_ThrowsNotFoundException() {
+        @DisplayName("존재하지 않는 identifier로 조회 시 EverytimeEmptyTimetableException이 발생한다")
+        fun fetchTimetable_WithInvalidIdentifier_ThrowsEmptyTimetableException() {
             // given
             val invalidIdentifier = "nonExistentInvalidIdentifier123"
 
             // when & then
             assertThatThrownBy { everytimeApi.fetchTimetable(invalidIdentifier) }
-                .isInstanceOf(EverytimeNotFoundException::class.java)
+                .isInstanceOf(EverytimeEmptyTimetableException::class.java)
         }
     }
 
     // EverytimeApi 의 private parseXml 메서드와 동일 로직 — 파싱 정확성을 검증
     private fun parseXml(xml: String): List<EverytimeLecture> {
-        val factory = DocumentBuilderFactory.newInstance()
+        val factory = DocumentBuilderFactory.newInstance().apply {
+            setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
+            setFeature("http://xml.org/sax/features/external-general-entities", false)
+            setFeature("http://xml.org/sax/features/external-parameter-entities", false)
+            isExpandEntityReferences = false
+        }
         val builder = factory.newDocumentBuilder()
         val document = builder.parse(xml.byteInputStream())
         val subjects = document.getElementsByTagName("subject")
 
         if (subjects.length == 0) {
-            throw EverytimeNotFoundException()
+            throw EverytimeEmptyTimetableException()
         }
 
         val lectures = mutableListOf<EverytimeLecture>()

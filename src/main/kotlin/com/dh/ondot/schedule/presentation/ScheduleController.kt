@@ -200,8 +200,7 @@ class ScheduleController(
                     examples = [ExampleObject(
                         value = """
                         {
-                          "identifier": "ip9ktZ3A7H35H6P7Z1Wr",
-                          "isValid": true
+                          "identifier": "ip9ktZ3A7H35H6P7Z1Wr"
                         }"""
                     )]
                 )]
@@ -272,7 +271,6 @@ class ScheduleController(
         val identifier = scheduleCommandFacade.validateEverytimeUrl(request.everytimeUrl)
         return EverytimeValidateResponse(
             identifier = identifier,
-            isValid = true,
         )
     }
 

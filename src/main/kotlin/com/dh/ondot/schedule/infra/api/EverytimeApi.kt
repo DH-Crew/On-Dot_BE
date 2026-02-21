@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.infra.api
 
 import com.dh.ondot.schedule.application.dto.EverytimeLecture
+import com.dh.ondot.schedule.infra.exception.EverytimeEmptyTimetableException
 import com.dh.ondot.schedule.infra.exception.EverytimeNotFoundException
 import com.dh.ondot.schedule.infra.exception.EverytimeServerException
 import org.springframework.beans.factory.annotation.Qualifier
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
 import org.w3c.dom.Element
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalTime
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -33,7 +36,7 @@ class EverytimeApi(
             val response = everytimeRestClient.post()
                 .uri("/find/timetable/table/friend")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body("identifier=$identifier&friendInfo=true")
+                .body("identifier=${URLEncoder.encode(identifier, StandardCharsets.UTF_8)}&friendInfo=true")
                 .retrieve()
                 .body(String::class.java)
 
@@ -51,13 +54,18 @@ class EverytimeApi(
     }
 
     private fun parseXml(xml: String): List<EverytimeLecture> {
-        val factory = DocumentBuilderFactory.newInstance()
+        val factory = DocumentBuilderFactory.newInstance().apply {
+            setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
+            setFeature("http://xml.org/sax/features/external-general-entities", false)
+            setFeature("http://xml.org/sax/features/external-parameter-entities", false)
+            isExpandEntityReferences = false
+        }
         val builder = factory.newDocumentBuilder()
         val document = builder.parse(xml.byteInputStream())
         val subjects = document.getElementsByTagName("subject")
 
         if (subjects.length == 0) {
-            throw EverytimeNotFoundException()
+            throw EverytimeEmptyTimetableException()
         }
 
         val lectures = mutableListOf<EverytimeLecture>()

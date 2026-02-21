@@ -235,7 +235,6 @@ class ScheduleCommandFacade(
         return identifier
     }
 
-    @Transactional
     fun createSchedulesFromEverytime(
         memberId: Long,
         url: String,
@@ -266,7 +265,16 @@ class ScheduleCommandFacade(
             timeGroups, startX, startY, endX, endY, transportType,
         )
 
-        // 그룹별 Schedule + Alarm 생성
+        return saveEverytimeSchedules(member, timeGroups, routeTimeByGroup, transportType)
+    }
+
+    @Transactional
+    fun saveEverytimeSchedules(
+        member: com.dh.ondot.member.domain.Member,
+        timeGroups: Map<LocalTime, List<Int>>,
+        routeTimeByGroup: Map<LocalTime, Int>,
+        transportType: TransportType,
+    ): List<Schedule> {
         return timeGroups.map { (time, days) ->
             val title = buildScheduleTitle(days)
             val repeatDays = days.map { everytimeDayToRepeatDay(it) }.toSortedSet()
