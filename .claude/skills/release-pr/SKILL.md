@@ -20,7 +20,7 @@ digraph release_pr {
   v1 [label="Fetch latest:\ngit fetch origin develop main"]
   v2 [label="Resolve base refs:\ndevelop (local or origin/develop)"]
   v3 [label="Gather commits:\ngit log origin/main..{develop-ref}"]
-  v4 [label="Classify changes:\nMajor / Minor / Patch"]
+  v4 [label="Classify changes:\nMajor / Minor"]
   v5 [label="gh pr create --base main"]
   gate1 [label="Gate 1: PR 내용 확인" shape=diamond]
   edit [label="Edit PR as requested"]
@@ -60,9 +60,8 @@ digraph release_pr {
 2. **Gather commits**: `git log origin/main..{develop-ref} --format='%h %s (%an)'`
    - `{develop-ref}`: 로컬 `develop` 또는 `origin/develop`
    - Classify each commit:
-     - **Major**: breaking/incompatible API changes
-     - **Minor**: `feat:` commits, new functionality
-     - **Patch**: `fix:`, `test:`, `docs:`, `refactor:`, `chore:`
+     - **Major**: `feat:` 새 기능 추가, API 스펙 변경, breaking changes
+     - **Minor**: `fix:`, `docs:`, `test:`, `refactor:`, `chore:` 등 버그 수정 및 내부 개선
    - Resolve each author to their GitHub username (check commit history or `gh api`)
 
 3. **Create PR**:
@@ -74,20 +73,18 @@ gh pr create --base main --head develop \
 ## Summary
 
 ### Major Changes
-- {한글 설명} @{author-github-id}
+- {한글 설명} (#PR번호) @{author-github-id}
 
 ### Minor Changes
-- {한글 설명} @{author-github-id}
-
-### Patch Changes
-- {한글 설명} @{author-github-id}
+- {한글 설명} (#PR번호) @{author-github-id}
 EOF
 )" \
   --assignee @me
 ```
 
    - Omit empty sections (no Major commits -> no Major heading)
-   - Each item: `- {한글 설명} @{author-github-id}`
+   - Each item: `- {한글 설명} (#PR번호) @{author-github-id}`
+   - PR 번호는 squash merge 커밋 메시지에서 추출 (e.g. `(#78)` → `#78`)
 
 4. **Gate 1 — PR Confirmation**: Ask "PR 내용 확인해주세요. 문제 없나요?"
    - No -> edit PR content as requested, re-confirm
@@ -99,9 +96,8 @@ EOF
 
 | Highest Level | Bump | Example |
 |---------------|------|---------|
-| Major | major | 1.0.1 -> 2.0.0 |
-| Minor | minor | 1.0.1 -> 1.1.0 |
-| Patch | patch | 1.0.1 -> 1.0.2 |
+| Major | minor | 1.0.1 -> 1.1.0 |
+| Minor | patch | 1.0.1 -> 1.0.2 |
 
    - Present as multiple choice for user to confirm or override
    - User picks different version -> use that
