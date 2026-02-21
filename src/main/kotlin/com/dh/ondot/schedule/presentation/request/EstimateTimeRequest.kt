@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.presentation.request
 
+import com.dh.ondot.schedule.domain.enums.TransportType
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.NotNull
@@ -24,4 +25,6 @@ data class EstimateTimeRequest(
     @field:DecimalMin(value = "-90.0", message = "endLatitude는 -90 이상이어야 합니다.")
     @field:DecimalMax(value = "90.0", message = "endLatitude는 90 이하이어야 합니다.")
     val endLatitude: Double,
+
+    val transportType: TransportType? = null,
 )

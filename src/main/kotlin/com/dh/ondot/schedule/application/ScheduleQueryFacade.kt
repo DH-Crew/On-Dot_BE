@@ -6,6 +6,7 @@ import com.dh.ondot.schedule.presentation.response.*
 import com.dh.ondot.schedule.application.dto.HomeScheduleListItem
 import com.dh.ondot.schedule.application.mapper.HomeScheduleListItemMapper
 import com.dh.ondot.schedule.domain.Schedule
+import com.dh.ondot.schedule.domain.enums.TransportType
 import com.dh.ondot.schedule.domain.service.RouteService
 import com.dh.ondot.schedule.domain.service.ScheduleQueryService
 import com.dh.ondot.schedule.domain.service.ScheduleService
@@ -61,7 +62,8 @@ class ScheduleQueryFacade(
     fun estimateTravelTime(
         startLongitude: Double, startLatitude: Double,
         endLongitude: Double, endLatitude: Double,
+        transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
     ): Int {
-        return routeService.calculateRouteTime(startLongitude, startLatitude, endLongitude, endLatitude)
+        return routeService.calculateRouteTime(startLongitude, startLatitude, endLongitude, endLatitude, transportType)
     }
 }

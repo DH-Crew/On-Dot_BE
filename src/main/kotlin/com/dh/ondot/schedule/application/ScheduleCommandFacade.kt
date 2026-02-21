@@ -79,6 +79,7 @@ class ScheduleCommandFacade(
             command.appointmentAt,
             command.isMedicationRequired,
             command.preparationNote,
+            command.transportType,
         )
 
         return scheduleService.saveSchedule(schedule)

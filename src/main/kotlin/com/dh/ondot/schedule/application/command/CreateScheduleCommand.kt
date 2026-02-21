@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.application.command
 
+import com.dh.ondot.schedule.domain.enums.TransportType
 import java.time.LocalDateTime
 
 data class CreateScheduleCommand(
@@ -9,6 +10,7 @@ data class CreateScheduleCommand(
     val appointmentAt: LocalDateTime,
     val isMedicationRequired: Boolean,
     val preparationNote: String?,
+    val transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
     val departurePlace: PlaceInfo,
     val arrivalPlace: PlaceInfo,
     val preparationAlarm: PreparationAlarmInfo,

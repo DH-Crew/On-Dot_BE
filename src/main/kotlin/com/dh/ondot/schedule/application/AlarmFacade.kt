@@ -23,6 +23,7 @@ class AlarmFacade(
         val estimatedTimeMin = routeService.calculateRouteTime(
             command.startLongitude, command.startLatitude,
             command.endLongitude, command.endLatitude,
+            command.transportType,
         )
 
         return scheduleService.setupSchedule(
