@@ -3,7 +3,7 @@ package com.dh.ondot.schedule.application.handler
 import com.dh.ondot.member.domain.service.MemberService
 import com.dh.ondot.schedule.domain.event.QuickScheduleRequestedEvent
 import com.dh.ondot.schedule.domain.repository.PlaceRepository
-import com.dh.ondot.schedule.domain.service.RouteService
+import com.dh.ondot.schedule.application.RouteService
 import com.dh.ondot.schedule.domain.service.ScheduleService
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional

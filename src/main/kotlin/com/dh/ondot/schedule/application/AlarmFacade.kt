@@ -4,7 +4,6 @@ import com.dh.ondot.schedule.application.command.GenerateAlarmCommand
 import com.dh.ondot.member.domain.service.MemberService
 import com.dh.ondot.schedule.domain.Schedule
 import com.dh.ondot.schedule.domain.service.AlarmService
-import com.dh.ondot.schedule.domain.service.RouteService
 import com.dh.ondot.schedule.domain.service.ScheduleService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

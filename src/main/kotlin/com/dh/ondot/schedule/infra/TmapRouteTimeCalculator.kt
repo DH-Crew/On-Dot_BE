@@ -1,7 +1,9 @@
-package com.dh.ondot.schedule.domain.service
+package com.dh.ondot.schedule.infra
 
 import com.dh.ondot.schedule.domain.enums.ApiType
 import com.dh.ondot.schedule.domain.enums.TransportType
+import com.dh.ondot.schedule.domain.service.ApiUsageService
+import com.dh.ondot.schedule.domain.service.RouteTimeCalculator
 import com.dh.ondot.schedule.infra.api.TmapPathApi
 import org.springframework.stereotype.Component
 import kotlin.math.ceil
