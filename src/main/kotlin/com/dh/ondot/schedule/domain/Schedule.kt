@@ -167,7 +167,7 @@ class Schedule(
             memberId: Long, departurePlace: Place, arrivalPlace: Place,
             preparationAlarm: Alarm, departureAlarm: Alarm, title: String,
             isRepeat: Boolean, repeatDays: SortedSet<Int>?, appointmentAt: LocalDateTime,
-            isMedicationRequired: Boolean, preparationNote: String?,
+            isMedicationRequired: Boolean = false, preparationNote: String? = null,
             transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
         ): Schedule = Schedule(
             memberId = memberId,
