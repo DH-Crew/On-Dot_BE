@@ -85,6 +85,7 @@ EOF
    - Omit empty sections (no Major commits -> no Major heading)
    - Each item: `- {한글 설명} (#PR번호) @{author-github-id}`
    - PR 번호는 squash merge 커밋 메시지에서 추출 (e.g. `(#78)` → `#78`)
+   - `(#XX)` 패턴이 없는 커밋은 PR 번호 없이 `- {한글 설명} @{author}` 형식으로 작성
 
 4. **Gate 1 — PR Confirmation**: Ask "PR 내용 확인해주세요. 문제 없나요?"
    - No -> edit PR content as requested, re-confirm
@@ -133,7 +134,7 @@ EOF
      - 같은 맥락 내 줄(번호-리스트)은 빈 줄 없이 붙임
      - 맥락이 바뀌는 경우(📌 섹션 전)에만 빈 줄 하나 삽입
 
-```
+```text
 ✅ **{YYYY.MM.DD} 변경사항**
 **1.** {변경사항 제목}
 - {세부 설명}
