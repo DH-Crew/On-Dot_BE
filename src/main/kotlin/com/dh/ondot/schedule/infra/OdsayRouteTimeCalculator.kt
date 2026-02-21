@@ -1,8 +1,10 @@
-package com.dh.ondot.schedule.domain.service
+package com.dh.ondot.schedule.infra
 
 import com.dh.ondot.core.util.GeoUtils
 import com.dh.ondot.schedule.domain.enums.ApiType
 import com.dh.ondot.schedule.domain.enums.TransportType
+import com.dh.ondot.schedule.domain.service.ApiUsageService
+import com.dh.ondot.schedule.domain.service.RouteTimeCalculator
 import com.dh.ondot.schedule.infra.api.OdsayPathApi
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse
 import com.dh.ondot.schedule.infra.exception.OdsayTooCloseException
@@ -44,13 +46,14 @@ class OdsayRouteTimeCalculator(
         return addBufferTimeAndRound(averageTime)
     }
 
-    private fun calculateAdjustedTimesForAllPaths(response: OdsayRouteApiResponse): List<Double> =
-        response.result!!
-            .path!!.stream()
+    private fun calculateAdjustedTimesForAllPaths(response: OdsayRouteApiResponse): List<Double> {
+        val paths = response.result?.path
+            ?: throw IllegalStateException("경로 응답에 result 또는 path가 없습니다")
+        return paths
             .map { calculateAdjustedTimeForSinglePath(it) }
             .sorted()
-            .limit(TOP_ROUTES_LIMIT.toLong())
-            .toList()
+            .take(TOP_ROUTES_LIMIT)
+    }
 
     private fun calculateAdjustedTimeForSinglePath(path: OdsayRouteApiResponse.Path): Double {
         val baseTime = path.info.totalTime
@@ -60,25 +63,20 @@ class OdsayRouteTimeCalculator(
     }
 
     private fun calculateTransferPenalty(path: OdsayRouteApiResponse.Path): Double {
-        val publicTransportLegs = path.subPath.stream()
-            .filter { it.trafficType == SUBWAY_TRAFFIC_TYPE || it.trafficType == BUS_TRAFFIC_TYPE }
-            .count()
-        val transferCount = maxOf(0L, publicTransportLegs - 1)
+        val publicTransportLegs = path.subPath
+            .count { it.trafficType == SUBWAY_TRAFFIC_TYPE || it.trafficType == BUS_TRAFFIC_TYPE }
+        val transferCount = maxOf(0, publicTransportLegs - 1)
         return transferCount * TRANSFER_PENALTY_MINUTES
     }
 
     private fun calculateLongWalkPenalty(path: OdsayRouteApiResponse.Path): Double {
-        val longWalkCount = path.subPath.stream()
-            .filter { it.trafficType == WALKING_TRAFFIC_TYPE && it.distance > LONG_WALK_DISTANCE_THRESHOLD }
-            .count()
+        val longWalkCount = path.subPath
+            .count { it.trafficType == WALKING_TRAFFIC_TYPE && it.distance > LONG_WALK_DISTANCE_THRESHOLD }
         return longWalkCount * LONG_WALK_PENALTY_MINUTES
     }
 
     private fun calculateAverageOfTopRoutes(adjustedTimes: List<Double>): Double =
-        adjustedTimes.stream()
-            .mapToDouble { it }
-            .average()
-            .orElse(0.0)
+        adjustedTimes.average().takeIf { !it.isNaN() } ?: 0.0
 
     private fun addBufferTimeAndRound(averageTime: Double): Int =
         round((averageTime + BUFFER_TIME_MINUTES) * BUFFER_TIME_RATIO).toInt()

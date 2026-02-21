@@ -7,7 +7,6 @@ import com.dh.ondot.schedule.application.dto.HomeScheduleListItem
 import com.dh.ondot.schedule.application.mapper.HomeScheduleListItemMapper
 import com.dh.ondot.schedule.domain.Schedule
 import com.dh.ondot.schedule.domain.enums.TransportType
-import com.dh.ondot.schedule.domain.service.RouteService
 import com.dh.ondot.schedule.domain.service.ScheduleQueryService
 import com.dh.ondot.schedule.domain.service.ScheduleService
 import org.springframework.data.domain.Pageable
@@ -59,6 +58,7 @@ class ScheduleQueryFacade(
         return emergencyAlertService.getIssuesByAddress(roadAddress)
     }
 
+    @Transactional
     fun estimateTravelTime(
         startLongitude: Double, startLatitude: Double,
         endLongitude: Double, endLatitude: Double,

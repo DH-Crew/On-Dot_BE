@@ -63,7 +63,7 @@ class Schedule(
     var preparationNote: String? = null,
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transport_type", nullable = false)
+    @Column(name = "transport_type", nullable = false, columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'PUBLIC_TRANSPORT'")
     var transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
 ) : BaseTimeEntity() {
 
@@ -163,7 +163,6 @@ class Schedule(
     }
 
     companion object {
-        @JvmStatic
         fun createSchedule(
             memberId: Long, departurePlace: Place, arrivalPlace: Place,
             preparationAlarm: Alarm, departureAlarm: Alarm, title: String,
@@ -185,7 +184,6 @@ class Schedule(
             transportType = transportType,
         )
 
-        @JvmStatic
         fun createWithDefaultAlarmSetting(
             alarmMode: AlarmMode, snooze: Snooze, sound: Sound,
             appointmentAt: LocalDateTime, estimatedTime: Int, preparationTime: Int,
