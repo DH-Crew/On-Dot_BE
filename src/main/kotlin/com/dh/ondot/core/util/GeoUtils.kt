@@ -4,7 +4,6 @@ import kotlin.math.*
 
 object GeoUtils {
 
-    @JvmStatic
     fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val earthRadius = 6_371_000.0
         val dLat = Math.toRadians(lat2 - lat1)

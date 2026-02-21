@@ -22,7 +22,6 @@ class MemberWithdrawal(
 ) : BaseTimeEntity() {
 
     companion object {
-        @JvmStatic
         fun create(memberId: Long, reasonId: Long, customReason: String?): MemberWithdrawal =
             MemberWithdrawal(
                 memberId = memberId,

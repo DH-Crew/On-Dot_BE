@@ -12,7 +12,6 @@ data class HomeScheduleListResponse(
     val hasNext: Boolean,
 ) {
     companion object {
-        @JvmStatic
         fun of(
             earliestAlarmId: Long?,
             earliestAlarmAt: Instant?,

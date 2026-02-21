@@ -20,7 +20,6 @@ class Answer(
 ) : BaseTimeEntity() {
 
     companion object {
-        @JvmStatic
         fun create(question: Question, content: String): Answer =
             Answer(question = question, content = content)
     }

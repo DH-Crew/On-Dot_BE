@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.presentation
 
 import com.dh.ondot.schedule.application.command.GenerateAlarmCommand
+import com.dh.ondot.schedule.domain.enums.TransportType
 import com.dh.ondot.schedule.presentation.request.RecordAlarmTriggerRequest
 import com.dh.ondot.schedule.presentation.request.SetAlarmRequest
 import com.dh.ondot.schedule.presentation.response.SettingAlarmResponse
@@ -32,6 +33,7 @@ class AlarmController(
             request.appointmentAt,
             request.startLongitude, request.startLatitude,
             request.endLongitude, request.endLatitude,
+            request.transportType ?: TransportType.PUBLIC_TRANSPORT,
         )
         val schedule = alarmFacade.generateAlarmSettingByRoute(memberId, command)
 

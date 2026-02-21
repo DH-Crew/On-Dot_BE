@@ -9,7 +9,6 @@ data class PlaceSearchResponse(
     val latitude: Double?,
 ) {
     companion object {
-        @JvmStatic
         fun from(result: PlaceSearchResult): PlaceSearchResponse {
             return PlaceSearchResponse(
                 title = result.title,
@@ -19,7 +18,6 @@ data class PlaceSearchResponse(
             )
         }
 
-        @JvmStatic
         fun fromList(results: List<PlaceSearchResult>): List<PlaceSearchResponse> {
             return results.map { from(it) }
         }

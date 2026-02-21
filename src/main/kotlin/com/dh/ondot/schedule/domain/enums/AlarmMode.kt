@@ -10,7 +10,6 @@ enum class AlarmMode {
     SOUND;
 
     companion object {
-        @JvmStatic
         fun from(mode: String): AlarmMode =
             try {
                 valueOf(mode.uppercase(Locale.ENGLISH))

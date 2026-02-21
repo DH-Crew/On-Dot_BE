@@ -1,9 +1,10 @@
 package com.dh.ondot.schedule.domain.service
 
 import com.dh.ondot.core.util.TimeUtils
-import com.dh.ondot.schedule.core.exception.MaxOdsayUsageLimitExceededException
-import com.dh.ondot.schedule.domain.OdsayUsage
-import com.dh.ondot.schedule.domain.repository.OdsayUsageRepository
+import com.dh.ondot.schedule.core.exception.MaxApiUsageLimitExceededException
+import com.dh.ondot.schedule.domain.ApiUsage
+import com.dh.ondot.schedule.domain.enums.ApiType
+import com.dh.ondot.schedule.domain.repository.ApiUsageRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
@@ -20,14 +21,14 @@ import java.time.LocalDate
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
-@DisplayName("OdsayUsageService 테스트")
-class OdsayUsageServiceTest {
+@DisplayName("ApiUsageService 테스트")
+class ApiUsageServiceTest {
 
     @Mock
-    private lateinit var repository: OdsayUsageRepository
+    private lateinit var repository: ApiUsageRepository
 
     @InjectMocks
-    private lateinit var odsayUsageService: OdsayUsageService
+    private lateinit var apiUsageService: ApiUsageService
 
     @Test
     @DisplayName("오늘 첫 사용 시 새로운 사용량 레코드를 생성한다")
@@ -38,14 +39,14 @@ class OdsayUsageServiceTest {
         mockStatic(TimeUtils::class.java).use { timeUtils ->
             timeUtils.`when`<LocalDate> { TimeUtils.nowSeoulDate() }.thenReturn(today)
 
-            given(repository.incrementUsageCount(today)).willReturn(0)
+            given(repository.incrementUsageCount(ApiType.ODSAY, today)).willReturn(0)
 
             // when
-            odsayUsageService.checkAndIncrementUsage()
+            apiUsageService.checkAndIncrementUsage(ApiType.ODSAY)
 
             // then
-            verify(repository).incrementUsageCount(today)
-            verify(repository).save(anyNonNull<OdsayUsage>())
+            verify(repository).incrementUsageCount(ApiType.ODSAY, today)
+            verify(repository).save(anyNonNull<ApiUsage>())
         }
     }
 
@@ -58,14 +59,14 @@ class OdsayUsageServiceTest {
         mockStatic(TimeUtils::class.java).use { timeUtils ->
             timeUtils.`when`<LocalDate> { TimeUtils.nowSeoulDate() }.thenReturn(today)
 
-            given(repository.incrementUsageCount(today)).willReturn(1)
+            given(repository.incrementUsageCount(ApiType.ODSAY, today)).willReturn(1)
 
             // when
-            odsayUsageService.checkAndIncrementUsage()
+            apiUsageService.checkAndIncrementUsage(ApiType.ODSAY)
 
             // then
-            verify(repository).incrementUsageCount(today)
-            verify(repository, never()).findByUsageDate(anyNonNull())
+            verify(repository).incrementUsageCount(ApiType.ODSAY, today)
+            verify(repository, never()).findByApiTypeAndUsageDate(anyNonNull(), anyNonNull())
             verify(repository, never()).save(anyNonNull())
         }
     }
@@ -79,19 +80,19 @@ class OdsayUsageServiceTest {
         mockStatic(TimeUtils::class.java).use { timeUtils ->
             timeUtils.`when`<LocalDate> { TimeUtils.nowSeoulDate() }.thenReturn(today)
 
-            given(repository.incrementUsageCount(today))
+            given(repository.incrementUsageCount(ApiType.ODSAY, today))
                 .willReturn(0)  // First call
                 .willReturn(0)  // Second call (retry after exception)
 
             doThrow(DataIntegrityViolationException::class.java)
-                .`when`(repository).save(anyNonNull<OdsayUsage>())
+                .`when`(repository).save(anyNonNull<ApiUsage>())
 
             // when & then
-            assertThatThrownBy { odsayUsageService.checkAndIncrementUsage() }
-                .isInstanceOf(MaxOdsayUsageLimitExceededException::class.java)
+            assertThatThrownBy { apiUsageService.checkAndIncrementUsage(ApiType.ODSAY) }
+                .isInstanceOf(MaxApiUsageLimitExceededException::class.java)
 
-            verify(repository, times(2)).incrementUsageCount(today)
-            verify(repository).save(anyNonNull<OdsayUsage>())
+            verify(repository, times(2)).incrementUsageCount(ApiType.ODSAY, today)
+            verify(repository).save(anyNonNull<ApiUsage>())
         }
     }
 
@@ -106,14 +107,14 @@ class OdsayUsageServiceTest {
         mockStatic(TimeUtils::class.java).use { timeUtils ->
             timeUtils.`when`<LocalDate> { TimeUtils.nowSeoulDate() }.thenReturn(today)
 
-            given(repository.findUsageCountByDate(today)).willReturn(Optional.of(currentUsage))
+            given(repository.findUsageCountByDate(ApiType.ODSAY, today)).willReturn(Optional.of(currentUsage))
 
             // when
-            val remaining = odsayUsageService.getRemainingUsageToday()
+            val remaining = apiUsageService.getRemainingUsageToday(ApiType.ODSAY)
 
             // then
             assertThat(remaining).isEqualTo(expectedRemaining)
-            verify(repository).findUsageCountByDate(today)
+            verify(repository).findUsageCountByDate(ApiType.ODSAY, today)
         }
     }
 
@@ -126,14 +127,14 @@ class OdsayUsageServiceTest {
         mockStatic(TimeUtils::class.java).use { timeUtils ->
             timeUtils.`when`<LocalDate> { TimeUtils.nowSeoulDate() }.thenReturn(today)
 
-            given(repository.findUsageCountByDate(today)).willReturn(Optional.empty())
+            given(repository.findUsageCountByDate(ApiType.ODSAY, today)).willReturn(Optional.empty())
 
             // when
-            val remaining = odsayUsageService.getRemainingUsageToday()
+            val remaining = apiUsageService.getRemainingUsageToday(ApiType.ODSAY)
 
             // then
             assertThat(remaining).isEqualTo(1000)
-            verify(repository).findUsageCountByDate(today)
+            verify(repository).findUsageCountByDate(ApiType.ODSAY, today)
         }
     }
 
@@ -144,14 +145,14 @@ class OdsayUsageServiceTest {
         val targetDate = LocalDate.of(2025, 8, 30)
         val expectedCount = 250
 
-        given(repository.findUsageCountByDate(targetDate)).willReturn(Optional.of(expectedCount))
+        given(repository.findUsageCountByDate(ApiType.ODSAY, targetDate)).willReturn(Optional.of(expectedCount))
 
         // when
-        val usageCount = odsayUsageService.getUsageCount(targetDate)
+        val usageCount = apiUsageService.getUsageCount(ApiType.ODSAY, targetDate)
 
         // then
         assertThat(usageCount).isEqualTo(expectedCount)
-        verify(repository).findUsageCountByDate(targetDate)
+        verify(repository).findUsageCountByDate(ApiType.ODSAY, targetDate)
     }
 
     @Test
@@ -160,13 +161,13 @@ class OdsayUsageServiceTest {
         // given
         val targetDate = LocalDate.of(2025, 8, 29)
 
-        given(repository.findUsageCountByDate(targetDate)).willReturn(Optional.empty())
+        given(repository.findUsageCountByDate(ApiType.ODSAY, targetDate)).willReturn(Optional.empty())
 
         // when
-        val usageCount = odsayUsageService.getUsageCount(targetDate)
+        val usageCount = apiUsageService.getUsageCount(ApiType.ODSAY, targetDate)
 
         // then
         assertThat(usageCount).isEqualTo(0)
-        verify(repository).findUsageCountByDate(targetDate)
+        verify(repository).findUsageCountByDate(ApiType.ODSAY, targetDate)
     }
 }

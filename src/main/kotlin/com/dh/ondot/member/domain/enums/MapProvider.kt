@@ -10,7 +10,6 @@ enum class MapProvider {
     ;
 
     companion object {
-        @JvmStatic
         fun from(mapProvider: String): MapProvider =
             entries.find { it.name.equals(mapProvider, ignoreCase = true) }
                 ?: throw UnsupportedException(UNSUPPORTED_MAP_PROVIDER, mapProvider)

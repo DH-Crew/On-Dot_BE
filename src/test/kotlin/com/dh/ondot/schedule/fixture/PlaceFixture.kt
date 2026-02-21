@@ -4,7 +4,6 @@ import com.dh.ondot.schedule.domain.Place
 
 object PlaceFixture {
 
-    @JvmStatic
     fun defaultDeparturePlace(): Place = Place(
         0L,
         "집",
@@ -13,7 +12,6 @@ object PlaceFixture {
         37.5665
     )
 
-    @JvmStatic
     fun defaultArrivalPlace(): Place = Place(
         0L,
         "회사",

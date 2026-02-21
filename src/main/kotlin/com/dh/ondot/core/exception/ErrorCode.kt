@@ -66,15 +66,22 @@ enum class ErrorCode(
     UNAVAILABLE_OPEN_AI_SERVER(BAD_GATEWAY, "일시적으로 Open AI 서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."),
     UNHANDLED_OPEN_AI(INTERNAL_SERVER_ERROR, "Open AI 요청 과정에서 알 수 없는 문제가 발생했습니다. 관리자에게 문의해주세요."),
 
+    // API Usage
+    API_USAGE_LIMIT_EXCEEDED(FORBIDDEN, "오늘 %s API 사용 한도를 초과했습니다. Date : %s"),
+
     // ODsay API
     ODSAY_BAD_INPUT(BAD_REQUEST, "필수 입력값 형식 및 범위를 확인해주세요: %s"),
     ODSAY_MISSING_PARAM(BAD_REQUEST, "필수 입력값이 누락되었습니다: %s"),
     ODSAY_NO_STOP(BAD_REQUEST, "출발지 또는 도착지 정류장을 찾을 수 없습니다: %s"),
     ODSAY_SERVICE_AREA(BAD_REQUEST, "서비스 지역이 아닙니다: %s"),
     ODSAY_TOO_CLOSE(BAD_REQUEST, "출발지와 도착지가 너무 가깝습니다: %s"),
-    ODSAY_USAGE_LIMIT_EXCEEDED(FORBIDDEN, "오늘 Odsay API 사용 한도를 초과했습니다. Date : %s"),
     ODSAY_NO_RESULT(NOT_FOUND, "검색 결과가 없습니다: %s"),
     ODSAY_SERVER_ERROR(BAD_GATEWAY, "ODSay 서버 내부 오류가 발생했습니다: %s"),
     ODSAY_UNHANDLED_ERROR(INTERNAL_SERVER_ERROR, "ODSay API 처리 중 알 수 없는 오류가 발생했습니다: %s"),
+
+    // TMAP API
+    TMAP_NO_RESULT(NOT_FOUND, "자가용 경로 검색 결과가 없습니다: %s"),
+    TMAP_SERVER_ERROR(BAD_GATEWAY, "TMAP 서버 내부 오류가 발생했습니다: %s"),
+    TMAP_UNHANDLED_ERROR(INTERNAL_SERVER_ERROR, "TMAP API 처리 중 알 수 없는 오류가 발생했습니다: %s"),
     ;
 }

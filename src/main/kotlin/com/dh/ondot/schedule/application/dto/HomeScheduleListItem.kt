@@ -23,7 +23,6 @@ data class HomeScheduleListItem(
     val nextAlarmAt: Instant?,
 ) {
     companion object {
-        @JvmStatic
         fun from(schedule: Schedule): HomeScheduleListItem {
             return HomeScheduleListItem(
                 scheduleId = schedule.id,

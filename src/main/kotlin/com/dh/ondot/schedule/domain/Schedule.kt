@@ -5,6 +5,7 @@ import com.dh.ondot.core.BaseTimeEntity
 import com.dh.ondot.core.util.TimeUtils
 import com.dh.ondot.schedule.domain.converter.RepeatDaysConverter
 import com.dh.ondot.schedule.domain.enums.AlarmMode
+import com.dh.ondot.schedule.domain.enums.TransportType
 import com.dh.ondot.schedule.domain.vo.Snooze
 import com.dh.ondot.schedule.domain.vo.Sound
 import jakarta.persistence.*
@@ -60,6 +61,10 @@ class Schedule(
 
     @Column(name = "preparation_note", length = 100)
     var preparationNote: String? = null,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transport_type", nullable = false, columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'PUBLIC_TRANSPORT'")
+    var transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
 ) : BaseTimeEntity() {
 
     fun registerPlaces(departurePlace: Place, arrivalPlace: Place) {
@@ -158,12 +163,12 @@ class Schedule(
     }
 
     companion object {
-        @JvmStatic
         fun createSchedule(
             memberId: Long, departurePlace: Place, arrivalPlace: Place,
             preparationAlarm: Alarm, departureAlarm: Alarm, title: String,
             isRepeat: Boolean, repeatDays: SortedSet<Int>?, appointmentAt: LocalDateTime,
             isMedicationRequired: Boolean, preparationNote: String?,
+            transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
         ): Schedule = Schedule(
             memberId = memberId,
             departurePlace = departurePlace,
@@ -176,9 +181,9 @@ class Schedule(
             appointmentAt = TimeUtils.toInstant(appointmentAt),
             isMedicationRequired = isMedicationRequired,
             preparationNote = preparationNote,
+            transportType = transportType,
         )
 
-        @JvmStatic
         fun createWithDefaultAlarmSetting(
             alarmMode: AlarmMode, snooze: Snooze, sound: Sound,
             appointmentAt: LocalDateTime, estimatedTime: Int, preparationTime: Int,

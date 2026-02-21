@@ -11,7 +11,6 @@ data class PlaceHistory(
     val searchedAt: Instant,
 ) {
     companion object {
-        @JvmStatic
         fun of(
             memberId: Long, title: String, roadAddress: String,
             longitude: Double, latitude: Double,

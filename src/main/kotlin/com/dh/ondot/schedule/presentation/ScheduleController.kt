@@ -15,6 +15,7 @@ import com.dh.ondot.schedule.presentation.response.ScheduleParsedResponse
 import com.dh.ondot.schedule.presentation.response.SchedulePreparationResponse
 import com.dh.ondot.schedule.presentation.response.ScheduleUpdateResponse
 import com.dh.ondot.schedule.presentation.swagger.ScheduleSwagger
+import com.dh.ondot.schedule.domain.enums.TransportType
 import com.dh.ondot.schedule.application.ScheduleCommandFacade
 import com.dh.ondot.schedule.application.ScheduleQueryFacade
 import jakarta.validation.Valid
@@ -87,6 +88,8 @@ class ScheduleController(
         val estimatedTime = scheduleQueryFacade.estimateTravelTime(
             request.startLongitude, request.startLatitude,
             request.endLongitude, request.endLatitude,
+            request.transportType ?: TransportType.PUBLIC_TRANSPORT,
+            request.appointmentAt,
         )
         return EstimateTimeResponse.from(estimatedTime)
     }

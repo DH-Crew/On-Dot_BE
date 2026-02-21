@@ -13,6 +13,7 @@ import com.dh.ondot.schedule.domain.enums.RingTone
 import com.dh.ondot.schedule.domain.enums.SnoozeCount
 import com.dh.ondot.schedule.domain.enums.SnoozeInterval
 import com.dh.ondot.schedule.domain.enums.SoundCategory
+import com.dh.ondot.schedule.domain.enums.TransportType
 import com.dh.ondot.schedule.domain.vo.Snooze
 import com.dh.ondot.schedule.domain.vo.Sound
 import com.dh.ondot.schedule.presentation.response.HomeScheduleListResponse
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.verify
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -178,6 +180,7 @@ class ScheduleControllerTest {
             on { arrivalPlace } doReturn place
             on { isMedicationRequired } doReturn true
             on { preparationNote } doReturn "약 챙기기"
+            on { transportType } doReturn TransportType.PUBLIC_TRANSPORT
         }
     }
 
@@ -312,7 +315,9 @@ class ScheduleControllerTest {
         @Test
         @DisplayName("정상 요청 시 200과 EstimateTimeResponse를 반환한다")
         fun success_200() {
-            whenever(scheduleQueryFacade.estimateTravelTime(any(), any(), any(), any())).thenReturn(30)
+            whenever(scheduleQueryFacade.estimateTravelTime(
+                any(), any(), any(), any(), any(), anyOrNull(),
+            )).thenReturn(30)
 
             mockMvc.perform(
                 post("/schedules/estimate-time")

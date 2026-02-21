@@ -76,6 +76,10 @@ odsay:
   base-url: https://api.odsay.com/v1/api/searchPubTransPathT
   api-key: ${ODSAY_CLIENT_API_KEY}
 
+tmap:
+  base-url: https://apis.openapi.sk.com
+  app-key: ${TMAP_APP_KEY}
+
 external-api:
   seoul-transportation:
     base-url: https://apis.data.go.kr/B553766/ntce/getNtceList

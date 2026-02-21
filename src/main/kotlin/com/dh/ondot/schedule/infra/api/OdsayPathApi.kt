@@ -5,18 +5,18 @@ import com.dh.ondot.schedule.infra.dto.OdsayErrorResponse
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse
 import com.dh.ondot.schedule.infra.exception.*
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
-import java.net.URI
 
 @Component
 class OdsayPathApi(
     private val odsayApiConfig: OdsayApiConfig,
     private val objectMapper: ObjectMapper,
+    @Qualifier("odsayRestClient") private val restClient: RestClient,
 ) {
-    private val restClient: RestClient = RestClient.create()
 
     @Retryable(
         retryFor = [OdsayServerErrorException::class],
@@ -24,18 +24,17 @@ class OdsayPathApi(
         backoff = Backoff(delay = 500)
     )
     fun searchPublicTransportRoute(startX: Double, startY: Double, endX: Double, endY: Double): OdsayRouteApiResponse {
-        val url = String.format(
-            "%s?apiKey=%s&SX=%s&SY=%s&EX=%s&EY=%s",
-            odsayApiConfig.baseUrl,
-            odsayApiConfig.apiKey,
-            startX, startY, endX, endY
-        )
-
         try {
-            val uri = URI.create(url)
-
             val rawBody = restClient.get()
-                .uri(uri)
+                .uri { builder ->
+                    builder
+                        .queryParam("apiKey", odsayApiConfig.apiKey)
+                        .queryParam("SX", startX)
+                        .queryParam("SY", startY)
+                        .queryParam("EX", endX)
+                        .queryParam("EY", endY)
+                        .build()
+                }
                 .retrieve()
                 .body(String::class.java)
 

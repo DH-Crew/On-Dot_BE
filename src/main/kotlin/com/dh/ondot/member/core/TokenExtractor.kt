@@ -6,7 +6,6 @@ import com.dh.ondot.member.core.exception.TokenMissingException
 object TokenExtractor {
     private const val BEARER_PREFIX = "Bearer "
 
-    @JvmStatic
     fun extract(header: String?): String {
         if (header == null) {
             throw TokenMissingException()

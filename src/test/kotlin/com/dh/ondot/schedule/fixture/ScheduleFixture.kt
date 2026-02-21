@@ -9,13 +9,10 @@ import java.util.TreeSet
 
 object ScheduleFixture {
 
-    @JvmStatic
     fun builder(): ScheduleBuilder = ScheduleBuilder()
 
-    @JvmStatic
     fun defaultSchedule(): Schedule = builder().build()
 
-    @JvmStatic
     fun repeatSchedule(repeatDays: SortedSet<Int>): Schedule =
         builder()
             .isRepeat(true)
@@ -63,7 +60,6 @@ object ScheduleFixture {
         )
     }
 
-    @JvmStatic
     fun weekdays(): SortedSet<Int> {
         val days = TreeSet<Int>()
         days.add(2) // 월
@@ -74,7 +70,6 @@ object ScheduleFixture {
         return days
     }
 
-    @JvmStatic
     fun weekends(): SortedSet<Int> {
         val days = TreeSet<Int>()
         days.add(1) // 일

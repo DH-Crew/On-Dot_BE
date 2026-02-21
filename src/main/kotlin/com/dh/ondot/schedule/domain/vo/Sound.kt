@@ -31,7 +31,6 @@ class Sound protected constructor() {
     }
 
     companion object {
-        @JvmStatic
         fun of(soundCategory: String, ringTone: String, volume: Double?): Sound =
             Sound(SoundCategory.from(soundCategory), RingTone.from(ringTone), volume!!)
     }

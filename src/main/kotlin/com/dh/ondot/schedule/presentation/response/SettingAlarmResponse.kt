@@ -7,7 +7,6 @@ data class SettingAlarmResponse(
     val departureAlarm: AlarmDto,
 ) {
     companion object {
-        @JvmStatic
         fun from(preparation: Alarm, departure: Alarm): SettingAlarmResponse {
             return SettingAlarmResponse(
                 preparationAlarm = AlarmDto.of(preparation),

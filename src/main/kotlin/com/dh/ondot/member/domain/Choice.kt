@@ -25,7 +25,6 @@ class Choice(
 ) : BaseTimeEntity() {
 
     companion object {
-        @JvmStatic
         fun createChoice(member: Member, question: Question, answer: Answer): Choice =
             Choice(member = member, question = question, answer = answer)
     }

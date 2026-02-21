@@ -18,7 +18,6 @@ data class AlarmDto(
     val volume: Double,
 ) {
     companion object {
-        @JvmStatic
         fun of(alarm: Alarm): AlarmDto {
             return AlarmDto(
                 alarmId = alarm.id,
@@ -34,7 +33,6 @@ data class AlarmDto(
             )
         }
 
-        @JvmStatic
         fun of(alarm: Alarm, schedule: Schedule): AlarmDto {
             return AlarmDto(
                 alarmId = alarm.id,

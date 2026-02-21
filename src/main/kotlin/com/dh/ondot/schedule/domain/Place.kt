@@ -44,7 +44,6 @@ class Place(
             || this.latitude.compareTo(latitude) != 0
 
     companion object {
-        @JvmStatic
         fun createPlace(title: String, roadAddress: String, longitude: Double, latitude: Double): Place =
             Place(title = title, roadAddress = roadAddress, longitude = longitude, latitude = latitude)
     }
