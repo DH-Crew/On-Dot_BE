@@ -40,25 +40,20 @@ import org.springframework.web.bind.annotation.RequestParam
 @Tag(
     name = "Schedule API",
     description = """
-        <b>AccessToken (Authorization: Bearer JWT)</b>은 필수값입니다.<br>
-        → 각 엔드포인트에 별도 파라미터는 필요 없으나 오른쪽 상단 Authorize에 토큰 값을 넣어야합니다.<br><br>
+        **AccessToken (Authorization: Bearer JWT)** 은 필수값입니다.
+        → 각 엔드포인트에 별도 파라미터는 필요 없으나 오른쪽 상단 Authorize에 토큰 값을 넣어야합니다.
 
-        <b>🗓 repeatDays 요일 규칙</b><br>
-        • 1 = 일요일<br>
-        • 2 = 월요일 …<br>
-        • 7 = 토요일<br><br>
+        **🗓 repeatDays 요일 규칙**
+        - 1 = 일요일
+        - 2 = 월요일 …
+        - 7 = 토요일
 
-        <b>🔔 Alarm ENUM</b><br>
-        • <code>AlarmMode</code>: SILENT, VIBRATE, SOUND<br>
-        • <code>SnoozeInterval</code>: 1, 3, 5, 10, 30, 60 (분)<br>
-        • <code>SnoozeCount</code>: -1(INFINITE), 1, 3, 5, 10 (회)<br>
-        • <code>SoundCategory</code>: <i>BRIGHT_ENERGY, FAST_INTENSE</i><br>
-        • <code>RingTone</code>: <i>
-          DANCING_IN_THE_STARDUST, IN_THE_CITY_LIGHTS_MIST, FRACTURED_LOVE,<br>
-          CHASING_LIGHTS, ASHES_OF_US, HEATING_SUN, NO_COPYRIGHT_MUSIC,<br>
-          MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY,<br>
-          ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER
-        </i>
+        **🔔 Alarm ENUM**
+        - `AlarmMode`: SILENT, VIBRATE, SOUND
+        - `SnoozeInterval`: 1, 3, 5, 10, 30, 60 (분)
+        - `SnoozeCount`: -1(INFINITE), 1, 3, 5, 10 (회)
+        - `SoundCategory`: *BRIGHT_ENERGY, FAST_INTENSE*
+        - `RingTone`: *DANCING_IN_THE_STARDUST, IN_THE_CITY_LIGHTS_MIST, FRACTURED_LOVE, CHASING_LIGHTS, ASHES_OF_US, HEATING_SUN, NO_COPYRIGHT_MUSIC, MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY, ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER*
         """
 )
 @RequestMapping("/schedules")
@@ -70,14 +65,13 @@ interface ScheduleSwagger {
     @Operation(
         summary = "일정 생성",
         description = """
-            새로운 스케줄을 생성합니다. <br>
-            <ul>
-              <li><code>repeatDays</code> 는 1(일)~7(토) 숫자 배열입니다.</li>
-              <li><code>triggeredAt</code> 은 <code>HH:mm:ss</code> 형태의 ISO‑8601 시간 문자열입니다.</li>
-              <li><code>isMedicationRequired</code> 는 복약 여부를 나타내는 boolean 값입니다.</li>
-              <li><code>preparationNote</code> 는 준비물 관련 메모이며 최대 100자까지 입력 가능합니다.</li>
-              <li><code>transportType</code> 은 교통수단 유형입니다. <code>PUBLIC_TRANSPORT</code>(대중교통, 기본값) 또는 <code>CAR</code>(자가용)</li>
-            </ul>""",
+            새로운 스케줄을 생성합니다.
+            - `repeatDays` 는 1(일)~7(토) 숫자 배열입니다.
+            - `triggeredAt` 은 `HH:mm:ss` 형태의 ISO‑8601 시간 문자열입니다.
+            - `isMedicationRequired` 는 복약 여부를 나타내는 boolean 값입니다.
+            - `preparationNote` 는 준비물 관련 메모이며 최대 100자까지 입력 가능합니다.
+            - `transportType` 은 교통수단 유형입니다. `PUBLIC_TRANSPORT`(대중교통, 기본값) 또는 `CAR`(자가용)
+            """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
             content = [Content(
@@ -164,7 +158,7 @@ interface ScheduleSwagger {
     @Operation(
         summary = "빠른 일정 생성",
         description = """
-            STT(Speech-to-Text) 음성 인식 결과를 자연어 처리 기반 LLM(GPT)을 통해 파싱된 데이터를 통해 스케줄을 생성합니다.<br>
+            STT(Speech-to-Text) 음성 인식 결과를 자연어 처리 기반 LLM(GPT)을 통해 파싱된 데이터를 통해 스케줄을 생성합니다.
             알람 관련 시간 계산은 비동기적으로 처리되며, 요청이 성공적으로 수신되면 202 Accepted 상태 코드를 반환합니다.
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -210,15 +204,15 @@ interface ScheduleSwagger {
         summary = "STT 일정 텍스트 파싱",
         description = """
         한글 자연어 문장(예: "내일 6시에 강남역에 약속 있어")을
-        <code>departurePlaceTitle</code>, <code>appointmentAt</code> JSON 으로 변환합니다.
-        <br/><br/>
-        <b>⚠️ Error Code </b><br/>
-        - 잘못된 JSON 형식 <code>INVALID_JSON</code><br/>
-        - 문장을 이해하지 못하면 <code>OPEN_AI_PARSING_ERROR</code><br/>
-        - 하루 호출 제한(기본 30회)을 초과하면 <code>AI_USAGE_LIMIT_EXCEEDED</code><br/>
-        - OpenAI 서버 장애 시 <code>UNAVAILABLE_OPEN_AI_SERVER</code><br/>
-        - OpenAI 처리 중 예기치 못한 장애 시 <code>UNHANDLED_OPEN_AI</code><br/>
-        - 그 외 예기치 못한 장애 시 <code>SERVER_ERROR</code>
+        `departurePlaceTitle`, `appointmentAt` JSON 으로 변환합니다.
+
+        **⚠️ Error Code**
+        - 잘못된 JSON 형식 `INVALID_JSON`
+        - 문장을 이해하지 못하면 `OPEN_AI_PARSING_ERROR`
+        - 하루 호출 제한(기본 30회)을 초과하면 `AI_USAGE_LIMIT_EXCEEDED`
+        - OpenAI 서버 장애 시 `UNAVAILABLE_OPEN_AI_SERVER`
+        - OpenAI 처리 중 예기치 못한 장애 시 `UNHANDLED_OPEN_AI`
+        - 그 외 예기치 못한 장애 시 `SERVER_ERROR`
         """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -346,28 +340,28 @@ interface ScheduleSwagger {
     @Operation(
         summary = "[테스트용] 경로에 따른 예상 시간 반환",
         description = """
-            <b>⚠️ 이 엔드포인트는 앱에서 사용하지 않으며, Swagger 테스트 용도입니다.</b>
-            <br/>앱에서는 <code>POST /alarms/setting</code>을 통해 경로 계산을 수행합니다.
-            <br/><br/>
+            **⚠️ 이 엔드포인트는 앱에서 사용하지 않으며, Swagger 테스트 용도입니다.**
+            앱에서는 `POST /alarms/setting`을 통해 경로 계산을 수행합니다.
+
             출발지(startLongitude, startLatitude)와 도착지(endLongitude, endLatitude) 간의
             예상 소요 시간을 분 단위로 계산하여 반환합니다.
-            <br/><br/>
-            <b>📌 파라미터 설명</b><br/>
-            • <code>transportType</code>: <code>PUBLIC_TRANSPORT</code>(대중교통, 기본값) 또는 <code>CAR</code>(자가용)<br/>
-            • <code>appointmentAt</code>: 약속 시간 (선택). 자가용(<code>CAR</code>) 선택 시 해당 시간대의 예측 교통량을 반영합니다.
-            <br/><br/>
-            <b>⚠️ Error Codes</b><br/>
-            • 요청 JSON 문법 오류: <code>INVALID_JSON</code><br/>
-            • 입력 필드 검증 실패: <code>FIELD_ERROR</code><br/>
-            • 좌표 형식·범위 오류: <code>ODSAY_BAD_INPUT</code>, <code>ODSAY_MISSING_PARAM</code><br/>
-            • 정류장 없음: <code>ODSAY_NO_STOP</code><br/>
-            • 서비스 지역 아님: <code>ODSAY_SERVICE_AREA</code><br/>
-            • 검색 결과 없음: <code>ODSAY_NO_RESULT</code><br/>
-            • ODsay 서버 내부 오류: <code>ODSAY_SERVER_ERROR</code><br/>
-            • 예기치 못한 ODsay 오류: <code>ODSAY_UNHANDLED_ERROR</code><br/>
-            • TMAP 서버 오류: <code>TMAP_SERVER_ERROR</code><br/>
-            • TMAP 결과 없음: <code>TMAP_NO_RESULT</code><br/>
-            • 그 외 서버 오류: <code>SERVER_ERROR</code>
+
+            **📌 파라미터 설명**
+            - `transportType`: `PUBLIC_TRANSPORT`(대중교통, 기본값) 또는 `CAR`(자가용)
+            - `appointmentAt`: 약속 시간 (선택). 자가용(`CAR`) 선택 시 해당 시간대의 예측 교통량을 반영합니다.
+
+            **⚠️ Error Codes**
+            - 요청 JSON 문법 오류: `INVALID_JSON`
+            - 입력 필드 검증 실패: `FIELD_ERROR`
+            - 좌표 형식·범위 오류: `ODSAY_BAD_INPUT`, `ODSAY_MISSING_PARAM`
+            - 정류장 없음: `ODSAY_NO_STOP`
+            - 서비스 지역 아님: `ODSAY_SERVICE_AREA`
+            - 검색 결과 없음: `ODSAY_NO_RESULT`
+            - ODsay 서버 내부 오류: `ODSAY_SERVER_ERROR`
+            - 예기치 못한 ODsay 오류: `ODSAY_UNHANDLED_ERROR`
+            - TMAP 서버 오류: `TMAP_SERVER_ERROR`
+            - TMAP 결과 없음: `TMAP_NO_RESULT`
+            - 그 외 서버 오류: `SERVER_ERROR`
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -510,8 +504,8 @@ interface ScheduleSwagger {
     @Operation(
         summary = "단일 일정 상세 조회",
         description = """
-            <code>scheduleId</code> 로 하나의 스케줄 상세 정보를 반환합니다.<br>
-            홈 화면에서 선택한 <b>일정의 상세 정보(약속, 알람, 장소)</b>를 조회할 때 사용합니다.
+            `scheduleId` 로 하나의 스케줄 상세 정보를 반환합니다.
+            홈 화면에서 선택한 **일정의 상세 정보(약속, 알람, 장소)** 를 조회할 때 사용합니다.
             """,
         parameters = [
             Parameter(
@@ -616,9 +610,9 @@ interface ScheduleSwagger {
     @Operation(
         summary = "일정 준비 정보 조회",
         description = """
-        <code>scheduleId</code>에 해당하는 일정의 <b>준비 정보</b>를 반환합니다.
-        - <code>isMedicationRequired</code>: 복약 여부
-        - <code>preparationNote</code>: 준비물 메모 (최대 100자)
+        `scheduleId`에 해당하는 일정의 **준비 정보**를 반환합니다.
+        - `isMedicationRequired`: 복약 여부
+        - `preparationNote`: 준비물 메모 (최대 100자)
         """,
         parameters = [
             Parameter(
@@ -674,8 +668,8 @@ interface ScheduleSwagger {
     @Operation(
         summary = "일정별 이슈 조회",
         description = """
-            <code>scheduleId</code>에 해당하는 일정의 <b>도착지</b> 주변 긴급 재난문자 및 지하철 알림 메시지를 한데 모아<br>
-            각 메시지를 줄바꿈(`\n`)으로 구분한 단일 문자열로 반환합니다.<br>
+            `scheduleId`에 해당하는 일정의 **도착지** 주변 긴급 재난문자 및 지하철 알림 메시지를 한데 모아
+            각 메시지를 줄바꿈(`\n`)으로 구분한 단일 문자열로 반환합니다.
             사용자가 설정한 일정의 도착지에 등록된 이슈를 빠르게 확인할 때 사용합니다.
             """,
         parameters = [
@@ -733,9 +727,9 @@ interface ScheduleSwagger {
     @Operation(
         summary = "전체 일정 목록 조회",
         description = """
-            <b>가장 빨리 울릴 알람 시각</b>(earliestAlarmAt)과 <b>일정 목록</b>(scheduleList)를 반환합니다. <br>
-            • <code>hasNext=true</code> 면 이후 page 를 조회할 수 있습니다. <br>
-            • <code>page</code>와 <code>size</code>를 통해 페이지와 개수를 조정할 수 있습니다.
+            **가장 빨리 울릴 알람 시각**(earliestAlarmAt)과 **일정 목록**(scheduleList)를 반환합니다.
+            - `hasNext=true` 면 이후 page 를 조회할 수 있습니다.
+            - `page`와 `size`를 통해 페이지와 개수를 조정할 수 있습니다.
             """,
         parameters = [
             Parameter(
@@ -830,10 +824,9 @@ interface ScheduleSwagger {
         summary = "일정 수정",
         description = """
         스케줄을 수정합니다.
-        <ul>
-          <li>출발/도착 장소 또는 약속 시간이 바뀌면 202 Accepted</li>
-          <li>그 외 필드만 바뀌면 200 OK</li>
-        </ul>""",
+        - 출발/도착 장소 또는 약속 시간이 바뀌면 202 Accepted
+        - 그 외 필드만 바뀌면 200 OK
+        """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
             content = [Content(
@@ -917,7 +910,7 @@ interface ScheduleSwagger {
 
     @Operation(
         summary = "알람 ON/OFF",
-        description = "<b>일정의 알람 동작 여부</b>를 isEnabled 의 true/false 로 변경합니다.",
+        description = "**일정의 알람 동작 여부**를 isEnabled 의 true/false 로 변경합니다.",
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
             content = [Content(

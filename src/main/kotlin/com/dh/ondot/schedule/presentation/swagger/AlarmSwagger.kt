@@ -23,20 +23,15 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Tag(
     name = "Alarm API",
     description = """
-        <b>AccessToken (Authorization: Bearer JWT)</b>은 필수입니다.<br>
-        <br>
-        <b>🔔 Alarm ENUM</b><br>
-        • <code>AlarmMode</code>: SILENT, VIBRATE, SOUND<br>
-        • <code>SnoozeInterval</code>: 1, 3, 5, 10, 30, 60 (분)<br>
-        • <code>SnoozeCount</code>: -1(INFINITE), 1, 3, 5, 10 (회)<br>
-        • <code>SoundCategory</code>: <i>BRIGHT_ENERGY, FAST_INTENSE</i><br>
-        • <code>RingTone</code>: <i>
-          DANCING_IN_THE_STARDUST, IN_THE_CITY_LIGHTS_MIST, FRACTURED_LOVE,<br>
-          CHASING_LIGHTS, ASHES_OF_US, HEATING_SUN, NO_COPYRIGHT_MUSIC,<br>
-          MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY,<br>
-          ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER
-        </i><br>
-        • <code>AlarmTriggerAction</code>: SCHEDULED, STOP, SNOOZE, VIEW_ROUTE, START_PREPARE
+        **AccessToken (Authorization: Bearer JWT)** 은 필수입니다.
+
+        **🔔 Alarm ENUM**
+        - `AlarmMode`: SILENT, VIBRATE, SOUND
+        - `SnoozeInterval`: 1, 3, 5, 10, 30, 60 (분)
+        - `SnoozeCount`: -1(INFINITE), 1, 3, 5, 10 (회)
+        - `SoundCategory`: *BRIGHT_ENERGY, FAST_INTENSE*
+        - `RingTone`: *DANCING_IN_THE_STARDUST, IN_THE_CITY_LIGHTS_MIST, FRACTURED_LOVE, CHASING_LIGHTS, ASHES_OF_US, HEATING_SUN, NO_COPYRIGHT_MUSIC, MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY, ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER*
+        - `AlarmTriggerAction`: SCHEDULED, STOP, SNOOZE, VIEW_ROUTE, START_PREPARE
         """
 )
 @RequestMapping("/alarms")
@@ -48,28 +43,28 @@ interface AlarmSwagger {
     @Operation(
         summary = "출도착지 기반 알람 세팅",
         description = """
-            출도착지를 기반으로 예상시간을 계산합니다.<br>
-            사용자의 스케줄 중 <code>updatedAt</code>이 가장 최신인 1건을 기준으로
-            <b>준비 알람</b>과 <b>출발 알람</b> 설정 값을 반환합니다.<br/>
-            최신 스케줄이 없는 경우 온보딩에서 설정한 값을 가져옵니다.<br/>
-            <br/>
-            <b>📌 파라미터 설명</b><br/>
-            • <code>transportType</code>: <code>PUBLIC_TRANSPORT</code>(대중교통, 기본값) 또는 <code>CAR</code>(자가용)<br/>
-            • <code>appointmentAt</code>: 약속 시간. 자가용(<code>CAR</code>) 선택 시 해당 시간대의 예측 교통량을 반영합니다.
-            <br/><br/>
-            <b>⚠️ Error Codes</b><br/>
-            • 요청 JSON 문법 오류: <code>INVALID_JSON</code><br/>
-            • 입력 필드 검증 실패: <code>FIELD_ERROR</code><br/>
-            • 좌표 형식·범위 오류: <code>ODSAY_BAD_INPUT</code>, <code>ODSAY_MISSING_PARAM</code><br/>
-            • 정류장 없음: <code>ODSAY_NO_STOP</code><br/>
-            • 서비스 지역 아님: <code>ODSAY_SERVICE_AREA</code><br/>
-            • 지나치게 가까움(700m 이내): <code>ODSAY_TOO_CLOSE</code><br/>
-            • 검색 결과 없음: <code>ODSAY_NO_RESULT</code><br/>
-            • ODsay 서버 내부 오류: <code>ODSAY_SERVER_ERROR</code><br/>
-            • 예기치 못한 ODsay 오류: <code>ODSAY_UNHANDLED_ERROR</code><br/>
-            • TMAP 서버 오류: <code>TMAP_SERVER_ERROR</code><br/>
-            • TMAP 결과 없음: <code>TMAP_NO_RESULT</code><br/>
-            • 그 외 서버 오류: <code>SERVER_ERROR</code>
+            출도착지를 기반으로 예상시간을 계산합니다.
+            사용자의 스케줄 중 `updatedAt`이 가장 최신인 1건을 기준으로
+            **준비 알람**과 **출발 알람** 설정 값을 반환합니다.
+            최신 스케줄이 없는 경우 온보딩에서 설정한 값을 가져옵니다.
+
+            **📌 파라미터 설명**
+            - `transportType`: `PUBLIC_TRANSPORT`(대중교통, 기본값) 또는 `CAR`(자가용)
+            - `appointmentAt`: 약속 시간. 자가용(`CAR`) 선택 시 해당 시간대의 예측 교통량을 반영합니다.
+
+            **⚠️ Error Codes**
+            - 요청 JSON 문법 오류: `INVALID_JSON`
+            - 입력 필드 검증 실패: `FIELD_ERROR`
+            - 좌표 형식·범위 오류: `ODSAY_BAD_INPUT`, `ODSAY_MISSING_PARAM`
+            - 정류장 없음: `ODSAY_NO_STOP`
+            - 서비스 지역 아님: `ODSAY_SERVICE_AREA`
+            - 지나치게 가까움(700m 이내): `ODSAY_TOO_CLOSE`
+            - 검색 결과 없음: `ODSAY_NO_RESULT`
+            - ODsay 서버 내부 오류: `ODSAY_SERVER_ERROR`
+            - 예기치 못한 ODsay 오류: `ODSAY_UNHANDLED_ERROR`
+            - TMAP 서버 오류: `TMAP_SERVER_ERROR`
+            - TMAP 결과 없음: `TMAP_NO_RESULT`
+            - 그 외 서버 오류: `SERVER_ERROR`
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -142,22 +137,22 @@ interface AlarmSwagger {
     @Operation(
         summary = "알람 트리거 기록 저장",
         description = """
-            알람이 실제로 울렸을 때의 기록을 저장합니다.<br>
-            사용자가 알람에 대해 취한 액션(끔/다시알림/무응답)과 응답 시간 등의 지표를 수집합니다.<br/>
-            <br/>
-            <b>📝 action 필드 가능한 값</b><br/>
-            • <code>SCHEDULED</code>: 스케줄링 등록<br/>
-            • <code>STOP</code>: 알람 끔<br/>
-            • <code>SNOOZE</code>: 다시 알림<br/>
-            • <code>VIEW_ROUTE</code>: 경로안내 보기<br/>
-            • <code>START_PREPARE</code>: 준비 시작하기<br/>
-            <br/>
-            <b>⚠️ Error Codes</b><br/>
-            • 요청 JSON 문법 오류: <code>INVALID_JSON</code><br/>
-            • 입력 필드 검증 실패: <code>FIELD_ERROR</code><br/>
-            • 알람을 찾을 수 없음: <code>NOT_FOUND_ALARM</code><br/>
-            • 잘못된 알람 트리거 액션: <code>INVALID_ALARM_TRIGGER_ACTION</code><br/>
-            • 그 외 서버 오류: <code>SERVER_ERROR</code>
+            알람이 실제로 울렸을 때의 기록을 저장합니다.
+            사용자가 알람에 대해 취한 액션(끔/다시알림/무응답)과 응답 시간 등의 지표를 수집합니다.
+
+            **📝 action 필드 가능한 값**
+            - `SCHEDULED`: 스케줄링 등록
+            - `STOP`: 알람 끔
+            - `SNOOZE`: 다시 알림
+            - `VIEW_ROUTE`: 경로안내 보기
+            - `START_PREPARE`: 준비 시작하기
+
+            **⚠️ Error Codes**
+            - 요청 JSON 문법 오류: `INVALID_JSON`
+            - 입력 필드 검증 실패: `FIELD_ERROR`
+            - 알람을 찾을 수 없음: `NOT_FOUND_ALARM`
+            - 잘못된 알람 트리거 액션: `INVALID_ALARM_TRIGGER_ACTION`
+            - 그 외 서버 오류: `SERVER_ERROR`
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
