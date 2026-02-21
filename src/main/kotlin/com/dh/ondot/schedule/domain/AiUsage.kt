@@ -36,7 +36,6 @@ class AiUsage(
     }
 
     companion object {
-        @JvmStatic
         fun newForToday(memberId: Long, date: LocalDate): AiUsage =
             AiUsage(memberId = memberId, usageDate = date, count = 1)
     }

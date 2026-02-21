@@ -13,7 +13,6 @@ data class ScheduleCreateResponse(
     val createdAt: LocalDateTime?,
 ) {
     companion object {
-        @JvmStatic
         fun of(schedule: Schedule): ScheduleCreateResponse {
             val prepAt = TimeUtils.toSeoulDateTime(
                 schedule.preparationAlarm!!.triggeredAt

@@ -46,7 +46,6 @@ class AlarmTriggerHistory(
     )
 
     companion object {
-        @JvmStatic
         fun record(
             memberId: Long,
             alarmId: Long,

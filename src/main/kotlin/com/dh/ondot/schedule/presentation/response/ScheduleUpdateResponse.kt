@@ -9,7 +9,6 @@ data class ScheduleUpdateResponse(
     val updatedAt: LocalDateTime?,
 ) {
     companion object {
-        @JvmStatic
         fun of(schedule: Schedule): ScheduleUpdateResponse {
             return ScheduleUpdateResponse(
                 scheduleId = schedule.id,

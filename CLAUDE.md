@@ -38,6 +38,10 @@
 - 릴리스 완료 후 Discord `#api-update` 채널에 변경사항 자동 전송 (webhook URL은 `~/.claude/env`에서 로드)
 - 사용 시점: develop의 누적 작업을 main에 릴리스할 때
 
+## Code Style
+
+- 코드 리뷰에서 반복 발견되는 패턴은 `.claude/rules/code-style.md`에 규칙으로 추가한다.
+
 ## Skill 변경 관리
 
 `.claude/skills/` 하위 스킬이 추가, 수정, 삭제되면 반드시 이 CLAUDE.md의 Skills 섹션도 함께 업데이트한다.

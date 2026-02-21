@@ -1,21 +1,26 @@
 package com.dh.ondot.schedule.domain
 
 import com.dh.ondot.core.BaseTimeEntity
+import com.dh.ondot.schedule.domain.enums.ApiType
 import jakarta.persistence.*
 import java.time.LocalDate
 
 @Entity
 @Table(
-    name = "odsay_usages",
+    name = "api_usages",
     uniqueConstraints = [
-        UniqueConstraint(columnNames = ["usage_date"])
+        UniqueConstraint(columnNames = ["api_type", "usage_date"])
     ]
 )
-class OdsayUsage(
+class ApiUsage(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usage_id")
     val id: Long = 0L,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "api_type", nullable = false)
+    val apiType: ApiType,
 
     @Column(name = "usage_date", nullable = false)
     val usageDate: LocalDate,
@@ -27,10 +32,9 @@ class OdsayUsage(
     fun getRemainingUsage(): Int = maxOf(0, DAILY_LIMIT - count)
 
     companion object {
-        private const val DAILY_LIMIT = 1000
+        const val DAILY_LIMIT = 1000
 
-        @JvmStatic
-        fun newForToday(date: LocalDate): OdsayUsage =
-            OdsayUsage(usageDate = date, count = 1)
+        fun newForToday(apiType: ApiType, date: LocalDate): ApiUsage =
+            ApiUsage(apiType = apiType, usageDate = date, count = 1)
     }
 }

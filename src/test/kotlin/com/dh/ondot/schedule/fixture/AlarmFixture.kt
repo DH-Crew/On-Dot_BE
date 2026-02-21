@@ -9,19 +9,15 @@ import java.time.LocalDateTime
 
 object AlarmFixture {
 
-    @JvmStatic
     fun defaultPreparationAlarm(): Alarm =
         enabledAlarm(LocalDateTime.of(2025, 12, 15, 15, 0)) // 1시간 전
 
-    @JvmStatic
     fun defaultDepartureAlarm(): Alarm =
         enabledAlarm(LocalDateTime.of(2025, 12, 15, 15, 30)) // 30분 전
 
-    @JvmStatic
     fun enabledAlarm(): Alarm =
         enabledAlarm(LocalDateTime.of(2025, 12, 15, 15, 0))
 
-    @JvmStatic
     fun enabledAlarm(triggeredAt: LocalDateTime): Alarm = Alarm(
         0L,
         AlarmMode.SOUND,
@@ -31,11 +27,9 @@ object AlarmFixture {
         defaultSound()
     )
 
-    @JvmStatic
     fun disabledAlarm(): Alarm =
         disabledAlarm(LocalDateTime.of(2025, 12, 15, 15, 0))
 
-    @JvmStatic
     fun disabledAlarm(triggeredAt: LocalDateTime): Alarm = Alarm(
         0L,
         AlarmMode.SOUND,

@@ -107,7 +107,6 @@ class Member(
     }
 
     companion object {
-        @JvmStatic
         fun registerWithOauth(email: String, oauthProvider: OauthProvider, oauthProviderId: String): Member =
             Member(
                 email = email,

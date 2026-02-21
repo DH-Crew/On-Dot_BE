@@ -9,7 +9,6 @@ import com.dh.ondot.schedule.domain.vo.Sound
 
 object MemberFixture {
 
-    @JvmStatic
     fun defaultMember(): Member =
         Member(
             1L,
@@ -26,7 +25,6 @@ object MemberFixture {
             null,
         )
 
-    @JvmStatic
     fun memberWithId(id: Long): Member =
         Member(
             id,
@@ -43,11 +41,9 @@ object MemberFixture {
             null,
         )
 
-    @JvmStatic
     fun newMember(): Member =
         Member.registerWithOauth("new@example.com", OauthProvider.KAKAO, "kakao123")
 
-    @JvmStatic
     fun onboardedMember(): Member =
         Member(
             2L,

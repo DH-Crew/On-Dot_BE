@@ -22,7 +22,6 @@ enum class RingTone {
     ENERGY_CATCHER;
 
     companion object {
-        @JvmStatic
         fun from(ringTone: String): RingTone =
             try {
                 valueOf(ringTone.uppercase(Locale.ENGLISH))

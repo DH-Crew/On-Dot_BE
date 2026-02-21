@@ -20,7 +20,6 @@ data class PlaceDto(
     val latitude: Double,
 ) {
     companion object {
-        @JvmStatic
         fun from(place: Place): PlaceDto {
             return PlaceDto(place.title, place.roadAddress, place.longitude, place.latitude)
         }

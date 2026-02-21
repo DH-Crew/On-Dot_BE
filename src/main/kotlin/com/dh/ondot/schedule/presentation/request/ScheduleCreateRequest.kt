@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.presentation.request
 
 import com.dh.ondot.schedule.application.command.CreateScheduleCommand
+import com.dh.ondot.schedule.domain.enums.TransportType
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -28,6 +29,8 @@ data class ScheduleCreateRequest(
 
     @field:Size(max = 100)
     val preparationNote: String?,
+
+    val transportType: TransportType? = null,
 
     @field:NotNull @field:Valid
     val departurePlace: PlaceDto,
@@ -106,6 +109,7 @@ data class ScheduleCreateRequest(
         appointmentAt = appointmentAt,
         isMedicationRequired = isMedicationRequired,
         preparationNote = preparationNote,
+        transportType = transportType ?: TransportType.PUBLIC_TRANSPORT,
         departurePlace = CreateScheduleCommand.PlaceInfo(
             departurePlace.title, departurePlace.roadAddress,
             departurePlace.longitude, departurePlace.latitude,

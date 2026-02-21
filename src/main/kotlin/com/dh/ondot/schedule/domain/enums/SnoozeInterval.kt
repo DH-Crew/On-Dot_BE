@@ -13,7 +13,6 @@ enum class SnoozeInterval(val value: Int) {
     SIXTY(60);
 
     companion object {
-        @JvmStatic
         fun from(interval: String): SnoozeInterval =
             try {
                 valueOf(interval.uppercase(Locale.ENGLISH))
@@ -21,7 +20,6 @@ enum class SnoozeInterval(val value: Int) {
                 throw UnsupportedException(UNSUPPORTED_SNOOZE_INTERVAL, interval)
             }
 
-        @JvmStatic
         fun from(value: Int): SnoozeInterval =
             entries.firstOrNull { it.value == value }
                 ?: throw UnsupportedException(UNSUPPORTED_SNOOZE_INTERVAL, value.toString())

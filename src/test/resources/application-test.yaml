@@ -85,6 +85,10 @@ odsay:
   base-url: https://api.odsay.com/v1/api/searchPubTransPathT
   api-key: test-odsay-api-key
 
+tmap:
+  base-url: https://apis.openapi.sk.com
+  app-key: test-tmap-app-key
+
 external-api:
   seoul-transportation:
     base-url: https://test-url.com

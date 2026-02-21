@@ -9,7 +9,6 @@ import com.dh.ondot.schedule.domain.vo.Sound
 
 object MemberFixture {
 
-    @JvmStatic
     fun defaultMember(): Member = Member(
         1L,
         "테스트유저",

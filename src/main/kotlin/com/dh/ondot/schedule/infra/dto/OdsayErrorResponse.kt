@@ -13,7 +13,6 @@ data class OdsayErrorResponse(
         val message: String,
     ) {
         companion object {
-            @JvmStatic
             @JsonCreator
             fun create(
                 @JsonProperty("code") code: String,

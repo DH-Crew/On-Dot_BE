@@ -342,10 +342,17 @@ interface ScheduleSwagger {
     ): ScheduleParsedResponse
 
     @Operation(
-        summary = "경로에 따른 예상 시간 반환",
+        summary = "[테스트용] 경로에 따른 예상 시간 반환",
         description = """
+            <b>⚠️ 이 엔드포인트는 앱에서 사용하지 않으며, Swagger 테스트 용도입니다.</b>
+            <br/>앱에서는 <code>POST /alarms/setting</code>을 통해 경로 계산을 수행합니다.
+            <br/><br/>
             출발지(startLongitude, startLatitude)와 도착지(endLongitude, endLatitude) 간의
-            대중교통 예상 소요 시간을 분 단위로 계산하여 반환합니다.
+            예상 소요 시간을 분 단위로 계산하여 반환합니다.
+            <br/><br/>
+            <b>📌 파라미터 설명</b><br/>
+            • <code>transportType</code>: <code>PUBLIC_TRANSPORT</code>(대중교통, 기본값) 또는 <code>CAR</code>(자가용)<br/>
+            • <code>appointmentAt</code>: 약속 시간 (선택). 자가용(<code>CAR</code>) 선택 시 해당 시간대의 예측 교통량을 반영합니다.
             <br/><br/>
             <b>⚠️ Error Codes</b><br/>
             • 요청 JSON 문법 오류: <code>INVALID_JSON</code><br/>
@@ -356,11 +363,13 @@ interface ScheduleSwagger {
             • 검색 결과 없음: <code>ODSAY_NO_RESULT</code><br/>
             • ODsay 서버 내부 오류: <code>ODSAY_SERVER_ERROR</code><br/>
             • 예기치 못한 ODsay 오류: <code>ODSAY_UNHANDLED_ERROR</code><br/>
+            • TMAP 서버 오류: <code>TMAP_SERVER_ERROR</code><br/>
+            • TMAP 결과 없음: <code>TMAP_NO_RESULT</code><br/>
             • 그 외 서버 오류: <code>SERVER_ERROR</code>
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "출발·도착 좌표를 담은 요청 바디",
+            description = "출발·도착 좌표, 교통수단, 약속시간을 담은 요청 바디",
             content = [Content(
                 mediaType = APPLICATION_JSON_VALUE,
                 schema = Schema(implementation = EstimateTimeRequest::class),
@@ -371,7 +380,9 @@ interface ScheduleSwagger {
                           "startLongitude": 127.070593415212,
                           "startLatitude": 37.277975571288,
                           "endLongitude": 126.94569176914,
-                          "endLatitude": 37.5959199688468
+                          "endLatitude": 37.5959199688468,
+                          "transportType": "CAR",
+                          "appointmentAt": "2026-03-01T14:00:00"
                         }"""
                 )]
             )]

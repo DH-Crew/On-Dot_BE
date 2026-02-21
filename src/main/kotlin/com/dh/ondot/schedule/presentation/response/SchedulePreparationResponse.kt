@@ -7,7 +7,6 @@ data class SchedulePreparationResponse(
     val preparationNote: String?,
 ) {
     companion object {
-        @JvmStatic
         fun from(s: Schedule): SchedulePreparationResponse {
             return SchedulePreparationResponse(
                 isMedicationRequired = s.isMedicationRequired,
