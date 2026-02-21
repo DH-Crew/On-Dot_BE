@@ -33,7 +33,7 @@ class OdsayPathApi(
                         .queryParam("SY", startY)
                         .queryParam("EX", endX)
                         .queryParam("EY", endY)
-                        .build()
+                        .build(false)
                 }
                 .retrieve()
                 .body(String::class.java)
