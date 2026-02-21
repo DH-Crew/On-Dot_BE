@@ -76,6 +76,7 @@ interface ScheduleSwagger {
               <li><code>triggeredAt</code> 은 <code>HH:mm:ss</code> 형태의 ISO‑8601 시간 문자열입니다.</li>
               <li><code>isMedicationRequired</code> 는 복약 여부를 나타내는 boolean 값입니다.</li>
               <li><code>preparationNote</code> 는 준비물 관련 메모이며 최대 100자까지 입력 가능합니다.</li>
+              <li><code>transportType</code> 은 교통수단 유형입니다. <code>PUBLIC_TRANSPORT</code>(대중교통, 기본값) 또는 <code>CAR</code>(자가용)</li>
             </ul>""",
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -91,6 +92,7 @@ interface ScheduleSwagger {
                       "appointmentAt": "2025-05-10T19:00:00",
                       "isMedicationRequired": true,
                       "preparationNote": "준비물: 노트북, 충전기, 약",
+                      "transportType": "PUBLIC_TRANSPORT",
                       "departurePlace": {
                         "title": "집",
                         "roadAddress": "서울특별시 강남구 테헤란로 123",
@@ -526,22 +528,11 @@ interface ScheduleSwagger {
                     schema = Schema(implementation = ScheduleDetailResponse::class),
                     examples = [ExampleObject(value = """
                     {
+                      "scheduleId": 1001,
                       "title": "스터디 모임",
                       "isRepeat": true,
                       "repeatDays": [2,4,6],
                       "appointmentAt": "2025-05-10T19:00:00",
-                      "departurePlace": {
-                        "title": "집",
-                        "roadAddress": "서울특별시 강남구 테헤란로 123",
-                        "longitude": 127.0276,
-                        "latitude": 37.4979
-                      },
-                      "arrivalPlace": {
-                        "title": "카페",
-                        "roadAddress": "서울특별시 서초구 서초대로 77",
-                        "longitude": 127.0290,
-                        "latitude": 37.5010
-                      },
                       "preparationAlarm": {
                         "alarmId": 1001,
                         "alarmMode": "VIBRATE",
@@ -565,8 +556,19 @@ interface ScheduleSwagger {
                         "ringTone": "FRACTURED_LOVE",
                         "volume": 0.2
                       },
-                      "isMedicationRequired": false,
-                      "preparationNote": "노트북 챙기기"
+                      "departurePlace": {
+                        "title": "집",
+                        "roadAddress": "서울특별시 강남구 테헤란로 123",
+                        "longitude": 127.0276,
+                        "latitude": 37.4979
+                      },
+                      "arrivalPlace": {
+                        "title": "카페",
+                        "roadAddress": "서울특별시 서초구 서초대로 77",
+                        "longitude": 127.0290,
+                        "latitude": 37.5010
+                      },
+                      "transportType": "PUBLIC_TRANSPORT"
                     }""")]
                 )]
             ),
