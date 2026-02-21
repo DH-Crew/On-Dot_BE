@@ -83,5 +83,11 @@ enum class ErrorCode(
     TMAP_NO_RESULT(NOT_FOUND, "자가용 경로 검색 결과가 없습니다: %s"),
     TMAP_SERVER_ERROR(BAD_GATEWAY, "TMAP 서버 내부 오류가 발생했습니다: %s"),
     TMAP_UNHANDLED_ERROR(INTERNAL_SERVER_ERROR, "TMAP API 처리 중 알 수 없는 오류가 발생했습니다: %s"),
+
+    // Everytime API
+    EVERYTIME_INVALID_URL(BAD_REQUEST, "에브리타임 URL 형식이 올바르지 않습니다: %s"),
+    EVERYTIME_NOT_FOUND(NOT_FOUND, "에브리타임 시간표를 찾을 수 없습니다. 공유 URL을 확인해주세요."),
+    EVERYTIME_EMPTY_TIMETABLE(NOT_FOUND, "시간표에 등록된 수업이 없습니다."),
+    EVERYTIME_SERVER_ERROR(BAD_GATEWAY, "에브리타임 서버에 일시적인 오류가 발생했습니다: %s"),
     ;
 }
