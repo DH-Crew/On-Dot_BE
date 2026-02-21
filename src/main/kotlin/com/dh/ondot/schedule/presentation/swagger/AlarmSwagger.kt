@@ -52,7 +52,11 @@ interface AlarmSwagger {
             사용자의 스케줄 중 <code>updatedAt</code>이 가장 최신인 1건을 기준으로
             <b>준비 알람</b>과 <b>출발 알람</b> 설정 값을 반환합니다.<br/>
             최신 스케줄이 없는 경우 온보딩에서 설정한 값을 가져옵니다.<br/>
-
+            <br/>
+            <b>📌 파라미터 설명</b><br/>
+            • <code>transportType</code>: <code>PUBLIC_TRANSPORT</code>(대중교통, 기본값) 또는 <code>CAR</code>(자가용)<br/>
+            • <code>appointmentAt</code>: 약속 시간. 자가용(<code>CAR</code>) 선택 시 해당 시간대의 예측 교통량을 반영합니다.
+            <br/><br/>
             <b>⚠️ Error Codes</b><br/>
             • 요청 JSON 문법 오류: <code>INVALID_JSON</code><br/>
             • 입력 필드 검증 실패: <code>FIELD_ERROR</code><br/>
@@ -63,6 +67,8 @@ interface AlarmSwagger {
             • 검색 결과 없음: <code>ODSAY_NO_RESULT</code><br/>
             • ODsay 서버 내부 오류: <code>ODSAY_SERVER_ERROR</code><br/>
             • 예기치 못한 ODsay 오류: <code>ODSAY_UNHANDLED_ERROR</code><br/>
+            • TMAP 서버 오류: <code>TMAP_SERVER_ERROR</code><br/>
+            • TMAP 결과 없음: <code>TMAP_NO_RESULT</code><br/>
             • 그 외 서버 오류: <code>SERVER_ERROR</code>
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -70,7 +76,7 @@ interface AlarmSwagger {
             description = "약속 시간과 출발·도착 좌표를 담은 요청 바디",
             content = [Content(
                 mediaType = APPLICATION_JSON_VALUE,
-                schema = Schema(implementation = com.dh.ondot.schedule.presentation.request.EstimateTimeRequest::class),
+                schema = Schema(implementation = SetAlarmRequest::class),
                 examples = [ExampleObject(
                     name = "예시-요청",
                     value = """
@@ -79,7 +85,8 @@ interface AlarmSwagger {
                           "startLongitude": 127.070593415212,
                           "startLatitude": 37.277975571288,
                           "endLongitude": 126.94569176914,
-                          "endLatitude": 37.5959199688468
+                          "endLatitude": 37.5959199688468,
+                          "transportType": "PUBLIC_TRANSPORT"
                         }"""
                 )]
             )]
