@@ -49,13 +49,19 @@ class TmapPathApi(
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(mapOf(
                     "routesInfo" to mapOf(
+                        "departure" to mapOf(
+                            "name" to "departure",
+                            "lon" to startX.toString(),
+                            "lat" to startY.toString(),
+                        ),
+                        "destination" to mapOf(
+                            "name" to "destination",
+                            "lon" to endX.toString(),
+                            "lat" to endY.toString(),
+                        ),
                         "predictionType" to predictionType,
                         "predictionTime" to predictionTime,
                     ),
-                    "startX" to startX.toString(),
-                    "startY" to startY.toString(),
-                    "endX" to endX.toString(),
-                    "endY" to endY.toString(),
                 ))
                 .retrieve()
                 .body(TmapRouteApiResponse::class.java)
