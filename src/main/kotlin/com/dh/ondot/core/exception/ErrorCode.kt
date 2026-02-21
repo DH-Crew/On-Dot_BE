@@ -79,5 +79,10 @@ enum class ErrorCode(
     ODSAY_NO_RESULT(NOT_FOUND, "검색 결과가 없습니다: %s"),
     ODSAY_SERVER_ERROR(BAD_GATEWAY, "ODSay 서버 내부 오류가 발생했습니다: %s"),
     ODSAY_UNHANDLED_ERROR(INTERNAL_SERVER_ERROR, "ODSay API 처리 중 알 수 없는 오류가 발생했습니다: %s"),
+
+    // TMAP API
+    TMAP_NO_RESULT(NOT_FOUND, "자가용 경로 검색 결과가 없습니다: %s"),
+    TMAP_SERVER_ERROR(BAD_GATEWAY, "TMAP 서버 내부 오류가 발생했습니다: %s"),
+    TMAP_UNHANDLED_ERROR(INTERNAL_SERVER_ERROR, "TMAP API 처리 중 알 수 없는 오류가 발생했습니다: %s"),
     ;
 }
