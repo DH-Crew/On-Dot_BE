@@ -4,6 +4,7 @@ import com.dh.ondot.schedule.domain.enums.TransportType
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.NotNull
+import java.time.LocalDateTime
 
 data class EstimateTimeRequest(
     @field:NotNull(message = "startLongitude는 필수입니다.")
@@ -27,4 +28,6 @@ data class EstimateTimeRequest(
     val endLatitude: Double,
 
     val transportType: TransportType? = null,
+
+    val appointmentAt: LocalDateTime? = null,
 )

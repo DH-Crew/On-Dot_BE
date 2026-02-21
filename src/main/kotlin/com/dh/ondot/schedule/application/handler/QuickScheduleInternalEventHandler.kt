@@ -24,6 +24,7 @@ class QuickScheduleInternalEventHandler(
         val estimatedTimeMin = routeService.calculateRouteTime(
             dep.longitude, dep.latitude,
             arr.longitude, arr.latitude,
+            appointmentAt = event.appointmentAt,
         )
 
         val schedule = scheduleService.setupSchedule(

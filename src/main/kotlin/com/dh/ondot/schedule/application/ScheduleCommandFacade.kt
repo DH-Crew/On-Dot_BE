@@ -105,6 +105,7 @@ class ScheduleCommandFacade(
         val estimatedTime = routeService.calculateRouteTime(
             command.departurePlace.longitude, command.departurePlace.latitude,
             command.arrivalPlace.longitude, command.arrivalPlace.latitude,
+            appointmentAt = command.appointmentAt,
         )
 
         val schedule = scheduleService.setupSchedule(

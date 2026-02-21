@@ -11,6 +11,10 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class TmapPathApi(
@@ -21,18 +25,37 @@ class TmapPathApi(
         maxAttempts = 2,
         backoff = Backoff(delay = 500)
     )
-    fun searchCarRoute(startX: Double, startY: Double, endX: Double, endY: Double): TmapRouteApiResponse {
+    fun searchCarRoute(
+        startX: Double, startY: Double,
+        endX: Double, endY: Double,
+        appointmentAt: LocalDateTime? = null,
+    ): TmapRouteApiResponse {
+        val kst = ZoneId.of("Asia/Seoul")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
+
+        val predictionType: String
+        val predictionTime: String
+        if (appointmentAt != null) {
+            predictionType = "arrival"
+            predictionTime = appointmentAt.atZone(kst).format(formatter)
+        } else {
+            predictionType = "departure"
+            predictionTime = ZonedDateTime.now(kst).format(formatter)
+        }
+
         try {
             val response = tmapRestClient.post()
-                .uri("/tmap/tmap/routes?version=1")
+                .uri("/tmap/routes/prediction?version=1&resCoordType=WGS84GEO&reqCoordType=WGS84GEO&sort=index")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(mapOf(
+                    "routesInfo" to mapOf(
+                        "predictionType" to predictionType,
+                        "predictionTime" to predictionTime,
+                    ),
                     "startX" to startX.toString(),
                     "startY" to startY.toString(),
                     "endX" to endX.toString(),
                     "endY" to endY.toString(),
-                    "reqCoordType" to "WGS84GEO",
-                    "resCoordType" to "WGS84GEO",
                 ))
                 .retrieve()
                 .body(TmapRouteApiResponse::class.java)

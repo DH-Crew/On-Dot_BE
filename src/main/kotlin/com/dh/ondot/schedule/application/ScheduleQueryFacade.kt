@@ -8,6 +8,7 @@ import com.dh.ondot.schedule.application.mapper.HomeScheduleListItemMapper
 import com.dh.ondot.schedule.domain.Schedule
 import com.dh.ondot.schedule.domain.enums.TransportType
 import com.dh.ondot.schedule.domain.service.ScheduleQueryService
+import java.time.LocalDateTime
 import com.dh.ondot.schedule.domain.service.ScheduleService
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -63,7 +64,11 @@ class ScheduleQueryFacade(
         startLongitude: Double, startLatitude: Double,
         endLongitude: Double, endLatitude: Double,
         transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
+        appointmentAt: LocalDateTime? = null,
     ): Int {
-        return routeService.calculateRouteTime(startLongitude, startLatitude, endLongitude, endLatitude, transportType)
+        return routeService.calculateRouteTime(
+            startLongitude, startLatitude, endLongitude, endLatitude,
+            transportType, appointmentAt,
+        )
     }
 }

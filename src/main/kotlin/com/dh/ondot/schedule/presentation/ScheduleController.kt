@@ -89,6 +89,7 @@ class ScheduleController(
             request.startLongitude, request.startLatitude,
             request.endLongitude, request.endLatitude,
             request.transportType ?: TransportType.PUBLIC_TRANSPORT,
+            request.appointmentAt,
         )
         return EstimateTimeResponse.from(estimatedTime)
     }

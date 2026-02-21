@@ -23,6 +23,7 @@ class AlarmFacade(
             command.startLongitude, command.startLatitude,
             command.endLongitude, command.endLatitude,
             command.transportType,
+            command.appointmentAt,
         )
 
         return scheduleService.setupSchedule(

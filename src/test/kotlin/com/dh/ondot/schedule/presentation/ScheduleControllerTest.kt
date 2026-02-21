@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.verify
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -314,7 +315,9 @@ class ScheduleControllerTest {
         @Test
         @DisplayName("정상 요청 시 200과 EstimateTimeResponse를 반환한다")
         fun success_200() {
-            whenever(scheduleQueryFacade.estimateTravelTime(any(), any(), any(), any(), any())).thenReturn(30)
+            whenever(scheduleQueryFacade.estimateTravelTime(
+                any(), any(), any(), any(), any(), anyOrNull(),
+            )).thenReturn(30)
 
             mockMvc.perform(
                 post("/schedules/estimate-time")

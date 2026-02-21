@@ -9,6 +9,7 @@ import com.dh.ondot.schedule.infra.api.OdsayPathApi
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse
 import com.dh.ondot.schedule.infra.exception.OdsayTooCloseException
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 import kotlin.math.round
 
 @Component
@@ -20,7 +21,11 @@ class OdsayRouteTimeCalculator(
     override fun supports(transportType: TransportType): Boolean =
         transportType == TransportType.PUBLIC_TRANSPORT
 
-    override fun calculateRouteTime(startX: Double, startY: Double, endX: Double, endY: Double): Int {
+    override fun calculateRouteTime(
+        startX: Double, startY: Double,
+        endX: Double, endY: Double,
+        appointmentAt: LocalDateTime?,
+    ): Int {
         apiUsageService.checkAndIncrementUsage(ApiType.ODSAY)
         val response = getRouteTimeFromApi(startX, startY, endX, endY)
         return calculateFinalTravelTime(response)
