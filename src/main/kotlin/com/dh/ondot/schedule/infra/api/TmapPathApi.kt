@@ -24,7 +24,7 @@ class TmapPathApi(
     fun searchCarRoute(startX: Double, startY: Double, endX: Double, endY: Double): TmapRouteApiResponse {
         try {
             val response = tmapRestClient.post()
-                .uri("/tmap/routes?version=1")
+                .uri("/tmap/tmap/routes?version=1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(mapOf(
                     "startX" to startX.toString(),
