@@ -1,6 +1,8 @@
 package com.dh.ondot.schedule.application
 
 import com.dh.ondot.member.domain.service.MemberService
+import com.dh.ondot.schedule.application.command.CreateEverytimeScheduleCommand
+import com.dh.ondot.schedule.application.command.CreateScheduleCommand
 import com.dh.ondot.schedule.application.dto.EverytimeLecture
 import com.dh.ondot.schedule.application.mapper.QuickScheduleMapper
 import com.dh.ondot.schedule.domain.Schedule
@@ -11,7 +13,6 @@ import com.dh.ondot.schedule.domain.service.ScheduleQueryService
 import com.dh.ondot.schedule.domain.service.ScheduleService
 import com.dh.ondot.schedule.fixture.MemberFixture
 import com.dh.ondot.schedule.fixture.MockitoHelper.anyNonNull
-import com.dh.ondot.schedule.fixture.MockitoHelper.eqNonNull
 import com.dh.ondot.schedule.infra.api.EverytimeApi
 import com.dh.ondot.schedule.infra.api.OpenAiPromptApi
 import com.dh.ondot.schedule.infra.exception.EverytimeEmptyTimetableException
@@ -24,7 +25,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyDouble
 import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -128,8 +128,7 @@ class ScheduleCommandFacadeEverytimeTest {
 
             // when
             val result = facade.createSchedulesFromEverytime(
-                1L, "https://everytime.kr/@testId",
-                127.0, 37.0, 126.9, 37.5, TransportType.PUBLIC_TRANSPORT,
+                1L, createCommand("https://everytime.kr/@testId"),
             )
 
             // then
@@ -147,8 +146,7 @@ class ScheduleCommandFacadeEverytimeTest {
             // when & then
             assertThatThrownBy {
                 facade.createSchedulesFromEverytime(
-                    1L, "https://everytime.kr/@emptyId",
-                    127.0, 37.0, 126.9, 37.5, TransportType.PUBLIC_TRANSPORT,
+                    1L, createCommand("https://everytime.kr/@emptyId"),
                 )
             }.isInstanceOf(EverytimeEmptyTimetableException::class.java)
         }
@@ -176,8 +174,7 @@ class ScheduleCommandFacadeEverytimeTest {
 
             // when
             facade.createSchedulesFromEverytime(
-                1L, "https://everytime.kr/@testId",
-                127.0, 37.0, 126.9, 37.5, TransportType.PUBLIC_TRANSPORT,
+                1L, createCommand("https://everytime.kr/@testId"),
             )
 
             // then
@@ -188,6 +185,16 @@ class ScheduleCommandFacadeEverytimeTest {
                 )
         }
     }
+
+    private fun createCommand(
+        url: String,
+        transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
+    ): CreateEverytimeScheduleCommand = CreateEverytimeScheduleCommand(
+        everytimeUrl = url,
+        departurePlace = CreateScheduleCommand.PlaceInfo("집", "서울시 강남구", 127.0, 37.0),
+        arrivalPlace = CreateScheduleCommand.PlaceInfo("학교", "서울시 서초구", 126.9, 37.5),
+        transportType = transportType,
+    )
 
     private fun createLecture(
         name: String, day: Int, startTime: String, endTime: String,

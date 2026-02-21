@@ -2,6 +2,7 @@ package com.dh.ondot.schedule.application
 
 import com.dh.ondot.core.util.TimeUtils
 import com.dh.ondot.member.domain.service.MemberService
+import com.dh.ondot.schedule.application.command.CreateEverytimeScheduleCommand
 import com.dh.ondot.schedule.application.command.CreateQuickScheduleCommand
 import com.dh.ondot.schedule.application.command.CreateScheduleCommand
 import com.dh.ondot.schedule.application.command.UpdateScheduleCommand
@@ -238,13 +239,10 @@ class ScheduleCommandFacade(
     @Transactional
     fun createSchedulesFromEverytime(
         memberId: Long,
-        url: String,
-        startX: Double, startY: Double,
-        endX: Double, endY: Double,
-        transportType: TransportType,
+        command: CreateEverytimeScheduleCommand,
     ): List<Schedule> {
         val member = memberService.getMemberIfExists(memberId)
-        val identifier = extractIdentifier(url)
+        val identifier = extractIdentifier(command.everytimeUrl)
         val lectures = everytimeApi.fetchTimetable(identifier)
 
         if (lectures.isEmpty()) {
@@ -261,9 +259,14 @@ class ScheduleCommandFacade(
             .groupBy({ it.value }, { it.key })
             .mapValues { (_, days) -> days.sortedBy { it } }
 
+        val startX = command.departurePlace.longitude
+        val startY = command.departurePlace.latitude
+        val endX = command.arrivalPlace.longitude
+        val endY = command.arrivalPlace.latitude
+
         // 경로 계산
         val routeTimeByGroup = calculateRouteTimeByGroup(
-            timeGroups, startX, startY, endX, endY, transportType,
+            timeGroups, startX, startY, endX, endY, command.transportType,
         )
 
         // 그룹별 Schedule + Alarm 생성
@@ -273,12 +276,18 @@ class ScheduleCommandFacade(
             val appointmentAt = calculateNextAppointmentAt(days, time)
             val estimatedTime = routeTimeByGroup[time] ?: 0
 
-            val dep = Place.createPlace("집", "", startX, startY)
-            val arr = Place.createPlace("학교", "", endX, endY)
+            val dep = Place.createPlace(
+                command.departurePlace.title, command.departurePlace.roadAddress,
+                startX, startY,
+            )
+            val arr = Place.createPlace(
+                command.arrivalPlace.title, command.arrivalPlace.roadAddress,
+                endX, endY,
+            )
 
             scheduleService.createEverytimeSchedule(
                 member, dep, arr, title, TreeSet(repeatDays),
-                appointmentAt, estimatedTime, transportType,
+                appointmentAt, estimatedTime, command.transportType,
             )
         }
     }
