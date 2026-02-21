@@ -34,14 +34,16 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Tag(
     name = "Member API",
     description = """
-                <b>AccessToken (Authorization: Bearer JWT)</b>은 필수입니다.<br><br>
-                <b>🏠 AddressType ENUM</b> : <code>HOME</code><br>
-                <b>🗺 MapProvider ENUM</b> : <code>NAVER</code>, <code>KAKAO</code><br><br>
-                <b>📢 주요 ErrorCode</b><br>
-                • <code>NOT_FOUND_MEMBER</code> : 회원 미존재<br>
-                • <code>NOT_FOUND_HOME_ADDRESS</code> : HOME 주소 미존재<br>
-                • <code>FIELD_ERROR</code> / <code>URL_PARAMETER_ERROR</code> : 입력 검증 오류<br>
-                • <code>UNSUPPORTED_MAP_PROVIDER</code> : 지원하지 않는 MapProvider 값<br>
+                **AccessToken (Authorization: Bearer JWT)** 은 필수입니다.
+
+                **🏠 AddressType ENUM** : `HOME`
+                **🗺 MapProvider ENUM** : `NAVER`, `KAKAO`
+
+                **📢 주요 ErrorCode**
+                - `NOT_FOUND_MEMBER` : 회원 미존재
+                - `NOT_FOUND_HOME_ADDRESS` : HOME 주소 미존재
+                - `FIELD_ERROR` / `URL_PARAMETER_ERROR` : 입력 검증 오류
+                - `UNSUPPORTED_MAP_PROVIDER` : 지원하지 않는 MapProvider 값
                 """
 )
 @RequestMapping("/members")
@@ -211,17 +213,14 @@ interface MemberSwagger {
     @Operation(
         summary = "온보딩(첫 설정) 완료",
         description = """
-                    사용자 온보딩을 완료합니다. <br>
-                    <b>🔔 Alarm ENUM</b><br>
-                    • <code>AlarmMode</code>: SILENT, VIBRATE, SOUND<br>
-                    • <code>SnoozeInterval</code>: 1, 3, 5, 10, 30, 60 (분)<br>
-                    • <code>SnoozeCount</code>: -1(INFINITE), 1, 3, 5, 10 (회)<br>
-                    • <code>SoundCategory</code>: <i>BRIGHT_ENERGY, FAST_INTENSE</i><br>
-                    • <code>RingTone</code>: <i>
-                      DANCING_IN_THE_STARDUST, IN_THE_CITY_LIGHTS_MIST, FRACTURED_LOVE,<br>
-                      CHASING_LIGHTS, ASHES_OF_US, HEATING_SUN, NO_COPYRIGHT_MUSIC,<br>
-                      MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY,<br>
-                      ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER
+                    사용자 온보딩을 완료합니다.
+
+                    **🔔 Alarm ENUM**
+                    - `AlarmMode`: SILENT, VIBRATE, SOUND
+                    - `SnoozeInterval`: 1, 3, 5, 10, 30, 60 (분)
+                    - `SnoozeCount`: -1(INFINITE), 1, 3, 5, 10 (회)
+                    - `SoundCategory`: *BRIGHT_ENERGY, FAST_INTENSE*
+                    - `RingTone`: *DANCING_IN_THE_STARDUST, IN_THE_CITY_LIGHTS_MIST, FRACTURED_LOVE, CHASING_LIGHTS, ASHES_OF_US, HEATING_SUN, NO_COPYRIGHT_MUSIC, MEDAL, EXCITING_SPORTS_COMPETITIONS, POSITIVE_WAY, ENERGETIC_HAPPY_UPBEAT_ROCK_MUSIC, ENERGY_CATCHER*
                     """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,

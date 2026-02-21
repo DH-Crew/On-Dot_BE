@@ -21,13 +21,15 @@ import org.springframework.web.bind.annotation.RequestParam
 @Tag(
     name = "Auth API",
     description = """
-        <b>인증 관련 API입니다.</b><br><br>
-        <b>로그인 후 이용하는 API에서 발생 가능한 토큰 오류</b><br>
-        • <code>TOKEN_MISSING</code> : Authorization 헤더 없음<br>
-        • <code>INVALID_TOKEN_HEADER</code>: "Bearer " 접두사 누락<br>
-        • <code>TOKEN_EXPIRED</code> : Access Token 만료<br>
-        • <code>TOKEN_INVALID</code> : 위·변조 또는 형식 오류<br><br>
-        <b>🔑 OauthProvider ENUM</b> : <code>KAKAO</code> | <code>APPLE</code>
+        **인증 관련 API입니다.**
+
+        **로그인 후 이용하는 API에서 발생 가능한 토큰 오류**
+        - `TOKEN_MISSING` : Authorization 헤더 없음
+        - `INVALID_TOKEN_HEADER`: "Bearer " 접두사 누락
+        - `TOKEN_EXPIRED` : Access Token 만료
+        - `TOKEN_INVALID` : 위·변조 또는 형식 오류
+
+        **🔑 OauthProvider ENUM** : `KAKAO` | `APPLE`
         """
 )
 @RequestMapping("/auth")
@@ -102,7 +104,7 @@ interface AuthSwagger {
     @Operation(
         summary = "JWT 재발급",
         description = """
-            만료 전 Refresh Token으로 새 Access/Refresh Token을 발급합니다.<br>
+            만료 전 Refresh Token으로 새 Access/Refresh Token을 발급합니다.
             AccessToken이 아니라 RefreshToken을 헤더로 전달해야 합니다
             """,
         responses = [
@@ -117,12 +119,12 @@ interface AuthSwagger {
             ApiResponse(
                 responseCode = "401",
                 description = """
-                            인증/토큰 관련 오류<br>
-                            • <code>TOKEN_MISSING</code><br>
-                            • <code>INVALID_TOKEN_HEADER</code><br>
-                            • <code>TOKEN_INVALID</code><br>
-                            • <code>REFRESH_TOKEN_EXPIRED</code><br>
-                            • <code>TOKEN_BLACKLISTED</code>
+                            인증/토큰 관련 오류
+                            - `TOKEN_MISSING`
+                            - `INVALID_TOKEN_HEADER`
+                            - `TOKEN_INVALID`
+                            - `REFRESH_TOKEN_EXPIRED`
+                            - `TOKEN_BLACKLISTED`
                             """,
                 content = [Content(
                     schema = Schema(implementation = ErrorResponse::class),
@@ -193,7 +195,7 @@ interface AuthSwagger {
     @Operation(
         summary = "로그아웃",
         description = """
-            Refresh Token을 블랙리스트 처리해 재사용을 차단합니다.<br>
+            Refresh Token을 블랙리스트 처리해 재사용을 차단합니다.
             AccessToken이 아니라 RefreshToken을 헤더로 전달해야 합니다
             """,
         responses = [

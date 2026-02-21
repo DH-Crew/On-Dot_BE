@@ -20,8 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam
 @Tag(
     name = "Device Token API",
     description = """
-                <b>AccessToken (Authorization: Bearer JWT)</b>은 필수입니다.<br><br>
-                FCM 디바이스 토큰 등록/삭제 API.<br>
+                **AccessToken (Authorization: Bearer JWT)** 은 필수입니다.
+
+                FCM 디바이스 토큰 등록/삭제 API.
                 앱 실행 시 토큰 등록, 로그아웃 시 토큰 삭제를 수행합니다.
                 """
 )

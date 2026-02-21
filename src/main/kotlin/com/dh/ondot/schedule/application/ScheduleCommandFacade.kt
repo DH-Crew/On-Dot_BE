@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.application
 
+import com.dh.ondot.core.util.TimeUtils
 import com.dh.ondot.member.domain.service.MemberService
 import com.dh.ondot.schedule.application.command.CreateQuickScheduleCommand
 import com.dh.ondot.schedule.application.command.CreateScheduleCommand
@@ -10,11 +11,19 @@ import com.dh.ondot.schedule.application.mapper.QuickScheduleMapper
 import com.dh.ondot.schedule.domain.Alarm
 import com.dh.ondot.schedule.domain.Place
 import com.dh.ondot.schedule.domain.Schedule
+import com.dh.ondot.schedule.domain.enums.TransportType
 import com.dh.ondot.schedule.domain.service.*
+import com.dh.ondot.schedule.infra.api.EverytimeApi
 import com.dh.ondot.schedule.infra.api.OpenAiPromptApi
+import com.dh.ondot.schedule.infra.exception.EverytimeEmptyTimetableException
+import com.dh.ondot.schedule.infra.exception.EverytimeInvalidUrlException
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.net.URI
+import java.time.DayOfWeek
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.TreeSet
 
 @Service
@@ -26,6 +35,7 @@ class ScheduleCommandFacade(
     private val placeService: PlaceService,
     private val aiUsageService: AiUsageService,
     private val quickScheduleMapper: QuickScheduleMapper,
+    private val everytimeApi: EverytimeApi,
     private val openAiPromptApi: OpenAiPromptApi,
     private val eventPublisher: ApplicationEventPublisher,
 ) {
@@ -218,4 +228,153 @@ class ScheduleCommandFacade(
         val schedule = scheduleQueryService.findScheduleById(scheduleId)
         scheduleService.deleteSchedule(schedule)
     }
+
+    fun validateEverytimeUrl(url: String): String {
+        val identifier = extractIdentifier(url)
+        everytimeApi.fetchTimetable(identifier)
+        return identifier
+    }
+
+    @Transactional
+    fun createSchedulesFromEverytime(
+        memberId: Long,
+        url: String,
+        startX: Double, startY: Double,
+        endX: Double, endY: Double,
+        transportType: TransportType,
+    ): List<Schedule> {
+        val member = memberService.getMemberIfExists(memberId)
+        val identifier = extractIdentifier(url)
+        val lectures = everytimeApi.fetchTimetable(identifier)
+
+        if (lectures.isEmpty()) {
+            throw EverytimeEmptyTimetableException()
+        }
+
+        // 요일별 첫 수업 시작시간 추출
+        val firstLectureByDay: Map<Int, LocalTime> = lectures
+            .groupBy { it.day }
+            .mapValues { (_, dayLectures) -> dayLectures.minOf { it.startTime } }
+
+        // 동일 시간으로 그룹핑 (월→일 순서)
+        val timeGroups: Map<LocalTime, List<Int>> = firstLectureByDay.entries
+            .groupBy({ it.value }, { it.key })
+            .mapValues { (_, days) -> days.sortedBy { it } }
+
+        // 경로 계산
+        val routeTimeByGroup = calculateRouteTimeByGroup(
+            timeGroups, startX, startY, endX, endY, transportType,
+        )
+
+        // 그룹별 Schedule + Alarm 생성
+        return timeGroups.map { (time, days) ->
+            val title = buildScheduleTitle(days)
+            val repeatDays = days.map { everytimeDayToRepeatDay(it) }.toSortedSet()
+            val appointmentAt = calculateNextAppointmentAt(days, time)
+            val estimatedTime = routeTimeByGroup[time] ?: 0
+
+            val schedule = scheduleService.setupSchedule(member, appointmentAt, estimatedTime)
+            schedule.memberId = member.id
+            schedule.title = title
+            schedule.isRepeat = true
+            schedule.repeatDays = TreeSet(repeatDays)
+            schedule.appointmentAt = TimeUtils.toInstant(appointmentAt)
+            schedule.transportType = transportType
+
+            scheduleService.saveSchedule(schedule)
+        }
+    }
+
+    private fun extractIdentifier(url: String): String {
+        try {
+            val uri = URI(url)
+            if (uri.host != "everytime.kr") {
+                throw EverytimeInvalidUrlException(url)
+            }
+            val path = uri.path
+            if (!path.startsWith("/@")) {
+                throw EverytimeInvalidUrlException(url)
+            }
+            val identifier = path.removePrefix("/@")
+            if (identifier.isBlank()) {
+                throw EverytimeInvalidUrlException(url)
+            }
+            return identifier
+        } catch (e: EverytimeInvalidUrlException) {
+            throw e
+        } catch (_: Exception) {
+            throw EverytimeInvalidUrlException(url)
+        }
+    }
+
+    private fun calculateRouteTimeByGroup(
+        timeGroups: Map<LocalTime, List<Int>>,
+        startX: Double, startY: Double,
+        endX: Double, endY: Double,
+        transportType: TransportType,
+    ): Map<LocalTime, Int> {
+        if (transportType == TransportType.PUBLIC_TRANSPORT) {
+            val routeTime = routeService.calculateRouteTime(startX, startY, endX, endY, transportType)
+            return timeGroups.keys.associateWith { routeTime }
+        }
+
+        return timeGroups.map { (time, days) ->
+            val representativeDay = days.first()
+            val appointmentAt = calculateNextAppointmentAt(listOf(representativeDay), time)
+            val routeTime = routeService.calculateRouteTime(
+                startX, startY, endX, endY, transportType, appointmentAt,
+            )
+            time to routeTime
+        }.toMap()
+    }
+
+    private fun buildScheduleTitle(days: List<Int>): String {
+        val dayNames = mapOf(
+            0 to "월", 1 to "화", 2 to "수", 3 to "목",
+            4 to "금", 5 to "토", 6 to "일",
+        )
+        val dayStr = days.joinToString("/") { dayNames[it] ?: "" }
+        return "${dayStr}요일 학교"
+    }
+
+    private fun everytimeDayToRepeatDay(everytimeDay: Int): Int =
+        when (everytimeDay) {
+            0 -> 2  // 월
+            1 -> 3  // 화
+            2 -> 4  // 수
+            3 -> 5  // 목
+            4 -> 6  // 금
+            5 -> 7  // 토
+            6 -> 1  // 일
+            else -> throw IllegalArgumentException("잘못된 에브리타임 요일: $everytimeDay")
+        }
+
+    private fun calculateNextAppointmentAt(days: List<Int>, time: LocalTime): LocalDateTime {
+        val today = TimeUtils.nowSeoulDate()
+        val now = TimeUtils.nowSeoulDateTime()
+        val targetDaysOfWeek = days.map { everytimeDayToDayOfWeek(it) }
+
+        for (daysAhead in 0..7L) {
+            val candidateDate = today.plusDays(daysAhead)
+            if (candidateDate.dayOfWeek in targetDaysOfWeek) {
+                val candidateDateTime = candidateDate.atTime(time)
+                if (candidateDateTime.isAfter(now)) {
+                    return candidateDateTime
+                }
+            }
+        }
+        return today.plusDays(7).atTime(time)
+    }
+
+    private fun everytimeDayToDayOfWeek(everytimeDay: Int): DayOfWeek =
+        when (everytimeDay) {
+            0 -> DayOfWeek.MONDAY
+            1 -> DayOfWeek.TUESDAY
+            2 -> DayOfWeek.WEDNESDAY
+            3 -> DayOfWeek.THURSDAY
+            4 -> DayOfWeek.FRIDAY
+            5 -> DayOfWeek.SATURDAY
+            6 -> DayOfWeek.SUNDAY
+            else -> throw IllegalArgumentException("잘못된 에브리타임 요일: $everytimeDay")
+        }
 }

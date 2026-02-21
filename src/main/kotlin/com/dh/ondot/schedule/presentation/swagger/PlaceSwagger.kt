@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam
 @Tag(
     name = "Place API",
     description = """
-        <p><b>장소(Place)</b> 관련 API입니다.</p>
+        **장소(Place)** 관련 API입니다.
         """
 )
 @RequestMapping("/places")
@@ -38,8 +38,8 @@ interface PlaceSwagger {
     @Operation(
         summary = "장소 키워드 검색",
         description = """
-            입력 키워드로 네이버 플레이스·도로명 주소를 통합 검색합니다.<br>
-            • query 파라미터 하나만 받으며, 최소 1글자 이상이어야 합니다.
+            입력 키워드로 네이버 플레이스·도로명 주소를 통합 검색합니다.
+            - query 파라미터 하나만 받으며, 최소 1글자 이상이어야 합니다.
             """,
         parameters = [Parameter(
             name = "query",
@@ -103,11 +103,9 @@ interface PlaceSwagger {
     @Operation(
         summary = "최근 검색 기록 저장",
         description = """
-            클라이언트가 사용자가 선택한 장소를 전달하면 <b>회원별 검색 기록</b>으로 남깁니다.
-            <ul>
-              <li>title이 <code>null</code>이면 <code>roadAddress</code> 값을 title 자리에 복사하여 저장합니다.</li>
-              <li>회원당 최대 10건만 보관, 30일 경과 데이터는 제거합니다.</li>
-            </ul>
+            클라이언트가 사용자가 선택한 장소를 전달하면 **회원별 검색 기록**으로 남깁니다.
+            - title이 `null`이면 `roadAddress` 값을 title 자리에 복사하여 저장합니다.
+            - 회원당 최대 10건만 보관, 30일 경과 데이터는 제거합니다.
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -186,8 +184,9 @@ interface PlaceSwagger {
     @Operation(
         summary = "최근 검색 기록 조회",
         description = """
-            회원별로 저장된 <b>최근 10건</b>의 장소 기록을 최신순으로 반환합니다.
-            <br><br><b>searchedAt</b>은 서울 시간대 기준 LocalDateTime 형식이며, 나노초 정밀도를 포함합니다 (예: <code>2025‑04‑15T18:20:31.123456789</code>).
+            회원별로 저장된 **최근 10건**의 장소 기록을 최신순으로 반환합니다.
+
+            **searchedAt**은 서울 시간대 기준 LocalDateTime 형식이며, 나노초 정밀도를 포함합니다 (예: `2025‑04‑15T18:20:31.123456789`).
             """,
         responses = [
             ApiResponse(
@@ -229,12 +228,10 @@ interface PlaceSwagger {
     @Operation(
         summary = "최근 검색 기록 삭제",
         description = """
-            회원별 검색 기록 중 <b>특정 항목을 삭제</b>합니다.
-            <ul>
-              <li>searchedAt 값은 조회 API에서 받은 값을 그대로 사용하세요 (예: <code>2025-04-15T18:20:31.123456789</code>).</li>
-              <li>서울 시간대 기준 LocalDateTime 형식이며, 나노초 정밀도를 포함합니다.</li>
-              <li>해당 시각의 기록이 존재하지 않아도 성공(204) 응답을 반환합니다.</li>
-            </ul>
+            회원별 검색 기록 중 **특정 항목을 삭제**합니다.
+            - searchedAt 값은 조회 API에서 받은 값을 그대로 사용하세요 (예: `2025-04-15T18:20:31.123456789`).
+            - 서울 시간대 기준 LocalDateTime 형식이며, 나노초 정밀도를 포함합니다.
+            - 해당 시각의 기록이 존재하지 않아도 성공(204) 응답을 반환합니다.
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
