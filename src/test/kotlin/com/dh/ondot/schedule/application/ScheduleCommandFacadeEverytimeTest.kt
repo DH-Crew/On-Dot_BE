@@ -121,10 +121,10 @@ class ScheduleCommandFacadeEverytimeTest {
                 anyDouble(), anyDouble(), anyDouble(), anyDouble(),
                 anyNonNull(), anyNonNull(),
             )).willReturn(30)
-            given(scheduleService.setupSchedule(anyNonNull(), anyNonNull(), anyInt()))
-                .willReturn(Schedule())
-            given(scheduleService.saveSchedule(anyNonNull()))
-                .willAnswer { it.arguments[0] as Schedule }
+            given(scheduleService.createEverytimeSchedule(
+                anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull(),
+                anyNonNull(), anyNonNull(), anyInt(), anyNonNull(),
+            )).willReturn(Schedule())
 
             // when
             val result = facade.createSchedulesFromEverytime(
@@ -169,10 +169,10 @@ class ScheduleCommandFacadeEverytimeTest {
                 anyDouble(), anyDouble(), anyDouble(), anyDouble(),
                 anyNonNull(), anyNonNull(),
             )).willReturn(25)
-            given(scheduleService.setupSchedule(anyNonNull(), anyNonNull(), anyInt()))
-                .willReturn(Schedule())
-            given(scheduleService.saveSchedule(anyNonNull()))
-                .willAnswer { it.arguments[0] as Schedule }
+            given(scheduleService.createEverytimeSchedule(
+                anyNonNull(), anyNonNull(), anyNonNull(), anyNonNull(),
+                anyNonNull(), anyNonNull(), anyInt(), anyNonNull(),
+            )).willReturn(Schedule())
 
             // when
             facade.createSchedulesFromEverytime(

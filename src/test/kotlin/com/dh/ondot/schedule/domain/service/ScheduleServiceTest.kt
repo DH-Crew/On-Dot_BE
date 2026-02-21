@@ -192,4 +192,25 @@ class ScheduleServiceTest {
         // then
         verify(scheduleRepository).delete(schedule)
     }
+
+    @Test
+    @DisplayName("createScheduleWithAlarms는 알람만 설정하고 quick schedule 메타데이터를 설정하지 않는다")
+    fun createScheduleWithAlarms_ReturnsScheduleWithAlarmsOnly() {
+        // given
+        val member = MemberFixture.defaultMember()
+        val appointmentAt = LocalDateTime.of(2025, 12, 16, 10, 0)
+        val estimatedTimeMin = 30
+
+        given(scheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc(member.id))
+            .willReturn(Optional.empty())
+
+        // when
+        val result = scheduleService.createScheduleWithAlarms(member, appointmentAt, estimatedTimeMin)
+
+        // then
+        assertThat(result.preparationAlarm).isNotNull()
+        assertThat(result.departureAlarm).isNotNull()
+        assertThat(result.memberId).isEqualTo(0L)
+        assertThat(result.title).isEqualTo("")
+    }
 }

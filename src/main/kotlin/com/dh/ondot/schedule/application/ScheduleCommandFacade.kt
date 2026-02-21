@@ -273,15 +273,13 @@ class ScheduleCommandFacade(
             val appointmentAt = calculateNextAppointmentAt(days, time)
             val estimatedTime = routeTimeByGroup[time] ?: 0
 
-            val schedule = scheduleService.setupSchedule(member, appointmentAt, estimatedTime)
-            schedule.memberId = member.id
-            schedule.title = title
-            schedule.isRepeat = true
-            schedule.repeatDays = TreeSet(repeatDays)
-            schedule.appointmentAt = TimeUtils.toInstant(appointmentAt)
-            schedule.transportType = transportType
+            val dep = Place.createPlace("집", "", startX, startY)
+            val arr = Place.createPlace("학교", "", endX, endY)
 
-            scheduleService.saveSchedule(schedule)
+            scheduleService.createEverytimeSchedule(
+                member, dep, arr, title, TreeSet(repeatDays),
+                appointmentAt, estimatedTime, transportType,
+            )
         }
     }
 
