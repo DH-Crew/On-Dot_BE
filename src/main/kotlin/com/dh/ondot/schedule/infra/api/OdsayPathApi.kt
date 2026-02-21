@@ -10,6 +10,9 @@ import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
+import java.net.URI
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Component
 class OdsayPathApi(
@@ -25,16 +28,9 @@ class OdsayPathApi(
     )
     fun searchPublicTransportRoute(startX: Double, startY: Double, endX: Double, endY: Double): OdsayRouteApiResponse {
         try {
+            val encodedApiKey = URLEncoder.encode(odsayApiConfig.apiKey, StandardCharsets.UTF_8)
             val rawBody = restClient.get()
-                .uri { builder ->
-                    builder
-                        .queryParam("apiKey", odsayApiConfig.apiKey)
-                        .queryParam("SX", startX)
-                        .queryParam("SY", startY)
-                        .queryParam("EX", endX)
-                        .queryParam("EY", endY)
-                        .build(false) // API key의 특수문자(+ 등) 인코딩 방지
-                }
+                .uri(URI.create("${odsayApiConfig.baseUrl}?apiKey=$encodedApiKey&SX=$startX&SY=$startY&EX=$endX&EY=$endY"))
                 .retrieve()
                 .body(String::class.java)
 
