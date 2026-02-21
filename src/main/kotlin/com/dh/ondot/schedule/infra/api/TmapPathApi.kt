@@ -10,6 +10,7 @@ import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.RestClientResponseException
 
 @Component
 class TmapPathApi(
@@ -45,6 +46,11 @@ class TmapPathApi(
             throw ex
         } catch (ex: TmapNoResultException) {
             throw ex
+        } catch (ex: RestClientResponseException) {
+            if (ex.statusCode.is5xxServerError) {
+                throw TmapServerErrorException(ex.message ?: "")
+            }
+            throw TmapUnhandledException(ex.message ?: "")
         } catch (e: Exception) {
             throw TmapUnhandledException(e.message ?: "")
         }

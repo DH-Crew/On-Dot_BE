@@ -8,6 +8,7 @@ import com.dh.ondot.schedule.domain.repository.ApiUsageRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Service
 @Transactional(readOnly = true)
@@ -38,6 +39,6 @@ class ApiUsageService(
             .orElse(ApiUsage.DAILY_LIMIT)
     }
 
-    fun getUsageCount(apiType: ApiType, date: java.time.LocalDate): Int =
+    fun getUsageCount(apiType: ApiType, date: LocalDate): Int =
         apiUsageRepository.findUsageCountByDate(apiType, date).orElse(0)
 }

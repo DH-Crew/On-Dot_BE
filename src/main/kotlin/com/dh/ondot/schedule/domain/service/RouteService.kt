@@ -12,7 +12,8 @@ class RouteService(
         endX: Double, endY: Double,
         transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
     ): Int {
-        val calculator = calculators.first { it.supports(transportType) }
+        val calculator = calculators.firstOrNull { it.supports(transportType) }
+            ?: throw IllegalArgumentException("지원하지 않는 교통수단입니다: $transportType")
         return calculator.calculateRouteTime(startX, startY, endX, endY)
     }
 }
