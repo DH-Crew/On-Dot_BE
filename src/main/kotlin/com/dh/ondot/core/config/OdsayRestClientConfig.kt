@@ -21,7 +21,6 @@ class OdsayRestClientConfig {
 
         return RestClient.builder()
             .requestFactory(factory)
-            .baseUrl(props.baseUrl)
             .build()
     }
 }
