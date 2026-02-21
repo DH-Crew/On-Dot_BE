@@ -1,5 +1,6 @@
 package com.dh.ondot.schedule.infra.dto
 
+import com.dh.ondot.schedule.infra.exception.TmapUnhandledException
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,8 +23,8 @@ data class TmapRouteApiResponse(
 
     fun getTotalTimeSeconds(): Int {
         val props = features?.firstOrNull()?.properties
-            ?: throw IllegalStateException("TMAP 응답에 경로 정보가 없습니다.")
+            ?: throw TmapUnhandledException("TMAP 응답에 경로 정보가 없습니다.")
         return props.totalTime
-            ?: throw IllegalStateException("TMAP 응답에 totalTime이 없습니다.")
+            ?: throw TmapUnhandledException("TMAP 응답에 totalTime이 없습니다.")
     }
 }

@@ -48,11 +48,11 @@ class TmapPathApi(
             throw ex
         } catch (ex: RestClientResponseException) {
             if (ex.statusCode.is5xxServerError) {
-                throw TmapServerErrorException(ex.message ?: "")
+                throw TmapServerErrorException("${ex.statusCode}: ${ex.message}")
             }
-            throw TmapUnhandledException(ex.message ?: "")
+            throw TmapUnhandledException("${ex.statusCode}: ${ex.message}")
         } catch (e: Exception) {
-            throw TmapUnhandledException(e.message ?: "")
+            throw TmapUnhandledException("${e.javaClass.simpleName}: ${e.message}")
         }
     }
 }
