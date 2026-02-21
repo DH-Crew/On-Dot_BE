@@ -4,10 +4,15 @@ import com.dh.ondot.schedule.application.dto.EverytimeLecture
 import com.dh.ondot.schedule.infra.exception.EverytimeNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings
+import org.springframework.web.client.RestClient
 import org.w3c.dom.Element
+import java.time.Duration
 import java.time.LocalTime
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -85,6 +90,62 @@ class EverytimeApiTest {
             assertThat(slotToLocalTime(114)).isEqualTo(LocalTime.of(9, 30))
             assertThat(slotToLocalTime(132)).isEqualTo(LocalTime.of(11, 0))
             assertThat(slotToLocalTime(216)).isEqualTo(LocalTime.of(18, 0))
+        }
+    }
+
+    @Nested
+    @DisplayName("실제 API 호출 검증")
+    inner class RealApiTest {
+
+        private lateinit var everytimeApi: EverytimeApi
+
+        @BeforeEach
+        fun setUp() {
+            val settings = ClientHttpRequestFactorySettings.defaults()
+                .withConnectTimeout(Duration.ofSeconds(3))
+                .withReadTimeout(Duration.ofSeconds(10))
+            val factory = ClientHttpRequestFactoryBuilder.detect().build(settings)
+
+            val restClient = RestClient.builder()
+                .requestFactory(factory)
+                .baseUrl("https://api.everytime.kr")
+                .defaultHeader("Origin", "https://everytime.kr")
+                .defaultHeader("Referer", "https://everytime.kr/")
+                .defaultHeader("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36")
+                .build()
+
+            everytimeApi = EverytimeApi(restClient)
+        }
+
+        @Test
+        @DisplayName("실제 에브리타임 URL로 시간표를 조회한다")
+        fun fetchTimetable_WithRealUrl_ReturnsLectures() {
+            // given
+            val identifier = "ip9ktZ3A7H35H6P7Z1Wr"
+
+            // when
+            val lectures = everytimeApi.fetchTimetable(identifier)
+
+            // then
+            assertThat(lectures).isNotEmpty
+            lectures.forEach { lecture ->
+                assertThat(lecture.name).isNotBlank()
+                assertThat(lecture.day).isBetween(0, 6)
+                assertThat(lecture.startTime).isNotNull()
+                assertThat(lecture.endTime).isNotNull()
+                assertThat(lecture.startTime).isBefore(lecture.endTime)
+            }
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 identifier로 조회 시 EverytimeNotFoundException이 발생한다")
+        fun fetchTimetable_WithInvalidIdentifier_ThrowsNotFoundException() {
+            // given
+            val invalidIdentifier = "nonExistentInvalidIdentifier123"
+
+            // when & then
+            assertThatThrownBy { everytimeApi.fetchTimetable(invalidIdentifier) }
+                .isInstanceOf(EverytimeNotFoundException::class.java)
         }
     }
 

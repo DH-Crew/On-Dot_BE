@@ -24,6 +24,7 @@ class EverytimeRestClientConfig {
             .baseUrl("https://api.everytime.kr")
             .defaultHeader("Origin", "https://everytime.kr")
             .defaultHeader("Referer", "https://everytime.kr/")
+            .defaultHeader("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36")
             .build()
     }
 }
