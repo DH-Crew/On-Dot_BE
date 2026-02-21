@@ -47,8 +47,6 @@ class ScheduleQueryRepositoryTest {
             registry.add("spring.datasource.password") { mysql.password }
             registry.add("spring.datasource.driver-class-name") { "com.mysql.cj.jdbc.Driver" }
             registry.add("spring.jpa.hibernate.ddl-auto") { "create-drop" }
-            registry.add("spring.jpa.database-platform") { "org.hibernate.dialect.MySQL8Dialect" }
-            registry.add("spring.jpa.properties.hibernate.dialect") { "org.hibernate.dialect.MySQL8Dialect" }
 
             // HikariCP - 테스트 환경 최적화
             registry.add("spring.datasource.hikari.maximum-pool-size") { "2" }
