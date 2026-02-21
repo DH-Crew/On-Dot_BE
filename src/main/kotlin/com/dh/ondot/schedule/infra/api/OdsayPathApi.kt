@@ -33,7 +33,7 @@ class OdsayPathApi(
                         .queryParam("SY", startY)
                         .queryParam("EX", endX)
                         .queryParam("EY", endY)
-                        .build()
+                        .build(false) // API key의 특수문자(+ 등) 인코딩 방지
                 }
                 .retrieve()
                 .body(String::class.java)

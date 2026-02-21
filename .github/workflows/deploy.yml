@@ -84,6 +84,8 @@ jobs:
         uses: appleboy/ssh-action@v0.1.5
         id: deploy-prod
         if: contains(github.ref, 'main')
+        env:
+          FCM_SERVICE_ACCOUNT_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
