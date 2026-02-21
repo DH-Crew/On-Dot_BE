@@ -1,8 +1,9 @@
 package com.dh.ondot.schedule.presentation.request
 
+import com.dh.ondot.schedule.application.command.CreateEverytimeScheduleCommand
+import com.dh.ondot.schedule.application.command.CreateScheduleCommand
 import com.dh.ondot.schedule.domain.enums.TransportType
-import jakarta.validation.constraints.DecimalMax
-import jakarta.validation.constraints.DecimalMin
+import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
@@ -10,25 +11,24 @@ data class EverytimeScheduleCreateRequest(
     @field:NotBlank(message = "everytimeUrl은 필수입니다.")
     val everytimeUrl: String,
 
-    @field:NotNull(message = "startLongitude는 필수입니다.")
-    @field:DecimalMin(value = "-180.0", message = "startLongitude는 -180 이상이어야 합니다.")
-    @field:DecimalMax(value = "180.0", message = "startLongitude는 180 이하이어야 합니다.")
-    val startLongitude: Double,
+    @field:NotNull @field:Valid
+    val departurePlace: PlaceDto,
 
-    @field:NotNull(message = "startLatitude는 필수입니다.")
-    @field:DecimalMin(value = "-90.0", message = "startLatitude는 -90 이상이어야 합니다.")
-    @field:DecimalMax(value = "90.0", message = "startLatitude는 90 이하이어야 합니다.")
-    val startLatitude: Double,
-
-    @field:NotNull(message = "endLongitude는 필수입니다.")
-    @field:DecimalMin(value = "-180.0", message = "endLongitude는 -180 이상이어야 합니다.")
-    @field:DecimalMax(value = "180.0", message = "endLongitude는 180 이하이어야 합니다.")
-    val endLongitude: Double,
-
-    @field:NotNull(message = "endLatitude는 필수입니다.")
-    @field:DecimalMin(value = "-90.0", message = "endLatitude는 -90 이상이어야 합니다.")
-    @field:DecimalMax(value = "90.0", message = "endLatitude는 90 이하이어야 합니다.")
-    val endLatitude: Double,
+    @field:NotNull @field:Valid
+    val arrivalPlace: PlaceDto,
 
     val transportType: TransportType? = null,
-)
+) {
+    fun toCommand(): CreateEverytimeScheduleCommand = CreateEverytimeScheduleCommand(
+        everytimeUrl = everytimeUrl,
+        departurePlace = CreateScheduleCommand.PlaceInfo(
+            departurePlace.title, departurePlace.roadAddress,
+            departurePlace.longitude, departurePlace.latitude,
+        ),
+        arrivalPlace = CreateScheduleCommand.PlaceInfo(
+            arrivalPlace.title, arrivalPlace.roadAddress,
+            arrivalPlace.longitude, arrivalPlace.latitude,
+        ),
+        transportType = transportType ?: TransportType.PUBLIC_TRANSPORT,
+    )
+}

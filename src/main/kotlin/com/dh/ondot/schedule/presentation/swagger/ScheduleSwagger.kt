@@ -3,12 +3,16 @@ package com.dh.ondot.schedule.presentation.swagger
 import com.dh.ondot.core.ErrorResponse
 import com.dh.ondot.schedule.presentation.request.AlarmSwitchRequest
 import com.dh.ondot.schedule.presentation.request.EstimateTimeRequest
+import com.dh.ondot.schedule.presentation.request.EverytimeScheduleCreateRequest
+import com.dh.ondot.schedule.presentation.request.EverytimeValidateRequest
 import com.dh.ondot.schedule.presentation.request.QuickScheduleCreateRequest
 import com.dh.ondot.schedule.presentation.request.ScheduleCreateRequest
 import com.dh.ondot.schedule.presentation.request.ScheduleParsedRequest
 import com.dh.ondot.schedule.presentation.request.ScheduleUpdateRequest
 import com.dh.ondot.schedule.presentation.response.AlarmSwitchResponse
 import com.dh.ondot.schedule.presentation.response.EstimateTimeResponse
+import com.dh.ondot.schedule.presentation.response.EverytimeScheduleCreateResponse
+import com.dh.ondot.schedule.presentation.response.EverytimeValidateResponse
 import com.dh.ondot.schedule.presentation.response.HomeScheduleListResponse
 import com.dh.ondot.schedule.presentation.response.ScheduleCreateResponse
 import com.dh.ondot.schedule.presentation.response.ScheduleDetailResponse
@@ -960,6 +964,260 @@ interface ScheduleSwagger {
         @PathVariable scheduleId: Long,
         @RequestBody request: AlarmSwitchRequest,
     ): AlarmSwitchResponse
+
+    /*──────────────────────────────────────────────────────
+     * 에브리타임 URL 검증
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+        summary = "에브리타임 URL 검증",
+        description = """
+            에브리타임 공유 URL의 유효성을 검증합니다.
+            - URL 형식 검증 (everytime.kr 도메인, /@{identifier} 경로)
+            - 실제 에브리타임 API 호출을 통한 시간표 존재 여부 확인
+
+            **⚠️ Error Codes**
+            - URL 형식 오류: `EVERYTIME_INVALID_URL`
+            - 시간표를 찾을 수 없음 (비공개/삭제): `EVERYTIME_NOT_FOUND`
+            - 수업이 없는 시간표: `EVERYTIME_EMPTY_TIMETABLE`
+            - 에브리타임 서버 오류: `EVERYTIME_SERVER_ERROR`
+            """,
+        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            content = [Content(
+                mediaType = APPLICATION_JSON_VALUE,
+                schema = Schema(implementation = EverytimeValidateRequest::class),
+                examples = [ExampleObject(
+                    name = "예시-요청",
+                    value = """
+                    {
+                      "everytimeUrl": "https://everytime.kr/@ip9ktZ3A7H35H6P7Z1Wr"
+                    }"""
+                )]
+            )]
+        ),
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "검증 성공",
+                content = [Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = Schema(implementation = EverytimeValidateResponse::class),
+                    examples = [ExampleObject(
+                        value = """
+                        {
+                          "identifier": "ip9ktZ3A7H35H6P7Z1Wr"
+                        }"""
+                    )]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "URL 형식 오류",
+                content = [Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = Schema(ref = "#/components/schemas/ErrorResponse"),
+                    examples = [ExampleObject(
+                        value = """
+                        {
+                          "errorCode": "EVERYTIME_INVALID_URL",
+                          "message": "에브리타임 URL 형식이 올바르지 않습니다: https://example.com/test"
+                        }"""
+                    )]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "시간표를 찾을 수 없음",
+                content = [Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = Schema(ref = "#/components/schemas/ErrorResponse"),
+                    examples = [
+                        ExampleObject(
+                            name = "시간표 없음",
+                            value = """
+                            {
+                              "errorCode": "EVERYTIME_NOT_FOUND",
+                              "message": "에브리타임 시간표를 찾을 수 없습니다. 공유 URL을 확인해주세요."
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "빈 시간표",
+                            value = """
+                            {
+                              "errorCode": "EVERYTIME_EMPTY_TIMETABLE",
+                              "message": "시간표에 등록된 수업이 없습니다."
+                            }"""
+                        )
+                    ]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "502",
+                description = "에브리타임 서버 장애",
+                content = [Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = Schema(ref = "#/components/schemas/ErrorResponse"),
+                    examples = [ExampleObject(
+                        value = """
+                        {
+                          "errorCode": "EVERYTIME_SERVER_ERROR",
+                          "message": "에브리타임 서버에 일시적인 오류가 발생했습니다: 500 INTERNAL_SERVER_ERROR"
+                        }"""
+                    )]
+                )]
+            )
+        ]
+    )
+    @PostMapping("/everytime/validate")
+    fun validateEverytimeUrl(
+        @RequestBody request: EverytimeValidateRequest,
+    ): EverytimeValidateResponse
+
+    /*──────────────────────────────────────────────────────
+     * 에브리타임 시간표 기반 스케줄 일괄 생성
+     *──────────────────────────────────────────────────────*/
+    @Operation(
+        summary = "에브리타임 시간표 기반 스케줄 일괄 생성",
+        description = """
+            에브리타임 공유 URL을 기반으로 시간표를 조회한 뒤,
+            요일별 첫 수업 시작시간을 기준으로 반복 스케줄을 일괄 생성합니다.
+
+            **📌 생성 규칙**
+            - 동일한 시작시간의 요일들은 하나의 반복 스케줄로 묶입니다
+              (예: 월/수 09:30 → "월/수요일 학교", 화/목 11:00 → "화/목요일 학교")
+            - 각 스케줄에는 멤버 기본 알람 설정이 적용됩니다
+            - `transportType` 미지정 시 `PUBLIC_TRANSPORT`(대중교통)로 처리
+
+            **🚗 경로 계산**
+            - 대중교통: 1회 조회 후 전체 그룹에 재사용
+            - 자가용: 시간대별 조회 (동일 시간 그룹은 첫 번째 요일 기준)
+
+            **⚠️ Error Codes**
+            - URL 형식 오류: `EVERYTIME_INVALID_URL`
+            - 시간표를 찾을 수 없음: `EVERYTIME_NOT_FOUND`
+            - 수업이 없는 시간표: `EVERYTIME_EMPTY_TIMETABLE`
+            - 에브리타임 서버 오류: `EVERYTIME_SERVER_ERROR`
+            - 경로 계산 오류: `ODSAY_*`, `TMAP_*` 계열 에러 코드
+            """,
+        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            content = [Content(
+                mediaType = APPLICATION_JSON_VALUE,
+                schema = Schema(implementation = EverytimeScheduleCreateRequest::class),
+                examples = [ExampleObject(
+                    name = "예시-요청",
+                    value = """
+                    {
+                      "everytimeUrl": "https://everytime.kr/@ip9ktZ3A7H35H6P7Z1Wr",
+                      "departurePlace": {
+                        "title": "집",
+                        "roadAddress": "서울특별시 강남구 테헤란로 123",
+                        "longitude": 127.070593415212,
+                        "latitude": 37.277975571288
+                      },
+                      "arrivalPlace": {
+                        "title": "학교",
+                        "roadAddress": "서울특별시 서초구 서초대로 77",
+                        "longitude": 126.94569176914,
+                        "latitude": 37.5959199688468
+                      },
+                      "transportType": "PUBLIC_TRANSPORT"
+                    }"""
+                )]
+            )]
+        ),
+        responses = [
+            ApiResponse(
+                responseCode = "201",
+                description = "스케줄 일괄 생성 성공",
+                content = [Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = Schema(implementation = EverytimeScheduleCreateResponse::class),
+                    examples = [ExampleObject(
+                        value = """
+                        {
+                          "createdCount": 2,
+                          "schedules": [
+                            {
+                              "scheduleId": 101,
+                              "title": "월/수요일 학교",
+                              "repeatDays": [2, 4],
+                              "appointmentAt": "2026-02-23T09:30:00"
+                            },
+                            {
+                              "scheduleId": 102,
+                              "title": "화/목요일 학교",
+                              "repeatDays": [3, 5],
+                              "appointmentAt": "2026-02-24T11:00:00"
+                            }
+                          ]
+                        }"""
+                    )]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "URL 형식 오류 또는 검증 오류",
+                content = [Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = Schema(ref = "#/components/schemas/ErrorResponse"),
+                    examples = [ExampleObject(
+                        value = """
+                        {
+                          "errorCode": "EVERYTIME_INVALID_URL",
+                          "message": "에브리타임 URL 형식이 올바르지 않습니다: https://example.com/test"
+                        }"""
+                    )]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "시간표를 찾을 수 없음 또는 멤버 없음",
+                content = [Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = Schema(ref = "#/components/schemas/ErrorResponse"),
+                    examples = [
+                        ExampleObject(
+                            name = "시간표 없음",
+                            value = """
+                            {
+                              "errorCode": "EVERYTIME_NOT_FOUND",
+                              "message": "에브리타임 시간표를 찾을 수 없습니다. 공유 URL을 확인해주세요."
+                            }"""
+                        ),
+                        ExampleObject(
+                            name = "빈 시간표",
+                            value = """
+                            {
+                              "errorCode": "EVERYTIME_EMPTY_TIMETABLE",
+                              "message": "시간표에 등록된 수업이 없습니다."
+                            }"""
+                        )
+                    ]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "502",
+                description = "에브리타임 또는 경로 API 서버 장애",
+                content = [Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = Schema(ref = "#/components/schemas/ErrorResponse"),
+                    examples = [ExampleObject(
+                        value = """
+                        {
+                          "errorCode": "EVERYTIME_SERVER_ERROR",
+                          "message": "에브리타임 서버에 일시적인 오류가 발생했습니다: timeout"
+                        }"""
+                    )]
+                )]
+            )
+        ]
+    )
+    @PostMapping("/everytime")
+    fun createSchedulesFromEverytime(
+        @RequestAttribute("memberId") memberId: Long,
+        @RequestBody request: EverytimeScheduleCreateRequest,
+    ): EverytimeScheduleCreateResponse
 
     /*──────────────────────────────────────────────────────
      * 일정 삭제
