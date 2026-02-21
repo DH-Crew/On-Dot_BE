@@ -20,7 +20,7 @@ digraph release_pr {
   v1 [label="Fetch latest:\ngit fetch origin develop main"]
   v2 [label="Resolve base refs:\ndevelop (local or origin/develop)"]
   v3 [label="Gather commits:\ngit log origin/main..{develop-ref}"]
-  v4 [label="Classify changes:\nMajor / Minor / Patch"]
+  v4 [label="Classify changes:\nMajor / Minor"]
   v5 [label="gh pr create --base main"]
   gate1 [label="Gate 1: PR 내용 확인" shape=diamond]
   edit [label="Edit PR as requested"]
@@ -60,9 +60,8 @@ digraph release_pr {
 2. **Gather commits**: `git log origin/main..{develop-ref} --format='%h %s (%an)'`
    - `{develop-ref}`: 로컬 `develop` 또는 `origin/develop`
    - Classify each commit:
-     - **Major**: breaking/incompatible API changes
-     - **Minor**: `feat:` commits, new functionality
-     - **Patch**: `fix:`, `test:`, `docs:`, `refactor:`, `chore:`
+     - **Major**: `feat:` 새 기능 추가, API 스펙 변경, breaking changes
+     - **Minor**: `fix:`, `docs:`, `test:`, `refactor:`, `chore:` 등 버그 수정 및 내부 개선
    - Resolve each author to their GitHub username (check commit history or `gh api`)
 
 3. **Create PR**:
@@ -74,20 +73,18 @@ gh pr create --base main --head develop \
 ## Summary
 
 ### Major Changes
-- {한글 설명} @{author-github-id}
+- {한글 설명} (#PR번호) @{author-github-id}
 
 ### Minor Changes
-- {한글 설명} @{author-github-id}
-
-### Patch Changes
-- {한글 설명} @{author-github-id}
+- {한글 설명} (#PR번호) @{author-github-id}
 EOF
 )" \
   --assignee @me
 ```
 
    - Omit empty sections (no Major commits -> no Major heading)
-   - Each item: `- {한글 설명} @{author-github-id}`
+   - Each item: `- {한글 설명} (#PR번호) @{author-github-id}`
+   - PR 번호는 squash merge 커밋 메시지에서 추출 (e.g. `(#78)` → `#78`)
 
 4. **Gate 1 — PR Confirmation**: Ask "PR 내용 확인해주세요. 문제 없나요?"
    - No -> edit PR content as requested, re-confirm
@@ -99,9 +96,8 @@ EOF
 
 | Highest Level | Bump | Example |
 |---------------|------|---------|
-| Major | major | 1.0.1 -> 2.0.0 |
-| Minor | minor | 1.0.1 -> 1.1.0 |
-| Patch | patch | 1.0.1 -> 1.0.2 |
+| Major | minor | 1.0.1 -> 1.1.0 |
+| Minor | patch | 1.0.1 -> 1.0.2 |
 
    - Present as multiple choice for user to confirm or override
    - User picks different version -> use that
@@ -128,20 +124,30 @@ EOF
 7. **Discord 알림** — `#api-update` 채널에 변경사항 전송:
    - `~/.claude/env` 파일에서 `DH_API_UPDATE_DISCORD_WEBHOOK_URL` 로드
    - 파일이 없거나 변수가 없으면 → 안내 메시지 출력 후 skip (릴리스 자체는 정상 완료)
-   - PR Summary를 프론트엔드 팀원이 이해하기 쉬운 포맷으로 변환:
+   - PR Summary를 프론트엔드 팀원이 이해하기 쉬운 포맷으로 변환
+   - **Discord Markdown 포맷 규칙**:
+     - 들여쓰기 기반 포맷 사용 금지 (Discord에서 무시됨)
+     - `**볼드**`와 백틱 `` ` `` 코드블록 위주로 구성
+     - 섹션 구분에는 이모지 접두어 사용 (📌, ✅ 등)
+     - 빈 줄로 섹션 간 구분
 
 ```
-✅ {YYYY.MM.DD} 변경사항
-1. {변경사항 제목}
-  - {세부 설명 (프론트에서 필요한 액션이 있으면 명시)}
-2. {변경사항 제목}
-  - {세부 설명}
+✅ **{YYYY.MM.DD} 변경사항**
+
+**1. {변경사항 제목}**
+- {세부 설명}
+- {세부 설명}
+
+📌 **[영향받는 API] {METHOD} {endpoint}**
+- {프론트에서 필요한 변경/액션}
+- 예시: `{ 요청/응답 예시 }`
 ```
 
    - 작성 원칙:
      - 백엔드 내부 구현보다 **API 변경/영향**에 초점
      - 프론트에서 대응이 필요한 경우 구체적으로 명시
      - 한글로 간결하게 작성
+     - 변경된 필드명, 타입, 값은 반드시 백틱으로 감싸기
    - **Gate 3 — Discord 메시지 확인**: "Discord에 전송할 메시지를 확인해주세요" → 수정 요청 시 반영 후 재확인
    - 확인 완료 후 전송:
 
