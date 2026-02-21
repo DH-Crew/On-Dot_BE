@@ -129,6 +129,13 @@ EOF
 ### 3. 미해결 이슈 및 향후 검토 사항
 - {남은 이슈 또는 추가 검토 필요 사항}
 
+### 4. 인프라 필수 조치 사항
+> 해당 사항이 없으면 이 섹션을 "없음"으로 표기한다.
+- **DB**: {새 컬럼, 마이그레이션, DEFAULT 값 등 DB 스키마 변경사항}
+- **환경변수**: {새로 추가된 환경변수 목록 + GitHub Secrets 등록 필요 여부}
+- **CI/CD**: {deploy.yml 변경사항, 새 시크릿 등록 필요 여부}
+- **기타**: {인프라 관련 추가 조치사항}
+
 ## ✅ Check List
 - [x] Have all tests passed?
 - [x] Have all commits been pushed?

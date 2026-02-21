@@ -115,6 +115,7 @@ jobs:
               -e APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }} \
               -e NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
               -e NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
+              -e TMAP_APP_KEY=${{ secrets.TMAP_APP_KEY }} \
               -e ODSAY_CLIENT_API_KEY=${{ secrets.ODSAY_CLIENT_API_KEY }} \
               -e SEOUL_TRANSPORTATION_SERVICE_KEY=${{ secrets.SEOUL_TRANSPORTATION_SERVICE_KEY }} \
               -e SAFETY_DATA_SERVICE_KEY=${{ secrets.SAFETY_DATA_SERVICE_KEY }} \
