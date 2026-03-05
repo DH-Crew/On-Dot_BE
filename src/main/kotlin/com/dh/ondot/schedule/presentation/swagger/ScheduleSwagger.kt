@@ -966,14 +966,16 @@ interface ScheduleSwagger {
     ): AlarmSwitchResponse
 
     /*──────────────────────────────────────────────────────
-     * 에브리타임 URL 검증
+     * 에브리타임 URL 검증 및 시간표 조회
      *──────────────────────────────────────────────────────*/
     @Operation(
-        summary = "에브리타임 URL 검증",
+        summary = "에브리타임 URL 검증 및 시간표 조회",
         description = """
-            에브리타임 공유 URL의 유효성을 검증합니다.
+            에브리타임 공유 URL의 유효성을 검증하고, 요일별 시간표를 반환합니다.
             - URL 형식 검증 (everytime.kr 도메인, /@{identifier} 경로)
-            - 실제 에브리타임 API 호출을 통한 시간표 존재 여부 확인
+            - 실제 에브리타임 API 호출을 통한 시간표 조회
+            - 응답의 `timetable`은 요일별(MONDAY~SUNDAY) 수업 목록이며, 월요일부터 시작하여 시간순으로 정렬됩니다
+            - 수업이 없는 요일은 응답에서 제외됩니다
 
             **⚠️ Error Codes**
             - URL 형식 오류: `EVERYTIME_INVALID_URL`
@@ -998,14 +1000,40 @@ interface ScheduleSwagger {
         responses = [
             ApiResponse(
                 responseCode = "200",
-                description = "검증 성공",
+                description = "검증 성공 및 시간표 반환",
                 content = [Content(
                     mediaType = APPLICATION_JSON_VALUE,
                     schema = Schema(implementation = EverytimeValidateResponse::class),
                     examples = [ExampleObject(
                         value = """
                         {
-                          "identifier": "ip9ktZ3A7H35H6P7Z1Wr"
+                          "timetable": {
+                            "MONDAY": [
+                              { "courseName": "드론과 로보틱스", "startTime": "10:00:00", "endTime": "12:00:00" },
+                              { "courseName": "시스템아키텍처", "startTime": "12:00:00", "endTime": "14:00:00" },
+                              { "courseName": "P-실무프로젝트", "startTime": "18:00:00", "endTime": "21:00:00" }
+                            ],
+                            "TUESDAY": [
+                              { "courseName": "컴퓨터구조", "startTime": "11:00:00", "endTime": "13:00:00" },
+                              { "courseName": "시스템아키텍처", "startTime": "14:00:00", "endTime": "16:00:00" },
+                              { "courseName": "기업과 리더십", "startTime": "16:00:00", "endTime": "18:00:00" },
+                              { "courseName": "P-실무프로젝트", "startTime": "18:00:00", "endTime": "21:00:00" }
+                            ],
+                            "WEDNESDAY": [
+                              { "courseName": "ㅎㅎ", "startTime": "12:00:00", "endTime": "13:00:00" },
+                              { "courseName": "P-실무프로젝트", "startTime": "18:00:00", "endTime": "21:00:00" }
+                            ],
+                            "THURSDAY": [
+                              { "courseName": "취/창업 진로세미나", "startTime": "09:00:00", "endTime": "10:00:00" },
+                              { "courseName": "드론과 로보틱스", "startTime": "10:00:00", "endTime": "12:00:00" },
+                              { "courseName": "컴퓨터구조", "startTime": "11:00:00", "endTime": "13:00:00" },
+                              { "courseName": "드론과 로보틱스", "startTime": "14:00:00", "endTime": "16:00:00" },
+                              { "courseName": "P-실무프로젝트", "startTime": "18:00:00", "endTime": "21:00:00" }
+                            ],
+                            "FRIDAY": [
+                              { "courseName": "P-실무프로젝트", "startTime": "18:00:00", "endTime": "21:00:00" }
+                            ]
+                          }
                         }"""
                     )]
                 )]
@@ -1079,24 +1107,22 @@ interface ScheduleSwagger {
     @Operation(
         summary = "에브리타임 시간표 기반 스케줄 일괄 생성",
         description = """
-            에브리타임 공유 URL을 기반으로 시간표를 조회한 뒤,
-            요일별 첫 수업 시작시간을 기준으로 반복 스케줄을 일괄 생성합니다.
+            유저가 선택한 요일별 수업을 기반으로 반복 스케줄을 일괄 생성합니다.
+            먼저 `/schedules/everytime/validate`를 호출하여 시간표를 조회한 뒤,
+            유저가 요일별로 하나씩 선택한 수업 정보를 `selectedLectures`로 전달합니다.
 
             **📌 생성 규칙**
+            - `selectedLectures`에 요일별 최대 1개의 수업을 선택합니다 (없는 요일은 생략)
             - 동일한 시작시간의 요일들은 하나의 반복 스케줄로 묶입니다
-              (예: 월/수 09:30 → "월/수요일 학교", 화/목 11:00 → "화/목요일 학교")
+              (예: 월/수 09:30 선택 → "월/수요일 학교")
             - 각 스케줄에는 멤버 기본 알람 설정이 적용됩니다
             - `transportType` 미지정 시 `PUBLIC_TRANSPORT`(대중교통)로 처리
 
             **🚗 경로 계산**
             - 대중교통: 1회 조회 후 전체 그룹에 재사용
-            - 자가용: 시간대별 조회 (동일 시간 그룹은 첫 번째 요일 기준)
+            - 자가용: 시간대별 조회
 
             **⚠️ Error Codes**
-            - URL 형식 오류: `EVERYTIME_INVALID_URL`
-            - 시간표를 찾을 수 없음: `EVERYTIME_NOT_FOUND`
-            - 수업이 없는 시간표: `EVERYTIME_EMPTY_TIMETABLE`
-            - 에브리타임 서버 오류: `EVERYTIME_SERVER_ERROR`
             - 경로 계산 오류: `ODSAY_*`, `TMAP_*` 계열 에러 코드
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -1108,7 +1134,11 @@ interface ScheduleSwagger {
                     name = "예시-요청",
                     value = """
                     {
-                      "everytimeUrl": "https://everytime.kr/@ip9ktZ3A7H35H6P7Z1Wr",
+                      "selectedLectures": [
+                        { "day": "MONDAY", "startTime": "10:00:00" },
+                        { "day": "TUESDAY", "startTime": "11:00:00" },
+                        { "day": "THURSDAY", "startTime": "09:00:00" }
+                      ],
                       "departurePlace": {
                         "title": "집",
                         "roadAddress": "서울특별시 강남구 테헤란로 123",
@@ -1140,15 +1170,21 @@ interface ScheduleSwagger {
                           "schedules": [
                             {
                               "scheduleId": 101,
-                              "title": "월/수요일 학교",
-                              "repeatDays": [2, 4],
-                              "appointmentAt": "2026-02-23T09:30:00"
+                              "title": "목요일 학교",
+                              "repeatDays": [5],
+                              "appointmentAt": "2026-03-12T09:00:00"
                             },
                             {
                               "scheduleId": 102,
-                              "title": "화/목요일 학교",
-                              "repeatDays": [3, 5],
-                              "appointmentAt": "2026-02-24T11:00:00"
+                              "title": "월요일 학교",
+                              "repeatDays": [2],
+                              "appointmentAt": "2026-03-09T10:00:00"
+                            },
+                            {
+                              "scheduleId": 103,
+                              "title": "화요일 학교",
+                              "repeatDays": [3],
+                              "appointmentAt": "2026-03-10T11:00:00"
                             }
                           ]
                         }"""
@@ -1157,56 +1193,45 @@ interface ScheduleSwagger {
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "URL 형식 오류 또는 검증 오류",
+                description = "검증 오류",
                 content = [Content(
                     mediaType = APPLICATION_JSON_VALUE,
                     schema = Schema(ref = "#/components/schemas/ErrorResponse"),
                     examples = [ExampleObject(
                         value = """
                         {
-                          "errorCode": "EVERYTIME_INVALID_URL",
-                          "message": "에브리타임 URL 형식이 올바르지 않습니다: https://example.com/test"
+                          "errorCode": "BAD_REQUEST",
+                          "message": "selectedLectures는 필수입니다."
                         }"""
                     )]
                 )]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "시간표를 찾을 수 없음 또는 멤버 없음",
-                content = [Content(
-                    mediaType = APPLICATION_JSON_VALUE,
-                    schema = Schema(ref = "#/components/schemas/ErrorResponse"),
-                    examples = [
-                        ExampleObject(
-                            name = "시간표 없음",
-                            value = """
-                            {
-                              "errorCode": "EVERYTIME_NOT_FOUND",
-                              "message": "에브리타임 시간표를 찾을 수 없습니다. 공유 URL을 확인해주세요."
-                            }"""
-                        ),
-                        ExampleObject(
-                            name = "빈 시간표",
-                            value = """
-                            {
-                              "errorCode": "EVERYTIME_EMPTY_TIMETABLE",
-                              "message": "시간표에 등록된 수업이 없습니다."
-                            }"""
-                        )
-                    ]
-                )]
-            ),
-            ApiResponse(
-                responseCode = "502",
-                description = "에브리타임 또는 경로 API 서버 장애",
+                description = "멤버 없음",
                 content = [Content(
                     mediaType = APPLICATION_JSON_VALUE,
                     schema = Schema(ref = "#/components/schemas/ErrorResponse"),
                     examples = [ExampleObject(
                         value = """
                         {
-                          "errorCode": "EVERYTIME_SERVER_ERROR",
-                          "message": "에브리타임 서버에 일시적인 오류가 발생했습니다: timeout"
+                          "errorCode": "NOT_FOUND_MEMBER",
+                          "message": "회원을 찾을 수 없습니다. MemberId : 123"
+                        }"""
+                    )]
+                )]
+            ),
+            ApiResponse(
+                responseCode = "502",
+                description = "경로 API 서버 장애",
+                content = [Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = Schema(ref = "#/components/schemas/ErrorResponse"),
+                    examples = [ExampleObject(
+                        value = """
+                        {
+                          "errorCode": "ODSAY_SERVER_ERROR",
+                          "message": "ODsay 서버에 일시적인 오류가 발생했습니다."
                         }"""
                     )]
                 )]

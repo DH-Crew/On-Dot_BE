@@ -31,6 +31,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.context.ApplicationEventPublisher
+import java.time.DayOfWeek
 import java.time.LocalTime
 
 @ExtendWith(MockitoExtension::class)
@@ -56,18 +57,39 @@ class ScheduleCommandFacadeEverytimeTest {
     inner class ValidateEverytimeUrlTest {
 
         @Test
-        @DisplayName("유효한 에브리타임 URL에서 identifier를 추출한다")
-        fun validateEverytimeUrl_ValidUrl_ReturnsIdentifier() {
+        @DisplayName("유효한 에브리타임 URL로 요일별 시간표를 반환한다")
+        fun validateEverytimeUrl_ValidUrl_ReturnsTimetable() {
             // given
             val url = "https://everytime.kr/@ip9ktZ3A7H35H6P7Z1Wr"
+            val lectures = listOf(
+                createLecture("수학", 0, "09:30", "10:45"),
+                createLecture("영어", 0, "11:00", "12:15"),
+                createLecture("물리", 1, "09:30", "10:45"),
+            )
             given(everytimeApi.fetchTimetable("ip9ktZ3A7H35H6P7Z1Wr"))
-                .willReturn(listOf(createLecture("테스트", 0, "09:30", "10:45")))
+                .willReturn(lectures)
 
             // when
             val result = facade.validateEverytimeUrl(url)
 
             // then
-            assertThat(result).isEqualTo("ip9ktZ3A7H35H6P7Z1Wr")
+            assertThat(result).containsKeys(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)
+            assertThat(result[DayOfWeek.MONDAY]).hasSize(2)
+            assertThat(result[DayOfWeek.MONDAY]!![0].startTime).isEqualTo(LocalTime.of(9, 30))
+            assertThat(result[DayOfWeek.MONDAY]!![1].startTime).isEqualTo(LocalTime.of(11, 0))
+            assertThat(result[DayOfWeek.TUESDAY]).hasSize(1)
+        }
+
+        @Test
+        @DisplayName("빈 시간표일 경우 EverytimeEmptyTimetableException이 발생한다")
+        fun validateEverytimeUrl_EmptyTimetable_ThrowsException() {
+            // given
+            val url = "https://everytime.kr/@emptyId"
+            given(everytimeApi.fetchTimetable("emptyId")).willReturn(emptyList())
+
+            // when & then
+            assertThatThrownBy { facade.validateEverytimeUrl(url) }
+                .isInstanceOf(EverytimeEmptyTimetableException::class.java)
         }
 
         @Test
@@ -104,19 +126,18 @@ class ScheduleCommandFacadeEverytimeTest {
     inner class CreateSchedulesFromEverytimeTest {
 
         @Test
-        @DisplayName("동일 시간대의 수업이 있는 요일들은 하나의 반복 스케줄로 묶인다")
+        @DisplayName("동일 시간대를 선택한 요일들은 하나의 반복 스케줄로 묶인다")
         fun createSchedules_SameTimeDays_GroupedIntoOneSchedule() {
             // given
             val member = MemberFixture.defaultMember()
-            val lectures = listOf(
-                createLecture("수학", 0, "09:30", "10:45"),
-                createLecture("물리", 2, "09:30", "10:45"),
-                createLecture("영어", 1, "11:00", "12:15"),
-                createLecture("국어", 3, "11:00", "12:15"),
+            val selectedLectures = listOf(
+                CreateEverytimeScheduleCommand.SelectedLecture(DayOfWeek.MONDAY, LocalTime.of(9, 30)),
+                CreateEverytimeScheduleCommand.SelectedLecture(DayOfWeek.WEDNESDAY, LocalTime.of(9, 30)),
+                CreateEverytimeScheduleCommand.SelectedLecture(DayOfWeek.TUESDAY, LocalTime.of(11, 0)),
+                CreateEverytimeScheduleCommand.SelectedLecture(DayOfWeek.THURSDAY, LocalTime.of(11, 0)),
             )
 
             given(memberService.getMemberIfExists(1L)).willReturn(member)
-            given(everytimeApi.fetchTimetable("testId")).willReturn(lectures)
             given(routeService.calculateRouteTime(
                 anyDouble(), anyDouble(), anyDouble(), anyDouble(),
                 anyNonNull(), anyNonNull(),
@@ -128,7 +149,7 @@ class ScheduleCommandFacadeEverytimeTest {
 
             // when
             val result = facade.createSchedulesFromEverytime(
-                1L, createCommand("https://everytime.kr/@testId"),
+                1L, createCommand(selectedLectures),
             )
 
             // then
@@ -136,33 +157,16 @@ class ScheduleCommandFacadeEverytimeTest {
         }
 
         @Test
-        @DisplayName("빈 시간표일 경우 EverytimeEmptyTimetableException이 발생한다")
-        fun createSchedules_EmptyTimetable_ThrowsException() {
-            // given
-            val member = MemberFixture.defaultMember()
-            given(memberService.getMemberIfExists(1L)).willReturn(member)
-            given(everytimeApi.fetchTimetable("emptyId")).willReturn(emptyList())
-
-            // when & then
-            assertThatThrownBy {
-                facade.createSchedulesFromEverytime(
-                    1L, createCommand("https://everytime.kr/@emptyId"),
-                )
-            }.isInstanceOf(EverytimeEmptyTimetableException::class.java)
-        }
-
-        @Test
         @DisplayName("대중교통 경로 계산은 1회만 호출된다")
         fun createSchedules_PublicTransport_CalculatesRouteOnce() {
             // given
             val member = MemberFixture.defaultMember()
-            val lectures = listOf(
-                createLecture("수학", 0, "09:30", "10:45"),
-                createLecture("영어", 1, "11:00", "12:15"),
+            val selectedLectures = listOf(
+                CreateEverytimeScheduleCommand.SelectedLecture(DayOfWeek.MONDAY, LocalTime.of(9, 30)),
+                CreateEverytimeScheduleCommand.SelectedLecture(DayOfWeek.TUESDAY, LocalTime.of(11, 0)),
             )
 
             given(memberService.getMemberIfExists(1L)).willReturn(member)
-            given(everytimeApi.fetchTimetable("testId")).willReturn(lectures)
             given(routeService.calculateRouteTime(
                 anyDouble(), anyDouble(), anyDouble(), anyDouble(),
                 anyNonNull(), anyNonNull(),
@@ -174,7 +178,7 @@ class ScheduleCommandFacadeEverytimeTest {
 
             // when
             facade.createSchedulesFromEverytime(
-                1L, createCommand("https://everytime.kr/@testId"),
+                1L, createCommand(selectedLectures),
             )
 
             // then
@@ -187,10 +191,10 @@ class ScheduleCommandFacadeEverytimeTest {
     }
 
     private fun createCommand(
-        url: String,
+        selectedLectures: List<CreateEverytimeScheduleCommand.SelectedLecture>,
         transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
     ): CreateEverytimeScheduleCommand = CreateEverytimeScheduleCommand(
-        everytimeUrl = url,
+        selectedLectures = selectedLectures,
         departurePlace = CreateScheduleCommand.PlaceInfo("집", "서울시 강남구", 127.0, 37.0),
         arrivalPlace = CreateScheduleCommand.PlaceInfo("학교", "서울시 서초구", 126.9, 37.5),
         transportType = transportType,
