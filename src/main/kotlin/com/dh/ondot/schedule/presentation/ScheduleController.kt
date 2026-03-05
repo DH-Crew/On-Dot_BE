@@ -163,8 +163,18 @@ class ScheduleController(
     override fun validateEverytimeUrl(
         @Valid @RequestBody request: EverytimeValidateRequest,
     ): EverytimeValidateResponse {
-        val identifier = scheduleCommandFacade.validateEverytimeUrl(request.everytimeUrl)
-        return EverytimeValidateResponse(identifier = identifier)
+        val timetable = scheduleCommandFacade.validateEverytimeUrl(request.everytimeUrl)
+        return EverytimeValidateResponse(
+            timetable = timetable.mapValues { (_, lectures) ->
+                lectures.map { lecture ->
+                    EverytimeValidateResponse.TimetableEntry(
+                        courseName = lecture.name,
+                        startTime = lecture.startTime,
+                        endTime = lecture.endTime,
+                    )
+                }
+            },
+        )
     }
 
     @ResponseStatus(HttpStatus.CREATED)
