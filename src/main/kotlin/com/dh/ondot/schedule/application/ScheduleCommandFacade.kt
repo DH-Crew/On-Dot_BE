@@ -6,6 +6,7 @@ import com.dh.ondot.schedule.application.command.CreateEverytimeScheduleCommand
 import com.dh.ondot.schedule.application.command.CreateQuickScheduleCommand
 import com.dh.ondot.schedule.application.command.CreateScheduleCommand
 import com.dh.ondot.schedule.application.command.UpdateScheduleCommand
+import com.dh.ondot.schedule.application.dto.EverytimeLecture
 import com.dh.ondot.schedule.application.dto.ScheduleParsedResult
 import com.dh.ondot.schedule.application.dto.UpdateScheduleResult
 import com.dh.ondot.schedule.application.mapper.QuickScheduleMapper
@@ -230,10 +231,18 @@ class ScheduleCommandFacade(
         scheduleService.deleteSchedule(schedule)
     }
 
-    fun validateEverytimeUrl(url: String): String {
+    fun validateEverytimeUrl(url: String): Map<DayOfWeek, List<EverytimeLecture>> {
         val identifier = extractIdentifier(url)
-        everytimeApi.fetchTimetable(identifier)
-        return identifier
+        val lectures = everytimeApi.fetchTimetable(identifier)
+
+        if (lectures.isEmpty()) {
+            throw EverytimeEmptyTimetableException()
+        }
+
+        return lectures
+            .groupBy { everytimeDayToDayOfWeek(it.day) }
+            .toSortedMap(compareBy { it.value })
+            .mapValues { (_, dayLectures) -> dayLectures.sortedBy { it.startTime } }
     }
 
     @Transactional
@@ -242,22 +251,11 @@ class ScheduleCommandFacade(
         command: CreateEverytimeScheduleCommand,
     ): List<Schedule> {
         val member = memberService.getMemberIfExists(memberId)
-        val identifier = extractIdentifier(command.everytimeUrl)
-        val lectures = everytimeApi.fetchTimetable(identifier)
 
-        if (lectures.isEmpty()) {
-            throw EverytimeEmptyTimetableException()
-        }
-
-        // 요일별 첫 수업 시작시간 추출
-        val firstLectureByDay: Map<Int, LocalTime> = lectures
-            .groupBy { it.day }
-            .mapValues { (_, dayLectures) -> dayLectures.minOf { it.startTime } }
-
-        // 동일 시간으로 그룹핑 (월→일 순서)
-        val timeGroups: Map<LocalTime, List<Int>> = firstLectureByDay.entries
-            .groupBy({ it.value }, { it.key })
-            .mapValues { (_, days) -> days.sortedBy { it } }
+        // 유저 선택 기반: 동일 시작시간으로 그룹핑
+        val timeGroups: Map<LocalTime, List<DayOfWeek>> = command.selectedLectures
+            .groupBy({ it.startTime }, { it.day })
+            .mapValues { (_, days) -> days.sortedBy { it.value } }
 
         val startX = command.departurePlace.longitude
         val startY = command.departurePlace.latitude
@@ -272,7 +270,7 @@ class ScheduleCommandFacade(
         // 그룹별 Schedule + Alarm 생성
         return timeGroups.map { (time, days) ->
             val title = buildScheduleTitle(days)
-            val repeatDays = days.map { everytimeDayToRepeatDay(it) }.toSortedSet()
+            val repeatDays = days.map { dayOfWeekToRepeatDay(it) }.toSortedSet()
             val appointmentAt = calculateNextAppointmentAt(days, time)
             val estimatedTime = routeTimeByGroup[time] ?: 0
 
@@ -315,7 +313,7 @@ class ScheduleCommandFacade(
     }
 
     private fun calculateRouteTimeByGroup(
-        timeGroups: Map<LocalTime, List<Int>>,
+        timeGroups: Map<LocalTime, List<DayOfWeek>>,
         startX: Double, startY: Double,
         endX: Double, endY: Double,
         transportType: TransportType,
@@ -326,8 +324,7 @@ class ScheduleCommandFacade(
         }
 
         return timeGroups.map { (time, days) ->
-            val representativeDay = days.first()
-            val appointmentAt = calculateNextAppointmentAt(listOf(representativeDay), time)
+            val appointmentAt = calculateNextAppointmentAt(days, time)
             val routeTime = routeService.calculateRouteTime(
                 startX, startY, endX, endY, transportType, appointmentAt,
             )
@@ -335,35 +332,35 @@ class ScheduleCommandFacade(
         }.toMap()
     }
 
-    private fun buildScheduleTitle(days: List<Int>): String {
+    private fun buildScheduleTitle(days: List<DayOfWeek>): String {
         val dayNames = mapOf(
-            0 to "월", 1 to "화", 2 to "수", 3 to "목",
-            4 to "금", 5 to "토", 6 to "일",
+            DayOfWeek.MONDAY to "월", DayOfWeek.TUESDAY to "화",
+            DayOfWeek.WEDNESDAY to "수", DayOfWeek.THURSDAY to "목",
+            DayOfWeek.FRIDAY to "금", DayOfWeek.SATURDAY to "토",
+            DayOfWeek.SUNDAY to "일",
         )
         val dayStr = days.joinToString("/") { dayNames[it] ?: "" }
         return "${dayStr}요일 학교"
     }
 
-    private fun everytimeDayToRepeatDay(everytimeDay: Int): Int =
-        when (everytimeDay) {
-            0 -> 2  // 월
-            1 -> 3  // 화
-            2 -> 4  // 수
-            3 -> 5  // 목
-            4 -> 6  // 금
-            5 -> 7  // 토
-            6 -> 1  // 일
-            else -> throw IllegalArgumentException("잘못된 에브리타임 요일: $everytimeDay")
+    private fun dayOfWeekToRepeatDay(dayOfWeek: DayOfWeek): Int =
+        when (dayOfWeek) {
+            DayOfWeek.MONDAY -> 2
+            DayOfWeek.TUESDAY -> 3
+            DayOfWeek.WEDNESDAY -> 4
+            DayOfWeek.THURSDAY -> 5
+            DayOfWeek.FRIDAY -> 6
+            DayOfWeek.SATURDAY -> 7
+            DayOfWeek.SUNDAY -> 1
         }
 
-    private fun calculateNextAppointmentAt(days: List<Int>, time: LocalTime): LocalDateTime {
+    private fun calculateNextAppointmentAt(days: List<DayOfWeek>, time: LocalTime): LocalDateTime {
         val today = TimeUtils.nowSeoulDate()
         val now = TimeUtils.nowSeoulDateTime()
-        val targetDaysOfWeek = days.map { everytimeDayToDayOfWeek(it) }
 
         for (daysAhead in 0..7L) {
             val candidateDate = today.plusDays(daysAhead)
-            if (candidateDate.dayOfWeek in targetDaysOfWeek) {
+            if (candidateDate.dayOfWeek in days) {
                 val candidateDateTime = candidateDate.atTime(time)
                 if (candidateDateTime.isAfter(now)) {
                     return candidateDateTime
