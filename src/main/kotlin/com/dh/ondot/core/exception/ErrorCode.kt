@@ -84,6 +84,14 @@ enum class ErrorCode(
     TMAP_SERVER_ERROR(BAD_GATEWAY, "TMAP 서버 내부 오류가 발생했습니다: %s"),
     TMAP_UNHANDLED_ERROR(INTERNAL_SERVER_ERROR, "TMAP API 처리 중 알 수 없는 오류가 발생했습니다: %s"),
 
+    // TMAP Transit API
+    TMAP_TRANSIT_NO_ROUTE(BAD_REQUEST, "대중교통 경로를 찾을 수 없습니다: %s"),
+    TMAP_TRANSIT_BAD_INPUT(BAD_REQUEST, "대중교통 API 입력값 형식 및 범위를 확인해주세요: %s"),
+    TMAP_TRANSIT_MISSING_PARAM(BAD_REQUEST, "대중교통 API 필수 입력값이 누락되었습니다: %s"),
+    TMAP_TRANSIT_SERVICE_AREA(BAD_REQUEST, "대중교통 서비스 지역이 아닙니다: %s"),
+    TMAP_TRANSIT_SERVER_ERROR(BAD_GATEWAY, "TMAP 대중교통 서버 오류가 발생했습니다: %s"),
+    TMAP_TRANSIT_UNHANDLED_ERROR(INTERNAL_SERVER_ERROR, "TMAP 대중교통 API 처리 중 알 수 없는 오류가 발생했습니다: %s"),
+
     // Everytime API
     EVERYTIME_INVALID_URL(BAD_REQUEST, "에브리타임 URL 형식이 올바르지 않습니다: %s"),
     EVERYTIME_NOT_FOUND(NOT_FOUND, "에브리타임 시간표를 찾을 수 없습니다. 공유 URL을 확인해주세요."),
