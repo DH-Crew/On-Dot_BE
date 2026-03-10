@@ -354,15 +354,16 @@ interface ScheduleSwagger {
             - `transportType`: `PUBLIC_TRANSPORT`(대중교통, 기본값) 또는 `CAR`(자가용)
             - `appointmentAt`: 약속 시간 (선택). 자가용(`CAR`) 선택 시 해당 시간대의 예측 교통량을 반영합니다.
 
-            **⚠️ Error Codes**
+            **⚠️ Error Codes (대중교통)**
             - 요청 JSON 문법 오류: `INVALID_JSON`
             - 입력 필드 검증 실패: `FIELD_ERROR`
-            - 좌표 형식·범위 오류: `ODSAY_BAD_INPUT`, `ODSAY_MISSING_PARAM`
-            - 정류장 없음: `ODSAY_NO_STOP`
-            - 서비스 지역 아님: `ODSAY_SERVICE_AREA`
-            - 검색 결과 없음: `ODSAY_NO_RESULT`
-            - ODsay 서버 내부 오류: `ODSAY_SERVER_ERROR`
-            - 예기치 못한 ODsay 오류: `ODSAY_UNHANDLED_ERROR`
+            - 좌표 형식·범위 오류: `TMAP_TRANSIT_BAD_INPUT`, `TMAP_TRANSIT_MISSING_PARAM`
+            - 대중교통 경로 없음 (도보 폴백): `TMAP_TRANSIT_NO_ROUTE`
+            - 서비스 지역 아님: `TMAP_TRANSIT_SERVICE_AREA`
+            - TMAP 대중교통 서버 오류: `TMAP_TRANSIT_SERVER_ERROR`
+            - 예기치 못한 TMAP 대중교통 오류: `TMAP_TRANSIT_UNHANDLED_ERROR`
+
+            **⚠️ Error Codes (자가용)**
             - TMAP 서버 오류: `TMAP_SERVER_ERROR`
             - TMAP 결과 없음: `TMAP_NO_RESULT`
             - 그 외 서버 오류: `SERVER_ERROR`
@@ -405,7 +406,7 @@ interface ScheduleSwagger {
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청: JSON 형식 오류, 필드 검증 오류, ODsay 입력값 오류",
+                description = "잘못된 요청: JSON 형식 오류, 필드 검증 오류, TMAP 대중교통 입력값 오류",
                 content = [Content(
                     mediaType = APPLICATION_JSON_VALUE,
                     schema = Schema(ref = "#/components/schemas/ErrorResponse"),
@@ -427,11 +428,11 @@ interface ScheduleSwagger {
                                 }"""
                         ),
                         ExampleObject(
-                            name = "ODSay 입력값 범위 오류",
+                            name = "TMAP 대중교통 입력값 오류",
                             value = """
                                 {
-                                  "errorCode": "ODSAY_BAD_INPUT",
-                                  "message": "필수 입력값 형식 및 범위를 확인해주세요: SX"
+                                  "errorCode": "TMAP_TRANSIT_BAD_INPUT",
+                                  "message": "대중교통 API 입력값 형식 및 범위를 확인해주세요: startX"
                                 }"""
                         )
                     ]
@@ -439,49 +440,49 @@ interface ScheduleSwagger {
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "검색 결과 없음",
+                description = "대중교통 경로 없음",
                 content = [Content(
                     mediaType = APPLICATION_JSON_VALUE,
                     schema = Schema(ref = "#/components/schemas/ErrorResponse"),
                     examples = [ExampleObject(
-                        name = "검색 결과 없음",
+                        name = "대중교통 경로 없음",
                         value = """
                             {
-                              "errorCode": "ODSAY_NO_RESULT",
-                              "message": "검색 결과가 없습니다: 출발지→도착지"
+                              "errorCode": "TMAP_TRANSIT_NO_ROUTE",
+                              "message": "대중교통 경로를 찾을 수 없습니다: 출발지→도착지"
                             }"""
                     )]
                 )]
             ),
             ApiResponse(
                 responseCode = "502",
-                description = "ODSay 서버(업스트림) 장애",
+                description = "TMAP 대중교통 서버(업스트림) 장애",
                 content = [Content(
                     mediaType = APPLICATION_JSON_VALUE,
                     schema = Schema(ref = "#/components/schemas/ErrorResponse"),
                     examples = [ExampleObject(
-                        name = "ODSay 서버 오류",
+                        name = "TMAP 대중교통 서버 오류",
                         value = """
                             {
-                              "errorCode": "ODSAY_SERVER_ERROR",
-                              "message": "ODSay 서버 내부 오류가 발생했습니다: timeout"
+                              "errorCode": "TMAP_TRANSIT_SERVER_ERROR",
+                              "message": "TMAP 대중교통 서버 오류가 발생했습니다: timeout"
                             }"""
                     )]
                 )]
             ),
             ApiResponse(
                 responseCode = "500",
-                description = "ODSay 처리 중 예기치 못한 오류 또는 기타 서버 오류",
+                description = "TMAP 대중교통 처리 중 예기치 못한 오류 또는 기타 서버 오류",
                 content = [Content(
                     mediaType = APPLICATION_JSON_VALUE,
                     schema = Schema(ref = "#/components/schemas/ErrorResponse"),
                     examples = [
                         ExampleObject(
-                            name = "미처리 ODsay 오류",
+                            name = "미처리 TMAP 대중교통 오류",
                             value = """
                                 {
-                                  "errorCode": "ODSAY_UNHANDLED_ERROR",
-                                  "message": "ODSay API 처리 중 알 수 없는 오류가 발생했습니다: null"
+                                  "errorCode": "TMAP_TRANSIT_UNHANDLED_ERROR",
+                                  "message": "TMAP 대중교통 API 처리 중 알 수 없는 오류가 발생했습니다: null"
                                 }"""
                         ),
                         ExampleObject(
