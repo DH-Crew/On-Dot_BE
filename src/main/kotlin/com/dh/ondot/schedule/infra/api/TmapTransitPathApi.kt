@@ -35,6 +35,7 @@ class TmapTransitPathApi(
         try {
             val rawBody = tmapRestClient.post()
                 .uri("/transit/routes/sub")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(mapOf(
                     "startX" to startX.toString(),
