@@ -8,11 +8,13 @@ import com.dh.ondot.schedule.domain.service.RouteTimeCalculator
 import com.dh.ondot.schedule.infra.api.OdsayPathApi
 import com.dh.ondot.schedule.infra.dto.OdsayRouteApiResponse
 import com.dh.ondot.schedule.infra.exception.OdsayTooCloseException
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import kotlin.math.round
 
 @Component
+@Order(2)
 class OdsayRouteTimeCalculator(
     private val odsayPathApi: OdsayPathApi,
     private val apiUsageService: ApiUsageService,
