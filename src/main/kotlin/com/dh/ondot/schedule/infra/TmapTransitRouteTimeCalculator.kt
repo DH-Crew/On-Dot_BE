@@ -30,16 +30,17 @@ class TmapTransitRouteTimeCalculator(
         appointmentAt: LocalDateTime?,
     ): Int {
         apiUsageService.checkAndIncrementUsage(ApiType.TMAP_TRANSIT)
-        val response = getRouteTimeFromApi(startX, startY, endX, endY)
+        val response = getRouteTimeFromApi(startX, startY, endX, endY, appointmentAt)
         return calculateFinalTravelTime(response.metaData.plan.itineraries)
     }
 
     private fun getRouteTimeFromApi(
         startX: Double, startY: Double,
         endX: Double, endY: Double,
+        appointmentAt: LocalDateTime?,
     ): TmapTransitRouteApiResponse {
         return try {
-            tmapTransitPathApi.searchTransitRoute(startX, startY, endX, endY)
+            tmapTransitPathApi.searchTransitRoute(startX, startY, endX, endY, appointmentAt)
         } catch (e: TmapTransitNoRouteException) {
             val walkTimeMinutes = calculateWalkTime(startX, startY, endX, endY)
             TmapTransitRouteApiResponse(
@@ -79,7 +80,7 @@ class TmapTransitRouteTimeCalculator(
     }
 
     companion object {
-        private const val BUFFER_TIME_MINUTES = 5
+        private const val BUFFER_TIME_MINUTES = 10
         private const val TOP_ROUTES_LIMIT = 3
         private const val WALKING_SPEED_MPS = 1.25
     }
