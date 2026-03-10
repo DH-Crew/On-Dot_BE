@@ -52,11 +52,13 @@ interface AlarmSwagger {
             - `transportType`: `PUBLIC_TRANSPORT`(대중교통, 기본값) 또는 `CAR`(자가용)
             - `appointmentAt`: 약속 시간. 자가용(`CAR`) 선택 시 해당 시간대의 예측 교통량을 반영합니다.
 
+            **ℹ️ 대중교통 경로가 없을 때**
+            - TMAP 대중교통 경로를 찾지 못하면 도보 이동 시간으로 대체 계산되어 정상 응답됩니다.
+
             **⚠️ Error Codes (대중교통)**
             - 요청 JSON 문법 오류: `INVALID_JSON`
             - 입력 필드 검증 실패: `FIELD_ERROR`
             - 좌표 형식·범위 오류: `TMAP_TRANSIT_BAD_INPUT`, `TMAP_TRANSIT_MISSING_PARAM`
-            - 대중교통 경로 없음 (도보 폴백): `TMAP_TRANSIT_NO_ROUTE`
             - 서비스 지역 아님: `TMAP_TRANSIT_SERVICE_AREA`
             - TMAP 대중교통 서버 오류: `TMAP_TRANSIT_SERVER_ERROR`
             - 예기치 못한 TMAP 대중교통 오류: `TMAP_TRANSIT_UNHANDLED_ERROR`
@@ -64,6 +66,7 @@ interface AlarmSwagger {
             **⚠️ Error Codes (자가용)**
             - TMAP 서버 오류: `TMAP_SERVER_ERROR`
             - TMAP 결과 없음: `TMAP_NO_RESULT`
+            - TMAP API 처리 중 알 수 없는 오류: `TMAP_UNHANDLED_ERROR`
             - 그 외 서버 오류: `SERVER_ERROR`
             """,
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
