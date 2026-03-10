@@ -16,6 +16,8 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class TmapTransitPathApi(
@@ -31,21 +33,27 @@ class TmapTransitPathApi(
     fun searchTransitRoute(
         startX: Double, startY: Double,
         endX: Double, endY: Double,
+        appointmentAt: LocalDateTime? = null,
     ): TmapTransitRouteApiResponse {
         try {
+            val body = mutableMapOf<String, Any>(
+                "startX" to startX.toString(),
+                "startY" to startY.toString(),
+                "endX" to endX.toString(),
+                "endY" to endY.toString(),
+                "count" to 10,
+                "lang" to 0,
+                "format" to "json",
+            )
+            if (appointmentAt != null) {
+                body["searchDttm"] = appointmentAt.format(SEARCH_DTTM_FORMATTER)
+            }
+
             val rawBody = tmapRestClient.post()
                 .uri("/transit/routes/sub")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(mapOf(
-                    "startX" to startX.toString(),
-                    "startY" to startY.toString(),
-                    "endX" to endX.toString(),
-                    "endY" to endY.toString(),
-                    "count" to 10,
-                    "lang" to 0,
-                    "format" to "json",
-                ))
+                .body(body)
                 .retrieve()
                 .body(String::class.java)
 
@@ -86,6 +94,10 @@ class TmapTransitPathApi(
         } catch (e: Exception) {
             throw TmapTransitUnhandledException("${e.javaClass.simpleName}: ${e.message}")
         }
+    }
+
+    companion object {
+        private val SEARCH_DTTM_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmm")
     }
 
     private fun throwExceptionByErrorCode(status: Int, message: String) {
