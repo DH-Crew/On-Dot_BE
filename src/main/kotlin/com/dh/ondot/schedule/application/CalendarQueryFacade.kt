@@ -81,28 +81,14 @@ class CalendarQueryFacade(
                 if (createdDate.isAfter(date)) continue
 
                 val appointmentInstant = date.atTime(appointmentTime).atZone(SEOUL_ZONE).toInstant()
-
-                if (schedule.isDeleted()) {
-                    val deletedAt = schedule.deletedAt ?: continue
-                    if (!deletedAt.isAfter(appointmentInstant)) continue
-                }
-
-                val type = if (appointmentInstant.isBefore(now)) CalendarScheduleType.RECORD else CalendarScheduleType.ALARM
-                if (type == CalendarScheduleType.RECORD && (schedule.id to date) in excludedSet) continue
+                val type = resolveScheduleType(schedule, appointmentInstant, date, now, excludedSet) ?: continue
 
                 items.add(toDailyItem(schedule, type, date.atTime(appointmentTime)))
             } else {
                 val appointmentDate = TimeUtils.toSeoulDateTime(schedule.appointmentAt)?.toLocalDate() ?: continue
                 if (appointmentDate != date) continue
 
-                if (schedule.isDeleted()) {
-                    val deletedAt = schedule.deletedAt ?: continue
-                    if (!deletedAt.isAfter(schedule.appointmentAt)) continue
-                }
-
-                val type = if (schedule.appointmentAt.isBefore(now)) CalendarScheduleType.RECORD else CalendarScheduleType.ALARM
-                if (type == CalendarScheduleType.RECORD && (schedule.id to date) in excludedSet) continue
-
+                val type = resolveScheduleType(schedule, schedule.appointmentAt, date, now, excludedSet) ?: continue
                 val appointmentDateTime = TimeUtils.toSeoulDateTime(schedule.appointmentAt) ?: continue
                 items.add(toDailyItem(schedule, type, appointmentDateTime))
             }
@@ -123,31 +109,19 @@ class CalendarQueryFacade(
         while (!date.isAfter(endDate)) {
             if (schedule.isScheduledForDayOfWeek(date)) {
                 val appointmentInstant = date.atTime(appointmentTime).atZone(SEOUL_ZONE).toInstant()
+                val type = resolveScheduleType(schedule, appointmentInstant, date, now, excludedSet)
 
-                if (schedule.isDeleted()) {
-                    val deletedAt = schedule.deletedAt
-                    if (deletedAt == null || !deletedAt.isAfter(appointmentInstant)) {
-                        date = date.plusDays(1)
-                        continue
-                    }
-                }
-
-                val type = if (appointmentInstant.isBefore(now)) CalendarScheduleType.RECORD else CalendarScheduleType.ALARM
-
-                if (type == CalendarScheduleType.RECORD && (schedule.id to date) in excludedSet) {
-                    date = date.plusDays(1)
-                    continue
-                }
-
-                dayMap.getOrPut(date) { mutableListOf() }.add(
-                    CalendarScheduleItem(
-                        scheduleId = schedule.id,
-                        title = schedule.title,
-                        type = type,
-                        isRepeat = true,
-                        appointmentAt = date.atTime(appointmentTime),
+                if (type != null) {
+                    dayMap.getOrPut(date) { mutableListOf() }.add(
+                        CalendarScheduleItem(
+                            scheduleId = schedule.id,
+                            title = schedule.title,
+                            type = type,
+                            isRepeat = true,
+                            appointmentAt = date.atTime(appointmentTime),
+                        )
                     )
-                )
+                }
             }
             date = date.plusDays(1)
         }
@@ -163,14 +137,7 @@ class CalendarQueryFacade(
 
         if (appointmentDate.isBefore(startDate) || appointmentDate.isAfter(endDate)) return
 
-        if (schedule.isDeleted()) {
-            val deletedAt = schedule.deletedAt ?: return
-            if (!deletedAt.isAfter(schedule.appointmentAt)) return
-        }
-
-        val type = if (schedule.appointmentAt.isBefore(now)) CalendarScheduleType.RECORD else CalendarScheduleType.ALARM
-
-        if (type == CalendarScheduleType.RECORD && (schedule.id to appointmentDate) in excludedSet) return
+        val type = resolveScheduleType(schedule, schedule.appointmentAt, appointmentDate, now, excludedSet) ?: return
 
         dayMap.getOrPut(appointmentDate) { mutableListOf() }.add(
             CalendarScheduleItem(
@@ -181,6 +148,25 @@ class CalendarQueryFacade(
                 appointmentAt = appointmentDateTime,
             )
         )
+    }
+
+    /**
+     * 삭제 상태, 시간 기준 타입(RECORD/ALARM), exclusion 여부를 종합 판단하여 스케줄 타입을 반환한다.
+     * 표시하지 않아야 할 스케줄이면 null을 반환한다.
+     */
+    private fun resolveScheduleType(
+        schedule: Schedule, appointmentInstant: Instant, date: LocalDate,
+        now: Instant, excludedSet: Set<Pair<Long, LocalDate>>,
+    ): CalendarScheduleType? {
+        if (schedule.isDeleted()) {
+            val deletedAt = schedule.deletedAt ?: return null
+            if (!deletedAt.isAfter(appointmentInstant)) return null
+        }
+
+        val type = if (appointmentInstant.isBefore(now)) CalendarScheduleType.RECORD else CalendarScheduleType.ALARM
+        if (type == CalendarScheduleType.RECORD && (schedule.id to date) in excludedSet) return null
+
+        return type
     }
 
     private fun toDailyItem(schedule: Schedule, type: CalendarScheduleType, appointmentAt: LocalDateTime): CalendarDailyItem =

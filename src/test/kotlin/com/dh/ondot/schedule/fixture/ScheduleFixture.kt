@@ -4,7 +4,10 @@ import com.dh.ondot.schedule.domain.Alarm
 import com.dh.ondot.schedule.domain.Place
 import com.dh.ondot.schedule.domain.Schedule
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.SortedSet
 import java.util.TreeSet
 
@@ -34,12 +37,16 @@ object ScheduleFixture {
         private var departureAlarm: Alarm = AlarmFixture.defaultDepartureAlarm()
         private var deletedAt: Instant? = null
 
+        private var createdAt: Instant? = null
+
         fun memberId(memberId: Long): ScheduleBuilder = apply { this.memberId = memberId }
+        fun title(title: String): ScheduleBuilder = apply { this.title = title }
         fun deletedAt(deletedAt: Instant?): ScheduleBuilder = apply { this.deletedAt = deletedAt }
         fun deleted(): ScheduleBuilder = apply { this.deletedAt = Instant.now() }
         fun isRepeat(isRepeat: Boolean): ScheduleBuilder = apply { this.isRepeat = isRepeat }
         fun repeatDays(repeatDays: SortedSet<Int>?): ScheduleBuilder = apply { this.repeatDays = repeatDays }
         fun appointmentAt(appointmentAt: LocalDateTime): ScheduleBuilder = apply { this.appointmentAt = appointmentAt }
+        fun createdAt(createdAt: Instant): ScheduleBuilder = apply { this.createdAt = createdAt }
 
         fun disabledAlarms(): ScheduleBuilder = apply {
             this.preparationAlarm = AlarmFixture.disabledAlarm()
@@ -64,6 +71,7 @@ object ScheduleFixture {
                 isMedicationRequired, preparationNote
             )
             deletedAt?.let { schedule.deletedAt = it }
+            createdAt?.let { schedule.createdAt = it }
             return schedule
         }
     }
@@ -84,4 +92,11 @@ object ScheduleFixture {
         days.add(7) // 토
         return days
     }
+
+    fun allDays(): SortedSet<Int> = TreeSet((1..7).toList())
+
+    private val SEOUL_ZONE = ZoneId.of("Asia/Seoul")
+
+    fun instantOf(date: LocalDate, time: LocalTime): Instant =
+        date.atTime(time).atZone(SEOUL_ZONE).toInstant()
 }
