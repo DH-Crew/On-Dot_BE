@@ -5,6 +5,7 @@ import com.dh.ondot.schedule.application.CalendarQueryFacade
 import com.dh.ondot.schedule.presentation.response.CalendarDailyResponse
 import com.dh.ondot.schedule.presentation.response.CalendarRangeResponse
 import com.dh.ondot.schedule.presentation.swagger.CalendarSwagger
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,12 +28,10 @@ class CalendarController(
     @GetMapping
     override fun getCalendarRange(
         @RequestAttribute("memberId") memberId: Long,
-        @RequestParam startDate: String,
-        @RequestParam endDate: String,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDate,
     ): CalendarRangeResponse {
-        val start = LocalDate.parse(startDate)
-        val end = LocalDate.parse(endDate)
-        val items = calendarQueryFacade.getCalendarRange(memberId, start, end)
+        val items = calendarQueryFacade.getCalendarRange(memberId, startDate, endDate)
         return CalendarRangeResponse.from(items)
     }
 
@@ -40,10 +39,9 @@ class CalendarController(
     @GetMapping("/{date}")
     override fun getCalendarDaily(
         @RequestAttribute("memberId") memberId: Long,
-        @PathVariable date: String,
+        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate,
     ): CalendarDailyResponse {
-        val localDate = LocalDate.parse(date)
-        val items = calendarQueryFacade.getCalendarDaily(memberId, localDate)
+        val items = calendarQueryFacade.getCalendarDaily(memberId, date)
         return CalendarDailyResponse.from(items)
     }
 
@@ -52,9 +50,8 @@ class CalendarController(
     override fun deleteCalendarRecord(
         @RequestAttribute("memberId") memberId: Long,
         @RequestParam scheduleId: Long,
-        @RequestParam date: String,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate,
     ) {
-        val localDate = LocalDate.parse(date)
-        calendarCommandFacade.deleteCalendarRecord(memberId, scheduleId, localDate)
+        calendarCommandFacade.deleteCalendarRecord(memberId, scheduleId, date)
     }
 }

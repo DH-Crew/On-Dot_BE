@@ -38,7 +38,7 @@ class CalendarQueryRepository(
             .where(
                 s.memberId.eq(memberId),
                 s.isRepeat.isTrue.and(s.createdAt.loe(rangeEnd))
-                    .or(s.isRepeat.isFalse.and(s.appointmentAt.between(rangeStart, rangeEnd)))
+                    .or(s.isRepeat.isFalse.and(s.appointmentAt.goe(rangeStart)).and(s.appointmentAt.lt(rangeEnd)))
             )
             .orderBy(s.appointmentAt.asc())
             .fetch()

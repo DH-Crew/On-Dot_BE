@@ -12,9 +12,7 @@ interface ScheduleRepository : JpaRepository<Schedule, Long> {
     @EntityGraph(attributePaths = ["preparationAlarm", "departureAlarm"])
     fun findFirstByMemberIdAndDeletedAtIsNullOrderByUpdatedAtDesc(memberId: Long): Optional<Schedule>
 
-    fun deleteByMemberId(memberId: Long)
-
-    fun findAllByMemberId(memberId: Long): List<Schedule>
+    fun findAllByMemberIdAndDeletedAtIsNull(memberId: Long): List<Schedule>
 
     @Query("SELECT s FROM Schedule s WHERE s.memberId IN :memberIds AND s.appointmentAt >= :start AND s.appointmentAt < :end AND s.deletedAt IS NULL")
     fun findAllByMemberIdInAndAppointmentAtRange(

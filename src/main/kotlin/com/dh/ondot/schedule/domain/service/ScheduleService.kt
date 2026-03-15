@@ -96,6 +96,6 @@ class ScheduleService(
 
     @Transactional
     fun deleteAllByMemberId(memberId: Long) {
-        scheduleRepository.findAllByMemberId(memberId).forEach { it.softDelete() }
+        scheduleRepository.findAllByMemberIdAndDeletedAtIsNull(memberId).forEach { it.softDelete() }
     }
 }
