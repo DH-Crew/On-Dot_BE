@@ -29,6 +29,10 @@ class ScheduleQueryService(
         scheduleQueryRepository.findScheduleByMemberIdAndId(memberId, scheduleId)
             .orElseThrow { NotFoundScheduleException(scheduleId) }
 
+    fun findScheduleByMemberIdAndIdIncludingDeleted(memberId: Long, scheduleId: Long): Schedule =
+        scheduleQueryRepository.findScheduleByMemberIdAndIdIncludingDeleted(memberId, scheduleId)
+            .orElseThrow { NotFoundScheduleException(scheduleId) }
+
     fun getActiveSchedules(memberId: Long, page: Pageable): Slice<Schedule> {
         val now = TimeUtils.nowSeoulInstant()
         return scheduleQueryRepository.findActiveSchedulesByMember(memberId, now, page)

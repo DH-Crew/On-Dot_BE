@@ -44,6 +44,13 @@ class ScheduleQueryRepository(
         return Optional.ofNullable(result)
     }
 
+    fun findScheduleByMemberIdAndIdIncludingDeleted(memberId: Long, scheduleId: Long): Optional<Schedule> {
+        val result = q.selectFrom(s)
+            .where(s.id.eq(scheduleId), s.memberId.eq(memberId))
+            .fetchOne()
+        return Optional.ofNullable(result)
+    }
+
     fun findActiveSchedulesByMember(memberId: Long, now: Instant, pageable: Pageable): Slice<Schedule> {
         val content = q.selectFrom(s)
             .join(s.departurePlace, dp).fetchJoin()
