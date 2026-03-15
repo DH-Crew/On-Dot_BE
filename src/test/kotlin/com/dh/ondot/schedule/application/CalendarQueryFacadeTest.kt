@@ -456,11 +456,13 @@ class CalendarQueryFacadeTest {
         fun partialExclusion_OnlyTargetRecordFiltered() {
             val date = LocalDate.of(2026, 1, 10)
             val schedule1 = ScheduleFixture.builder()
+                .id(100L)
                 .title("제외할 기록")
                 .appointmentAt(date.atTime(10, 0))
                 .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
                 .build()
             val schedule2 = ScheduleFixture.builder()
+                .id(200L)
                 .title("유지할 기록")
                 .appointmentAt(date.atTime(14, 0))
                 .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))

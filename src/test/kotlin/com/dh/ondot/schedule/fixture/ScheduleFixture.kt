@@ -24,6 +24,7 @@ object ScheduleFixture {
             .build()
 
     class ScheduleBuilder {
+        private var id: Long? = null
         private var memberId: Long = 1L
         private var title: String = "테스트 일정"
         private var isRepeat: Boolean = false
@@ -39,6 +40,7 @@ object ScheduleFixture {
 
         private var createdAt: Instant? = null
 
+        fun id(id: Long): ScheduleBuilder = apply { this.id = id }
         fun memberId(memberId: Long): ScheduleBuilder = apply { this.memberId = memberId }
         fun title(title: String): ScheduleBuilder = apply { this.title = title }
         fun deletedAt(deletedAt: Instant?): ScheduleBuilder = apply { this.deletedAt = deletedAt }
@@ -70,6 +72,11 @@ object ScheduleFixture {
                 isRepeat, repeatDays, appointmentAt,
                 isMedicationRequired, preparationNote
             )
+            id?.let {
+                val idField = Schedule::class.java.getDeclaredField("id")
+                idField.isAccessible = true
+                idField.set(schedule, it)
+            }
             deletedAt?.let { schedule.deletedAt = it }
             createdAt?.let { schedule.createdAt = it }
             return schedule
