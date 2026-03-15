@@ -51,7 +51,7 @@ class DailyReminderSchedulerTest {
             eq(listOf(1L)), any(), any()
         )).willReturn(listOf(schedule))
 
-        given(scheduleRepository.findAllByMemberIdInAndIsRepeatTrue(
+        given(scheduleRepository.findAllByMemberIdInAndIsRepeatTrueAndDeletedAtIsNull(
             eq(listOf(1L))
         )).willReturn(emptyList())
 
@@ -79,7 +79,7 @@ class DailyReminderSchedulerTest {
         given(scheduleRepository.findAllByMemberIdInAndAppointmentAtRange(
             eq(listOf(1L)), any(), any()
         )).willReturn(emptyList())
-        given(scheduleRepository.findAllByMemberIdInAndIsRepeatTrue(
+        given(scheduleRepository.findAllByMemberIdInAndIsRepeatTrueAndDeletedAtIsNull(
             eq(listOf(1L))
         )).willReturn(emptyList())
 

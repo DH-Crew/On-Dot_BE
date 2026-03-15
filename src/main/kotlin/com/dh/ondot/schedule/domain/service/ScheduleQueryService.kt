@@ -14,9 +14,12 @@ class ScheduleQueryService(
     private val scheduleRepository: ScheduleRepository,
     private val scheduleQueryRepository: ScheduleQueryRepository,
 ) {
-    fun findScheduleById(id: Long): Schedule =
-        scheduleRepository.findById(id)
+    fun findScheduleById(id: Long): Schedule {
+        val schedule = scheduleRepository.findById(id)
             .orElseThrow { NotFoundScheduleException(id) }
+        if (schedule.isDeleted()) throw NotFoundScheduleException(id)
+        return schedule
+    }
 
     fun findScheduleByIdEager(scheduleId: Long): Schedule =
         scheduleQueryRepository.findScheduleById(scheduleId)
