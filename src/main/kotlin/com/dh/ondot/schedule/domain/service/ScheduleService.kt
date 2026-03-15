@@ -18,7 +18,7 @@ class ScheduleService(
     fun createScheduleWithAlarms(
         member: Member, appointmentAt: LocalDateTime, estimatedTimeMin: Int,
     ): Schedule {
-        val schedule = scheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc(member.id)
+        val schedule = scheduleRepository.findFirstByMemberIdAndDeletedAtIsNullOrderByUpdatedAtDesc(member.id)
 
         return if (schedule.isPresent) {
             createFromLatestUserSetting(schedule.get(), member, appointmentAt, estimatedTimeMin)
@@ -91,11 +91,11 @@ class ScheduleService(
 
     @Transactional
     fun deleteSchedule(schedule: Schedule) {
-        scheduleRepository.delete(schedule)
+        schedule.softDelete()
     }
 
     @Transactional
     fun deleteAllByMemberId(memberId: Long) {
-        scheduleRepository.deleteByMemberId(memberId)
+        scheduleRepository.findAllByMemberIdAndDeletedAtIsNull(memberId).forEach { it.softDelete() }
     }
 }

@@ -28,7 +28,7 @@ class ScheduleQueryRepository(
         val result = q.selectFrom(s)
             .join(s.departurePlace, dp).fetchJoin()
             .join(s.arrivalPlace, ap).fetchJoin()
-            .where(s.id.eq(scheduleId))
+            .where(s.id.eq(scheduleId), s.deletedAt.isNull)
             .fetchOne()
         return Optional.ofNullable(result)
     }
@@ -39,6 +39,13 @@ class ScheduleQueryRepository(
             .join(s.departureAlarm, da).fetchJoin()
             .join(s.departurePlace, dp).fetchJoin()
             .join(s.arrivalPlace, ap).fetchJoin()
+            .where(s.id.eq(scheduleId), s.memberId.eq(memberId), s.deletedAt.isNull)
+            .fetchOne()
+        return Optional.ofNullable(result)
+    }
+
+    fun findScheduleByMemberIdAndIdIncludingDeleted(memberId: Long, scheduleId: Long): Optional<Schedule> {
+        val result = q.selectFrom(s)
             .where(s.id.eq(scheduleId), s.memberId.eq(memberId))
             .fetchOne()
         return Optional.ofNullable(result)
@@ -52,6 +59,7 @@ class ScheduleQueryRepository(
             .join(s.departureAlarm, da).fetchJoin()
             .where(
                 s.memberId.eq(memberId)
+                    .and(s.deletedAt.isNull)
                     .and(s.isRepeat.isTrue.or(s.appointmentAt.goe(now)))
             )
             .orderBy(s.appointmentAt.asc(), s.id.desc())
