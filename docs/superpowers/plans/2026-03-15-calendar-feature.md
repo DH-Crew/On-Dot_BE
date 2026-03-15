@@ -806,16 +806,20 @@ class CalendarQueryRepository(
         memberId: Long, rangeStart: Instant, rangeEnd: Instant,
     ): List<Schedule> =
         q.selectFrom(s)
-            .join(s.preparationAlarm, pa).fetchJoin()
-            .join(s.departureAlarm, da).fetchJoin()
-            .join(s.departurePlace, dp).fetchJoin()
-            .join(s.arrivalPlace, ap).fetchJoin()
+            .leftJoin(s.preparationAlarm, pa).fetchJoin()
+            .leftJoin(s.departureAlarm, da).fetchJoin()
+            .leftJoin(s.departurePlace, dp).fetchJoin()
+            .leftJoin(s.arrivalPlace, ap).fetchJoin()
             .where(
                 s.memberId.eq(memberId),
                 // 비반복: appointmentAt이 범위 내
                 // 반복: createdAt <= 범위 끝 (반복 확장은 앱에서 처리)
                 s.isRepeat.isTrue.and(s.createdAt.loe(rangeEnd))
-                    .or(s.isRepeat.isFalse.and(s.appointmentAt.between(rangeStart, rangeEnd)))
+                    .or(
+                        s.isRepeat.isFalse
+                            .and(s.appointmentAt.goe(rangeStart))
+                            .and(s.appointmentAt.lt(rangeEnd))
+                    )
             )
             .orderBy(s.appointmentAt.asc())
             .fetch()
