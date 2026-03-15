@@ -3,6 +3,7 @@ package com.dh.ondot.schedule.domain
 import com.dh.ondot.schedule.fixture.ScheduleFixture
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
@@ -198,5 +199,21 @@ class ScheduleTest {
         assertThat(schedule.memberId).isEqualTo(memberId)
         assertThat(schedule.title).isEqualTo("새로운 일정")
         assertThat(schedule.isRepeat).isFalse()
+    }
+
+    @Nested
+    @DisplayName("softDelete 테스트")
+    inner class SoftDeleteTest {
+        @Test
+        @DisplayName("softDelete 호출 시 deletedAt이 설정된다")
+        fun softDelete_SetsDeletedAt() {
+            val schedule = ScheduleFixture.defaultSchedule()
+            assertThat(schedule.deletedAt).isNull()
+
+            schedule.softDelete()
+
+            assertThat(schedule.deletedAt).isNotNull()
+            assertThat(schedule.isDeleted()).isTrue()
+        }
     }
 }

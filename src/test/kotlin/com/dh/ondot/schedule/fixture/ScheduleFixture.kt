@@ -3,6 +3,7 @@ package com.dh.ondot.schedule.fixture
 import com.dh.ondot.schedule.domain.Alarm
 import com.dh.ondot.schedule.domain.Place
 import com.dh.ondot.schedule.domain.Schedule
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.SortedSet
 import java.util.TreeSet
@@ -31,8 +32,11 @@ object ScheduleFixture {
         private var arrivalPlace: Place = PlaceFixture.defaultArrivalPlace()
         private var preparationAlarm: Alarm = AlarmFixture.defaultPreparationAlarm()
         private var departureAlarm: Alarm = AlarmFixture.defaultDepartureAlarm()
+        private var deletedAt: Instant? = null
 
         fun memberId(memberId: Long): ScheduleBuilder = apply { this.memberId = memberId }
+        fun deletedAt(deletedAt: Instant?): ScheduleBuilder = apply { this.deletedAt = deletedAt }
+        fun deleted(): ScheduleBuilder = apply { this.deletedAt = Instant.now() }
         fun isRepeat(isRepeat: Boolean): ScheduleBuilder = apply { this.isRepeat = isRepeat }
         fun repeatDays(repeatDays: SortedSet<Int>?): ScheduleBuilder = apply { this.repeatDays = repeatDays }
         fun appointmentAt(appointmentAt: LocalDateTime): ScheduleBuilder = apply { this.appointmentAt = appointmentAt }
@@ -52,12 +56,16 @@ object ScheduleFixture {
             this.departureAlarm = AlarmFixture.enabledAlarm(this.appointmentAt.minusMinutes(30))
         }
 
-        fun build(): Schedule = Schedule.createSchedule(
-            memberId, departurePlace, arrivalPlace,
-            preparationAlarm, departureAlarm, title,
-            isRepeat, repeatDays, appointmentAt,
-            isMedicationRequired, preparationNote
-        )
+        fun build(): Schedule {
+            val schedule = Schedule.createSchedule(
+                memberId, departurePlace, arrivalPlace,
+                preparationAlarm, departureAlarm, title,
+                isRepeat, repeatDays, appointmentAt,
+                isMedicationRequired, preparationNote
+            )
+            deletedAt?.let { schedule.deletedAt = it }
+            return schedule
+        }
     }
 
     fun weekdays(): SortedSet<Int> {
