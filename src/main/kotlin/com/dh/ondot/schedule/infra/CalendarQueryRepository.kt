@@ -31,10 +31,10 @@ class CalendarQueryRepository(
         memberId: Long, rangeStart: Instant, rangeEnd: Instant,
     ): List<Schedule> =
         q.selectFrom(s)
-            .join(s.preparationAlarm, pa).fetchJoin()
-            .join(s.departureAlarm, da).fetchJoin()
-            .join(s.departurePlace, dp).fetchJoin()
-            .join(s.arrivalPlace, ap).fetchJoin()
+            .leftJoin(s.preparationAlarm, pa).fetchJoin()
+            .leftJoin(s.departureAlarm, da).fetchJoin()
+            .leftJoin(s.departurePlace, dp).fetchJoin()
+            .leftJoin(s.arrivalPlace, ap).fetchJoin()
             .where(
                 s.memberId.eq(memberId),
                 s.isRepeat.isTrue.and(s.createdAt.loe(rangeEnd))

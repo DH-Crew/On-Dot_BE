@@ -40,7 +40,7 @@ var deletedAt: Instant? = null
 
 사용자가 캘린더에서 개별 과거 기록을 삭제할 때 사용한다.
 
-```
+```text
 CalendarRecordExclusion
 - id: Long (PK)
 - memberId: Long
@@ -56,7 +56,7 @@ CalendarRecordExclusion
 
 ### 1. 캘린더 범위 조회
 
-```
+```http
 GET /calendar?startDate={startDate}&endDate={endDate}
 ```
 
@@ -91,7 +91,7 @@ GET /calendar?startDate={startDate}&endDate={endDate}
 
 ### 2. 캘린더 일별 조회
 
-```
+```http
 GET /calendar/{date}
 ```
 
@@ -137,7 +137,7 @@ GET /calendar/{date}
 
 ### 3. 캘린더 기록 삭제
 
-```
+```http
 DELETE /calendar/records?scheduleId={scheduleId}&date={date}
 ```
 
@@ -148,7 +148,7 @@ DELETE /calendar/records?scheduleId={scheduleId}&date={date}
 
 ### 4. 기존 스케줄 삭제 (변경)
 
-```
+```http
 DELETE /schedules/{id}
 ```
 

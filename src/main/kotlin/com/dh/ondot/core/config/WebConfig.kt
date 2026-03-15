@@ -28,7 +28,7 @@ class WebConfig(
 
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(tokenInterceptor)
-            .addPathPatterns("/members/**", "/alarms/**", "/places/**", "/schedules/**")
+            .addPathPatterns("/members/**", "/alarms/**", "/places/**", "/schedules/**", "/calendar", "/calendar/**")
             .excludePathPatterns(
                 "/schedules/*/issues",
                 "/schedules/*/preparation",

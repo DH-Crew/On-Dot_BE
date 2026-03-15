@@ -1,6 +1,7 @@
 package com.dh.ondot.schedule.presentation.response
 
 import com.dh.ondot.schedule.application.dto.CalendarDailyItem
+import java.time.format.DateTimeFormatter
 
 data class CalendarDailyResponse(
     val schedules: List<CalendarDailyScheduleResponse>,
@@ -23,6 +24,8 @@ data class CalendarDailyResponse(
     )
 
     companion object {
+        private val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
         fun from(items: List<CalendarDailyItem>): CalendarDailyResponse =
             CalendarDailyResponse(
                 schedules = items.map { item ->
@@ -32,7 +35,7 @@ data class CalendarDailyResponse(
                         title = item.title,
                         isRepeat = item.isRepeat,
                         repeatDays = item.repeatDays,
-                        appointmentAt = item.appointmentAt.toString(),
+                        appointmentAt = item.appointmentAt.format(DATE_TIME_FORMATTER),
                         preparationAlarm = item.preparationAlarm,
                         departureAlarm = item.departureAlarm,
                         hasActiveAlarm = item.hasActiveAlarm,

@@ -15,6 +15,7 @@
 ## File Structure
 
 ### 신규 생성
+
 | File | Responsibility |
 |------|---------------|
 | `schedule/domain/CalendarRecordExclusion.kt` | 캘린더 기록 제외 엔티티 |
@@ -39,6 +40,7 @@
 | `test/.../application/CalendarCommandFacadeTest.kt` | 커맨드 퍼사드 테스트 |
 
 ### 수정 대상
+
 | File | Change |
 |------|--------|
 | `schedule/domain/Schedule.kt` | `deletedAt` 필드 추가, `softDelete()` 메서드 추가, `isScheduledForDayOfWeek()` public으로 변경 |

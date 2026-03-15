@@ -205,7 +205,7 @@ class CalendarQueryFacade(
         if (startDate.isAfter(endDate)) {
             throw InvalidCalendarDateRangeException(startDate.toString(), endDate.toString())
         }
-        val days = ChronoUnit.DAYS.between(startDate, endDate)
+        val days = ChronoUnit.DAYS.between(startDate, endDate) + 1
         if (days > MAX_RANGE_DAYS) {
             throw CalendarDateRangeTooLargeException(days)
         }

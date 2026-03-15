@@ -2,6 +2,7 @@ package com.dh.ondot.schedule.presentation.response
 
 import com.dh.ondot.schedule.application.dto.CalendarDayItem
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 data class CalendarRangeResponse(
     val days: List<CalendarDayResponse>,
@@ -20,6 +21,8 @@ data class CalendarRangeResponse(
     )
 
     companion object {
+        private val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
         fun from(items: List<CalendarDayItem>): CalendarRangeResponse =
             CalendarRangeResponse(
                 days = items.map { day ->
@@ -31,7 +34,7 @@ data class CalendarRangeResponse(
                                 title = schedule.title,
                                 type = schedule.type.name,
                                 isRepeat = schedule.isRepeat,
-                                appointmentAt = schedule.appointmentAt.toString(),
+                                appointmentAt = schedule.appointmentAt.format(DATE_TIME_FORMATTER),
                             )
                         },
                     )
