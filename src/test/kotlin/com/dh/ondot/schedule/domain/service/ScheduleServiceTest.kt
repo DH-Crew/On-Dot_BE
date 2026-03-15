@@ -13,6 +13,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import java.time.LocalDateTime
 import java.util.Optional
@@ -192,6 +193,7 @@ class ScheduleServiceTest {
         // then
         assertThat(schedule.isDeleted()).isTrue()
         assertThat(schedule.deletedAt).isNotNull()
+        verify(scheduleRepository, never()).delete(schedule)
     }
 
     @Test

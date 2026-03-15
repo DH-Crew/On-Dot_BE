@@ -508,7 +508,7 @@ class CalendarQueryFacadeTest {
         @Test
         @DisplayName("반복 스케줄이 해당 요일에 표시된다")
         fun repeatSchedule_ShownOnMatchingDay() {
-            // 2026-03-15는 일요일 -> dayValue = 1
+            // 2026-03-15는 일요일 -> dayValue = 7 (ISO-8601)
             val date = LocalDate.of(2026, 3, 15)
             val schedule = ScheduleFixture.builder()
                 .title("매일 반복")
