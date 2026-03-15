@@ -10,16 +10,16 @@ import java.util.Optional
 
 interface ScheduleRepository : JpaRepository<Schedule, Long> {
     @EntityGraph(attributePaths = ["preparationAlarm", "departureAlarm"])
-    fun findFirstByMemberIdOrderByUpdatedAtDesc(memberId: Long): Optional<Schedule>
+    fun findFirstByMemberIdAndDeletedAtIsNullOrderByUpdatedAtDesc(memberId: Long): Optional<Schedule>
 
-    fun deleteByMemberId(memberId: Long)
+    fun findAllByMemberIdAndDeletedAtIsNull(memberId: Long): List<Schedule>
 
-    @Query("SELECT s FROM Schedule s WHERE s.memberId IN :memberIds AND s.appointmentAt >= :start AND s.appointmentAt < :end")
+    @Query("SELECT s FROM Schedule s WHERE s.memberId IN :memberIds AND s.appointmentAt >= :start AND s.appointmentAt < :end AND s.deletedAt IS NULL")
     fun findAllByMemberIdInAndAppointmentAtRange(
         @Param("memberIds") memberIds: List<Long>,
         @Param("start") start: Instant,
         @Param("end") end: Instant,
     ): List<Schedule>
 
-    fun findAllByMemberIdInAndIsRepeatTrue(memberIds: List<Long>): List<Schedule>
+    fun findAllByMemberIdInAndIsRepeatTrueAndDeletedAtIsNull(memberIds: List<Long>): List<Schedule>
 }

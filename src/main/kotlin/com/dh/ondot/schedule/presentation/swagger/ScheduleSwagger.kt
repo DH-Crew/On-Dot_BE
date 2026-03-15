@@ -1237,7 +1237,7 @@ interface ScheduleSwagger {
      *──────────────────────────────────────────────────────*/
     @Operation(
         summary = "일정 삭제",
-        description = "스케줄을 삭제합니다.",
+        description = "스케줄을 소프트 딜리트합니다. 삭제 후에도 삭제 이전의 과거 기록은 캘린더에 남아 있습니다.",
         responses = [
             ApiResponse(responseCode = "204", description = "삭제 완료"),
             ApiResponse(responseCode = "404", description = "스케줄 또는 멤버 없음")

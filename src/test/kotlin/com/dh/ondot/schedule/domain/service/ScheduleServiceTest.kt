@@ -13,6 +13,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import java.time.LocalDateTime
 import java.util.Optional
@@ -35,7 +36,7 @@ class ScheduleServiceTest {
         val appointmentAt = LocalDateTime.of(2025, 12, 16, 10, 0)
         val estimatedTimeMin = 30
 
-        given(scheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc(member.id))
+        given(scheduleRepository.findFirstByMemberIdAndDeletedAtIsNullOrderByUpdatedAtDesc(member.id))
             .willReturn(Optional.empty())
 
         // when
@@ -57,7 +58,7 @@ class ScheduleServiceTest {
         val estimatedTimeMin = 30
         val latestSchedule = ScheduleFixture.defaultSchedule()
 
-        given(scheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc(member.id))
+        given(scheduleRepository.findFirstByMemberIdAndDeletedAtIsNullOrderByUpdatedAtDesc(member.id))
             .willReturn(Optional.of(latestSchedule))
 
         // when
@@ -81,7 +82,7 @@ class ScheduleServiceTest {
         val estimatedTimeMin = 30
         val latestSchedule = ScheduleFixture.builder().disabledAlarms().build()
 
-        given(scheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc(member.id))
+        given(scheduleRepository.findFirstByMemberIdAndDeletedAtIsNullOrderByUpdatedAtDesc(member.id))
             .willReturn(Optional.of(latestSchedule))
 
         // when
@@ -190,7 +191,9 @@ class ScheduleServiceTest {
         scheduleService.deleteSchedule(schedule)
 
         // then
-        verify(scheduleRepository).delete(schedule)
+        assertThat(schedule.isDeleted()).isTrue()
+        assertThat(schedule.deletedAt).isNotNull()
+        verify(scheduleRepository, never()).delete(schedule)
     }
 
     @Test
@@ -201,7 +204,7 @@ class ScheduleServiceTest {
         val appointmentAt = LocalDateTime.of(2025, 12, 16, 10, 0)
         val estimatedTimeMin = 30
 
-        given(scheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc(member.id))
+        given(scheduleRepository.findFirstByMemberIdAndDeletedAtIsNullOrderByUpdatedAtDesc(member.id))
             .willReturn(Optional.empty())
 
         // when

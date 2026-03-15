@@ -65,7 +65,16 @@ class Schedule(
     @Enumerated(EnumType.STRING)
     @Column(name = "transport_type", nullable = false, columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'PUBLIC_TRANSPORT'")
     var transportType: TransportType = TransportType.PUBLIC_TRANSPORT,
+
+    @Column(name = "deleted_at")
+    var deletedAt: Instant? = null,
 ) : BaseTimeEntity() {
+
+    fun softDelete() {
+        this.deletedAt = Instant.now()
+    }
+
+    fun isDeleted(): Boolean = deletedAt != null
 
     fun registerPlaces(departurePlace: Place, arrivalPlace: Place) {
         this.departurePlace = departurePlace
@@ -155,11 +164,11 @@ class Schedule(
     }
 
     // 특정 날짜가 반복 요일에 해당하는지 확인한다
-    private fun isScheduledForDayOfWeek(date: LocalDate): Boolean {
+    fun isScheduledForDayOfWeek(date: LocalDate): Boolean {
         // repeatDays: [1(일) .. 7(토)], DayOfWeek: [1(월) .. 7(일)]
         // 변환 로직: 월(1)->2, 화(2)->3, ..., 토(6)->7, 일(7)->1
         val dayValue = (date.dayOfWeek.value % 7) + 1
-        return repeatDays!!.contains(dayValue)
+        return repeatDays?.contains(dayValue) ?: false
     }
 
     companion object {

@@ -60,7 +60,7 @@ class DailyReminderScheduler(
 
         // 반복 일정
         val repeatSchedules = scheduleRepository
-            .findAllByMemberIdInAndIsRepeatTrue(memberIds)
+            .findAllByMemberIdInAndIsRepeatTrueAndDeletedAtIsNull(memberIds)
             .filter { isScheduledForDate(it, date) }
 
         val allSchedules = singleSchedules + repeatSchedules

@@ -97,5 +97,9 @@ enum class ErrorCode(
     EVERYTIME_NOT_FOUND(NOT_FOUND, "에브리타임 시간표를 찾을 수 없습니다. 공유 URL을 확인해주세요."),
     EVERYTIME_EMPTY_TIMETABLE(NOT_FOUND, "시간표에 등록된 수업이 없습니다."),
     EVERYTIME_SERVER_ERROR(BAD_GATEWAY, "에브리타임 서버에 일시적인 오류가 발생했습니다: %s"),
+
+    // Calendar
+    INVALID_CALENDAR_DATE_RANGE(BAD_REQUEST, "캘린더 조회 날짜 범위가 올바르지 않습니다. startDate: %s, endDate: %s"),
+    CALENDAR_DATE_RANGE_TOO_LARGE(BAD_REQUEST, "캘린더 조회 범위는 최대 45일입니다. 요청 범위: %d일"),
     ;
 }
