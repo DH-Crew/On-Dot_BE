@@ -309,6 +309,176 @@ class CalendarQueryFacadeTest {
     }
 
     @Nested
+    @DisplayName("여러 스케줄 복합 조회")
+    inner class MultipleSchedules {
+        @Test
+        @DisplayName("같은 날짜에 비반복 2개 + 반복 1개가 시간순으로 함께 표시된다")
+        fun multipleSchedules_SameDateGroupedAndSorted() {
+            val date = LocalDate.of(2026, 1, 10)
+            val nonRepeat1 = ScheduleFixture.builder()
+                .title("병원 예약")
+                .appointmentAt(date.atTime(10, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .build()
+            val nonRepeat2 = ScheduleFixture.builder()
+                .title("점심 약속")
+                .appointmentAt(date.atTime(12, 30))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 5), LocalTime.of(9, 0)))
+                .build()
+            val repeat = ScheduleFixture.builder()
+                .title("출근")
+                .isRepeat(true)
+                .repeatDays(ScheduleFixture.allDays())
+                .appointmentAt(date.atTime(8, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .build()
+
+            stubMember()
+            stubSchedules(date, date, listOf(nonRepeat1, nonRepeat2, repeat))
+
+            val result = facade.getCalendarRange(memberId, date, date)
+
+            assertThat(result).hasSize(1)
+            assertThat(result[0].date).isEqualTo(date)
+            assertThat(result[0].schedules).hasSize(3)
+            assertThat(result[0].schedules.map { it.title }).containsExactly("출근", "병원 예약", "점심 약속")
+        }
+
+        @Test
+        @DisplayName("여러 날짜에 걸친 스케줄이 날짜별로 그룹핑되고 빈 날짜는 생략된다")
+        fun multipleSchedules_AcrossDates_EmptyDaysOmitted() {
+            val schedule1 = ScheduleFixture.builder()
+                .title("1/10 일정")
+                .appointmentAt(LocalDate.of(2026, 1, 10).atTime(14, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .build()
+            val schedule2 = ScheduleFixture.builder()
+                .title("1/12 일정")
+                .appointmentAt(LocalDate.of(2026, 1, 12).atTime(10, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .build()
+
+            val startDate = LocalDate.of(2026, 1, 10)
+            val endDate = LocalDate.of(2026, 1, 15)
+            stubMember()
+            stubSchedules(startDate, endDate, listOf(schedule1, schedule2))
+
+            val result = facade.getCalendarRange(memberId, startDate, endDate)
+
+            assertThat(result).hasSize(2)
+            assertThat(result.map { it.date }).containsExactly(
+                LocalDate.of(2026, 1, 10),
+                LocalDate.of(2026, 1, 12),
+            )
+        }
+
+        @Test
+        @DisplayName("삭제된 스케줄과 활성 스케줄이 혼합된 경우 정확히 필터링된다")
+        fun deletedAndActiveSchedules_FilteredCorrectly() {
+            val date = LocalDate.of(2026, 1, 10)
+            val active = ScheduleFixture.builder()
+                .title("활성 일정")
+                .appointmentAt(date.atTime(14, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .build()
+            // 약속 후 삭제 → 기록 남아야 함
+            val deletedAfter = ScheduleFixture.builder()
+                .title("삭제됐지만 기록 남음")
+                .appointmentAt(date.atTime(16, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .deletedAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 15), LocalTime.of(10, 0)))
+                .build()
+            // 약속 전 삭제 → 표시 안 됨
+            val deletedBefore = ScheduleFixture.builder()
+                .title("삭제됨 미표시")
+                .appointmentAt(date.atTime(18, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .deletedAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 9), LocalTime.of(10, 0)))
+                .build()
+
+            stubMember()
+            stubSchedules(date, date, listOf(active, deletedAfter, deletedBefore))
+
+            val result = facade.getCalendarRange(memberId, date, date)
+
+            assertThat(result).hasSize(1)
+            assertThat(result[0].schedules).hasSize(2)
+            assertThat(result[0].schedules.map { it.title }).containsExactly("활성 일정", "삭제됐지만 기록 남음")
+        }
+
+        @Test
+        @DisplayName("평일 반복 스케줄과 비반복 스케줄이 한 주간 범위에서 함께 표시된다")
+        fun weekdayRepeatAndNonRepeat_OneWeekRange() {
+            val nonRepeat = ScheduleFixture.builder()
+                .title("1/6 단건")
+                .appointmentAt(LocalDate.of(2026, 1, 6).atTime(14, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .build()
+            val repeat = ScheduleFixture.builder()
+                .title("출근")
+                .isRepeat(true)
+                .repeatDays(ScheduleFixture.weekdays())
+                .appointmentAt(LocalDate.of(2026, 1, 1).atTime(9, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(8, 0)))
+                .build()
+
+            // 2026-01-05(월) ~ 2026-01-11(일)
+            val startDate = LocalDate.of(2026, 1, 5)
+            val endDate = LocalDate.of(2026, 1, 11)
+            stubMember()
+            stubSchedules(startDate, endDate, listOf(nonRepeat, repeat))
+
+            val result = facade.getCalendarRange(memberId, startDate, endDate)
+
+            // 월~금 5일만 (토/일은 평일 반복에 해당 안 됨, 비반복도 없음)
+            assertThat(result).hasSize(5)
+            assertThat(result.map { it.date }).containsExactly(
+                LocalDate.of(2026, 1, 5),
+                LocalDate.of(2026, 1, 6),
+                LocalDate.of(2026, 1, 7),
+                LocalDate.of(2026, 1, 8),
+                LocalDate.of(2026, 1, 9),
+            )
+
+            // 1/6(화)에는 출근 + 단건 = 2개
+            val tuesday = result.find { it.date == LocalDate.of(2026, 1, 6) }
+            assertThat(tuesday?.schedules).hasSize(2)
+            assertThat(tuesday?.schedules?.map { it.title }).containsExactly("출근", "1/6 단건")
+
+            // 나머지 날은 출근 1개만
+            val monday = result.find { it.date == LocalDate.of(2026, 1, 5) }
+            assertThat(monday?.schedules).hasSize(1)
+            assertThat(monday?.schedules?.get(0)?.title).isEqualTo("출근")
+        }
+
+        @Test
+        @DisplayName("여러 스케줄 중 일부만 exclusion으로 제외된다")
+        fun partialExclusion_OnlyTargetRecordFiltered() {
+            val date = LocalDate.of(2026, 1, 10)
+            val schedule1 = ScheduleFixture.builder()
+                .title("제외할 기록")
+                .appointmentAt(date.atTime(10, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .build()
+            val schedule2 = ScheduleFixture.builder()
+                .title("유지할 기록")
+                .appointmentAt(date.atTime(14, 0))
+                .createdAt(ScheduleFixture.instantOf(LocalDate.of(2026, 1, 1), LocalTime.of(9, 0)))
+                .build()
+
+            val exclusion = CalendarRecordExclusion.create(memberId, schedule1.id, date)
+            stubMember()
+            stubSchedulesWithExclusions(date, date, listOf(schedule1, schedule2), listOf(exclusion))
+
+            val result = facade.getCalendarRange(memberId, date, date)
+
+            assertThat(result).hasSize(1)
+            assertThat(result[0].schedules).hasSize(1)
+            assertThat(result[0].schedules[0].title).isEqualTo("유지할 기록")
+        }
+    }
+
+    @Nested
     @DisplayName("일별 조회")
     inner class DailyQuery {
         @Test
