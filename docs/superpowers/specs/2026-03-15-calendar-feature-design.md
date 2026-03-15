@@ -16,6 +16,7 @@
 - 캘린더 기록 삭제 API
 - 기존 삭제 API를 하드 딜리트 → 소프트 딜리트로 변경
 - 기존 조회 쿼리에 `deletedAt IS NULL` 조건 추가
+- Swagger 문서 최신화 (신규 API 추가, 변경된 삭제 API 반영)
 
 ### 미포함 (향후)
 - CalendarRecord 테이블 (외부 캘린더 연동 시 생성)
@@ -33,9 +34,7 @@ var deletedAt: Instant? = null
 ```
 
 삭제 시 `schedule.deletedAt = Instant.now()`로 소프트 딜리트한다.
-회원 탈퇴 시에는 개인정보 삭제 의무로 기존 하드 딜리트를 유지한다.
-
-> **`@SQLRestriction` 미사용 이유**: Hibernate 6의 `@SQLRestriction("deleted_at IS NULL")`을 사용하면 모든 쿼리에 자동 적용되어 편리하지만, 회원 탈퇴 시 하드 딜리트를 위해 이미 소프트 딜리트된 스케줄을 조회해야 하는 케이스가 존재한다. 이를 우회하려면 native query나 직접 JDBC가 필요해지므로, 수동으로 `deletedAt IS NULL` 조건을 추가하는 방식을 택한다.
+회원 탈퇴 시에도 분석 목적으로 소프트 딜리트를 적용한다.
 
 ### CalendarRecordExclusion 테이블 (신규)
 
@@ -51,7 +50,7 @@ CalendarRecordExclusion
 - UNIQUE(memberId, scheduleId, excludedDate)
 ```
 
-회원 탈퇴 시 해당 memberId의 CalendarRecordExclusion도 함께 하드 딜리트한다 (개인정보 삭제).
+회원 탈퇴 시에도 CalendarRecordExclusion은 별도 삭제하지 않는다 (스케줄이 소프트 딜리트되므로 자연스럽게 조회 대상에서 제외).
 
 ## API 설계
 
@@ -211,7 +210,7 @@ WHERE member_id = ? AND excluded_date BETWEEN startDate AND endDate
 ### 삭제 로직 변경
 
 - `ScheduleService.deleteSchedule()`: `repository.delete()` → `schedule.deletedAt = Instant.now()`
-- `ScheduleService.deleteAllByMemberId()`: 회원 탈퇴 시 하드 딜리트 유지 + CalendarRecordExclusion도 함께 삭제
+- `ScheduleService.deleteAllByMemberId()`: 회원 탈퇴 시에도 소프트 딜리트로 변경 (분석 목적 데이터 보존)
 
 ## 성능 고려사항
 
