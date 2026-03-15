@@ -4,6 +4,9 @@ import com.dh.ondot.member.domain.service.MemberService
 import com.dh.ondot.schedule.core.exception.CalendarDateRangeTooLargeException
 import com.dh.ondot.schedule.core.exception.InvalidCalendarDateRangeException
 import com.dh.ondot.schedule.domain.service.CalendarRecordExclusionService
+import com.dh.ondot.schedule.fixture.MemberFixture
+import com.dh.ondot.schedule.fixture.MockitoHelper.anyNonNull
+import com.dh.ondot.schedule.fixture.MockitoHelper.eqNonNull
 import com.dh.ondot.schedule.infra.CalendarQueryRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -11,12 +14,10 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import java.time.Instant
 import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
@@ -58,10 +59,11 @@ class CalendarQueryFacadeTest {
             // given
             val startDate = LocalDate.of(2026, 3, 1)
             val endDate = LocalDate.of(2026, 3, 31)
+            given(memberService.getMemberIfExists(1L)).willReturn(MemberFixture.defaultMember())
             given(calendarQueryRepository.findSchedulesForCalendarRange(
-                ArgumentMatchers.eq(1L),
-                ArgumentMatchers.any(Instant::class.java),
-                ArgumentMatchers.any(Instant::class.java),
+                eqNonNull(1L),
+                anyNonNull(),
+                anyNonNull(),
             )).willReturn(emptyList())
             given(exclusionService.findExclusionsInRange(1L, startDate, endDate)).willReturn(emptyList())
 
