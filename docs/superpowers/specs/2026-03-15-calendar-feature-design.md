@@ -35,6 +35,8 @@ var deletedAt: Instant? = null
 삭제 시 `schedule.deletedAt = Instant.now()`로 소프트 딜리트한다.
 회원 탈퇴 시에는 개인정보 삭제 의무로 기존 하드 딜리트를 유지한다.
 
+> **`@SQLRestriction` 미사용 이유**: Hibernate 6의 `@SQLRestriction("deleted_at IS NULL")`을 사용하면 모든 쿼리에 자동 적용되어 편리하지만, 회원 탈퇴 시 하드 딜리트를 위해 이미 소프트 딜리트된 스케줄을 조회해야 하는 케이스가 존재한다. 이를 우회하려면 native query나 직접 JDBC가 필요해지므로, 수동으로 `deletedAt IS NULL` 조건을 추가하는 방식을 택한다.
+
 ### CalendarRecordExclusion 테이블 (신규)
 
 사용자가 캘린더에서 개별 과거 기록을 삭제할 때 사용한다.
@@ -49,6 +51,8 @@ CalendarRecordExclusion
 - UNIQUE(memberId, scheduleId, excludedDate)
 ```
 
+회원 탈퇴 시 해당 memberId의 CalendarRecordExclusion도 함께 하드 딜리트한다 (개인정보 삭제).
+
 ## API 설계
 
 ### 1. 캘린더 범위 조회
@@ -58,6 +62,10 @@ GET /calendar?startDate={startDate}&endDate={endDate}
 ```
 
 클라이언트가 캘린더 뷰에 보이는 시작/끝 날짜를 전달한다. 스케줄이 없는 날짜는 응답에서 생략한다.
+
+**검증 규칙:**
+- `startDate <= endDate`이어야 한다. 위반 시 400 Bad Request.
+- 최대 조회 범위: 45일 (캘린더 뷰 6주 = 42일 + 여유분). 위반 시 400 Bad Request.
 
 **Response:**
 ```json
@@ -80,6 +88,7 @@ GET /calendar?startDate={startDate}&endDate={endDate}
 ```
 
 - `type`: `ALARM`(미래) | `RECORD`(과거). 기준은 `Instant.now()`.
+- 모든 datetime 필드는 KST(Asia/Seoul) 기준 `LocalDateTime`으로 응답한다 (기존 API 컨벤션과 동일).
 
 ### 2. 캘린더 일별 조회
 
@@ -97,7 +106,7 @@ GET /calendar/{date}
     {
       "scheduleId": 1,
       "type": "ALARM",
-      "scheduleTitle": "학교 수업",
+      "title": "학교 수업",
       "isRepeat": true,
       "repeatDays": [2, 3, 4, 5, 6],
       "appointmentAt": "2026-03-14T09:00:00",
@@ -125,12 +134,15 @@ GET /calendar/{date}
 }
 ```
 
+> 필드명은 범위 조회와 통일하여 `title`을 사용한다. `nextAlarmAt`은 캘린더 뷰에서 불필요하므로 생략한다.
+
 ### 3. 캘린더 기록 삭제
 
 ```
 DELETE /calendar/records?scheduleId={scheduleId}&date={date}
 ```
 
+- 요청한 `scheduleId`가 인증된 사용자의 소유인지 검증한다
 - `CalendarRecordExclusion` 생성
 - 이미 존재하면 무시 (멱등)
 - 204 No Content 응답
@@ -147,16 +159,27 @@ DELETE /schedules/{id}
 
 별도 CalendarRecord 테이블 없이, Schedule 테이블에서 쿼리 타임에 계산하여 도출한다.
 
+### 타임존 처리
+
+`createdAt`, `deletedAt`, `appointmentAt`은 모두 `Instant`(UTC)로 저장된다. 조회 범위의 `LocalDate`와 비교할 때는 **Asia/Seoul 기준으로 변환**하여 비교한다.
+
+```kotlin
+// 예: 특정 날짜의 약속시간 Instant 계산
+val appointmentTimeOnDate = date.atTime(schedule.appointmentTime)
+    .atZone(ZoneId.of("Asia/Seoul"))
+    .toInstant()
+```
+
 ### 미래 스케줄 (type = ALARM)
 
 - 조건: `deletedAt IS NULL`
 - 비반복: `appointmentAt >= now` AND `appointmentAt`이 조회 범위 내
-- 반복: `repeatDays`가 조회 범위 내 날짜와 매칭 AND `createdAt <= 해당 날짜`
+- 반복: `repeatDays`가 조회 범위 내 날짜와 매칭 AND `createdAt`(서울 시간 변환) `<= 해당 날짜`
 
 ### 과거 기록 (type = RECORD)
 
 - 비반복: `appointmentAt < now` AND `appointmentAt`이 조회 범위 내 AND (`deletedAt IS NULL` OR `deletedAt > appointmentAt`)
-- 반복: 조회 범위 내 각 과거 날짜에 대해 `createdAt <= 해당 날짜` AND `repeatDays` 매칭 AND (`deletedAt IS NULL` OR `deletedAt > 해당 날짜의 약속시간`)
+- 반복: 조회 범위 내 각 과거 날짜에 대해 `createdAt`(서울 시간 변환) `<= 해당 날짜` AND `repeatDays` 매칭 AND (`deletedAt IS NULL` OR `deletedAt > 해당 날짜의 약속시간`)
 
 ### 제외 필터링
 
@@ -178,20 +201,24 @@ WHERE member_id = ? AND excluded_date BETWEEN startDate AND endDate
 다음 쿼리에 소프트 딜리트 조건을 추가한다:
 
 - `ScheduleQueryRepository.findActiveSchedulesByMember()`
-- `ScheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc()`
+- `ScheduleQueryRepository.findScheduleByIdEager()`
+- `ScheduleQueryService.findScheduleById()` — `repository.findById()` 이후 `deletedAt != null`이면 예외 처리
+- `ScheduleQueryService.findScheduleByMemberIdAndId()` — 동일하게 `deletedAt` 검증
+- `ScheduleRepository.findFirstByMemberIdOrderByUpdatedAtDesc()` — 삭제된 스케줄에서 알람 설정 복사 방지
 - `ScheduleRepository.findAllByMemberIdInAndAppointmentAtRange()`
 - `ScheduleRepository.findAllByMemberIdInAndIsRepeatTrue()`
 
 ### 삭제 로직 변경
 
 - `ScheduleService.deleteSchedule()`: `repository.delete()` → `schedule.deletedAt = Instant.now()`
-- `ScheduleService.deleteAllByMemberId()`: 회원 탈퇴 시 하드 딜리트 유지
+- `ScheduleService.deleteAllByMemberId()`: 회원 탈퇴 시 하드 딜리트 유지 + CalendarRecordExclusion도 함께 삭제
 
 ## 성능 고려사항
 
 - 쿼리 타임 계산: 유저당 반복 스케줄 수가 현실적으로 수십 개 수준이라 메모리/CPU 부담 없음
+- API 최대 조회 범위 45일 제한으로 반복 스케줄 레코드 폭증 방지
 - CalendarRecordExclusion: 조회 범위 내 데이터만 가져오므로 소량
-- 인덱스: `Schedule(member_id, is_repeat, created_at)`, `CalendarRecordExclusion(member_id, excluded_date)`
+- 인덱스: `Schedule(member_id, deleted_at, is_repeat)`, `CalendarRecordExclusion(member_id, excluded_date)`
 
 ## 향후 확장
 
